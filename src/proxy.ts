@@ -1,18 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-/**
- * Next.js 16 Network Proxy (successor to middleware.ts)
- *
- * In Next.js 16+, `proxy.ts` replaces `middleware.ts` to clarify its role
- * as a network-level boundary/proxy running before routes and layouts.
- *
- * Common Use Cases:
- * - Authentication & route protection (redirecting unauthorized users)
- * - Header injection (CORS, security headers)
- * - URL rewrites and redirects
- *
- * Docs: https://nextjs.org/docs/app/building-your-application/routing/middleware
- */
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -22,13 +9,16 @@ export function proxy(request: NextRequest) {
   // 1. Protect routes: redirect to /login if trying to access /dashboard without token
   const isProtectedRoute = pathname.startsWith("/dashboard");
   if (isProtectedRoute && !token) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("from", pathname);
-    return NextResponse.redirect(loginUrl);
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   // 2. Auth routes: redirect to /dashboard if already logged in
-  const isAuthRoute = pathname.startsWith("/login");
+  const isAuthRoute =
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/register") ||
+    pathname.startsWith("/forgot-password") ||
+    pathname.startsWith("/reset-password");
+
   if (isAuthRoute && token) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
