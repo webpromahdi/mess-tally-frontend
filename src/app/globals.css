@@ -55,9 +55,9 @@
     --money-neutral: #4b5563;
     --money-neutral-surface: #f3f4f6;
 
-    /* Structure — input borders use silver-900 for WCAG 1.4.11 boundary compliance */
+    /* Structure — soft silver input borders aligned with Design.md palette (silver-500 #cdd6df) */
     --border: #bccad4;
-    --input: #6b7a87;
+    --input: #cdd6df;
     --ring: #3a0f34;
 
     --radius: 0.5rem;
@@ -126,7 +126,7 @@
 
     /* Structure */
     --border: #501a4a;
-    --input: #b46ea8;
+    --input: #6b2560;
     --ring: #eaaa00;
 
     /* Sidebar tokens */

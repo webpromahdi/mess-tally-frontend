@@ -21,5 +21,6 @@
   },
   "[css]": {
     "editor.defaultFormatter": "biomejs.biome"
-  }
+  },
+  "tailwindCSS.lint.suggestCanonicalClasses": "ignore"
 }
