@@ -64,7 +64,8 @@ export function MarketingHeader() {
           {siteConfig.marketingNavLinks.map((item) => {
             const isActive =
               pathname === item.href ||
-              (item.href === "/about" && pathname === "/about-us");
+              (item.href === "/about" && pathname === "/about-us") ||
+              (item.href === "/contact" && pathname === "/contact-us");
             return (
               <Link
                 key={item.href}
@@ -150,7 +151,8 @@ export function MarketingHeader() {
               {siteConfig.marketingNavLinks.map((item) => {
                 const isActive =
                   pathname === item.href ||
-                  (item.href === "/about" && pathname === "/about-us");
+                  (item.href === "/about" && pathname === "/about-us") ||
+                  (item.href === "/contact" && pathname === "/contact-us");
                 return (
                   <Link
                     key={item.href}
