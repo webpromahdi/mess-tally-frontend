@@ -1,23 +1,18 @@
 import Link from "next/link";
+import { BrandLogo } from "@/components";
 import { LoginForm } from "@/components/auth";
 
 export default function LoginPage() {
   return (
     <div className="w-full space-y-6">
-      {/* Brand Monogram & Wordmark Header */}
-      <div className="flex flex-col items-center text-center space-y-2">
+      {/* Brand Logo Header */}
+      <div className="flex flex-col items-center text-center">
         <Link
           href="/"
-          className="inline-flex items-center gap-2.5 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg p-1"
+          className="inline-flex items-center justify-center rounded-lg p-1 transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-label="MessTally Home"
         >
-          <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground font-black text-lg shadow-md group-hover:scale-105 transition-transform">
-            MT
-          </div>
-          <span className="font-extrabold text-2xl tracking-tight text-foreground">
-            Mess
-            <span className="text-primary dark:text-brand-accent">Tally</span>
-          </span>
+          <BrandLogo variant="primary" priority className="h-10 sm:h-11" />
         </Link>
       </div>
 

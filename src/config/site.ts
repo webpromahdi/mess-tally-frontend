@@ -1,6 +1,7 @@
 export const siteConfig = {
-  name: "My App",
-  description: "A production-grade Next.js application.",
+  name: "MessTally",
+  description:
+    "Track meals, manage shared expenses, and settle up with flatmates seamlessly.",
   url: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
   /**
    * Update these nav links per project.
