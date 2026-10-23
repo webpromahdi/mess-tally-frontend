@@ -8,6 +8,12 @@ export const siteConfig = {
    * Used for header/sidebar navigation.
    */
   navLinks: [{ label: "Dashboard", href: "/dashboard" }],
+  marketingNavLinks: [
+    { label: "Features", href: "/features" },
+    { label: "About Us", href: "/about" },
+    { label: "Pricing", href: "/pricing" },
+    { label: "Contact", href: "/contact" },
+  ],
 } as const;
 
 export type SiteConfig = typeof siteConfig;
