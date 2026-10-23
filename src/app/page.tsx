@@ -9,5 +9,5 @@ import { redirect } from "next/navigation";
  * For more complex auth-based redirects, handle this in middleware.ts
  */
 export default function RootPage() {
-  redirect("/dashboard");
+  redirect("/login");
 }
