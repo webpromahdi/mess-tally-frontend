@@ -27,10 +27,6 @@ export default function AboutUsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-16 items-center">
           {/* Left Column: Narrative */}
           <div className="lg:col-span-6 space-y-5 sm:space-y-6">
-            <p className="text-xs sm:text-sm font-bold uppercase tracking-wider text-primary dark:text-brand-accent">
-              ABOUT US
-            </p>
-
             <h1
               id="about-hero-heading"
               className="text-4xl sm:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-foreground leading-[1.12]"

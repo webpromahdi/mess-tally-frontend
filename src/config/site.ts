@@ -10,8 +10,8 @@ export const siteConfig = {
   navLinks: [{ label: "Dashboard", href: "/dashboard" }],
   marketingNavLinks: [
     { label: "Features", href: "/features" },
-    { label: "About Us", href: "/about" },
     { label: "Pricing", href: "/pricing" },
+    { label: "About Us", href: "/about" },
     { label: "Contact", href: "/contact" },
   ],
 } as const;
