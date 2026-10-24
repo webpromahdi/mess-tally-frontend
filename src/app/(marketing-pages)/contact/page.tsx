@@ -32,10 +32,6 @@ export default function ContactPage() {
         aria-labelledby="contact-hero-heading"
         className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 lg:pt-20 pb-8 text-center"
       >
-        <p className="text-xs sm:text-sm font-bold uppercase tracking-wider text-primary dark:text-brand-accent mb-3">
-          CONTACT US
-        </p>
-
         <h1
           id="contact-hero-heading"
           className="text-4xl sm:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-foreground leading-[1.12] text-balance"
