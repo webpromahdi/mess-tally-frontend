@@ -56,7 +56,7 @@ Before initiating work on any feature or screen:
 
 | Module / Feature | UI (Dummy Data) | API Integration | Current Status | Target Route |
 | :--- | :---: | :---: | :---: | :--- |
-| **01. Marketing & Public Pages** | 🟡 In Progress | N/A (Static) | Active | `/`, `/about`, `/contact`, `/features` |
+| **01. Marketing & Public Pages** | 🟡 In Progress | N/A (Static) | Active | `/`, `/about`, `/contact`, `/features`, `/pricing` |
 | **02. Authentication & Access** | 🟢 Done | ⚪ Pending | Ready for Integration | `/login`, `/register`, `/forgot-password`, `/reset-password` |
 | **03. Mess Onboarding & Setup** | ⚪ Pending | ⚪ Pending | Queued | `/onboarding`, `/mess/join`, `/mess/create` |
 | **04. Dashboard Overview** | ⚪ Pending | ⚪ Pending | Queued | `/dashboard` |
@@ -79,7 +79,7 @@ Before initiating work on any feature or screen:
 
 ### Module 01: Marketing & Public Pages
 - **Backend Reference:** Not applicable (static public routes).
-- **Frontend References:** [Design.md](file:///d:/Projects/mess-tally-frontend/Design.md), [responsive.md](file:///d:/Projects/mess-tally-frontend/responsive.md).
+- **Frontend References:** [Design.md](file:///d:/Projects/mess-tally-frontend/Design.md), [responsive.md](file:///d:/Projects/mess-tally-frontend/responsive.md), [fix-responsive-issue.md](file:///d:/Projects/mess-tally-frontend/fix-responsive-issue.md).
 - **Routes:** `src/app/(marketing-pages)/` (`/`, `/about`, `/contact`, `/features`, `/pricing`).
 
 #### Phase 1: Screen Design & Responsive Layout
@@ -88,9 +88,14 @@ Before initiating work on any feature or screen:
 - [x] Features showcase page (`/features` in [src/app/(marketing-pages)/features/page.tsx](file:///d:/Projects/mess-tally-frontend/src/app/(marketing-pages)/features/page.tsx))
 - [x] About Us story & team page (`/about` in [src/app/(marketing-pages)/about/page.tsx](file:///d:/Projects/mess-tally-frontend/src/app/(marketing-pages)/about/page.tsx))
 - [x] Contact Us page with responsive form (`/contact` in [src/app/(marketing-pages)/contact/page.tsx](file:///d:/Projects/mess-tally-frontend/src/app/(marketing-pages)/contact/page.tsx))
+- [x] Pricing page & plan comparison matrix (`/pricing` in [src/app/(marketing-pages)/pricing/page.tsx](file:///d:/Projects/mess-tally-frontend/src/app/(marketing-pages)/pricing/page.tsx)) — **COMPLETED**
+  - [x] 3-cycle billing toggle (Monthly, 6 Months, 1 Year) with stacked label & badges ([src/components/marketing/pricing-billing-toggle.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/pricing-billing-toggle.tsx))
+  - [x] 3 pricing tier cards: Starter (Free), Mess PRO (Featured Aubergine card), Hostel Custom ([src/components/marketing/pricing-cards.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/pricing-cards.tsx))
+  - [x] 5-category detailed feature comparison table with mobile swipe hint and `[contain:paint]` layout isolation ([src/components/marketing/pricing-comparison-table.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/pricing-comparison-table.tsx))
+  - [x] Bachelor flatmate FAQ accordion ([src/components/marketing/pricing-faq.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/pricing-faq.tsx))
+  - [x] Zero-tolerance horizontal overflow containment verified across 320px and 390px viewports
+- [x] Mobile ergonomics & zero-overflow audit across all public routes (320px & 390px viewports, touch targets ≥ 44px)
 - [ ] Main landing home page & hero section with value proposition (`/` in `src/app/(marketing-pages)/page.tsx`)
-- [ ] Pricing / Plan comparison section (Free 5-member tier vs PRO unlimited)
-- [ ] Mobile ergonomics check (390px viewport, touch targets ≥ 44px)
 
 ---
 
