@@ -47,6 +47,13 @@ export default function ForgotPasswordPage() {
             </div>
 
             <div className="space-y-3 pt-2">
+              <Button asChild className="w-full h-11 min-h-11 font-semibold">
+                <Link
+                  href={`/reset-password?email=${encodeURIComponent(submittedEmail)}`}
+                >
+                  Enter Verification Code
+                </Link>
+              </Button>
               <Button asChild variant="outline" className="w-full h-11">
                 <Link href="/login">Return to Sign In</Link>
               </Button>

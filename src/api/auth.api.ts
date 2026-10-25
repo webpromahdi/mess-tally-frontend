@@ -1,10 +1,16 @@
 import apiClient from "@/lib/apiClient";
 import type {
   ApiResponse,
+  AuthMeResponseData,
+  ForgotPasswordRequest,
+  ForgotPasswordResponseData,
+  LoginRequest,
+  LoginResponseData,
   RegisterRequest,
   RegisterResponseData,
   ResendOtpRequest,
   ResendOtpResponseData,
+  ResetPasswordRequest,
   VerifyEmailRequest,
   VerifyEmailResponseData,
 } from "@/lib/types";
@@ -15,8 +21,11 @@ import type {
  * These are plain async functions — TanStack Query hooks go in src/hooks/auth.hook.ts
  */
 
-export function userLogin(payload: { email: string; password: string }) {
-  return apiClient("/auth/login", { method: "POST", body: payload });
+export function userLogin(payload: LoginRequest) {
+  return apiClient<ApiResponse<LoginResponseData>>("/auth/login", {
+    method: "POST",
+    body: payload,
+  });
 }
 
 export function userRegister(payload: RegisterRequest) {
@@ -41,9 +50,39 @@ export function resendOtp(payload: ResendOtpRequest) {
 }
 
 export function getMe() {
-  return apiClient("/auth/me", { method: "GET" });
+  return apiClient<ApiResponse<AuthMeResponseData>>("/auth/me", {
+    method: "GET",
+  });
 }
 
 export function logout() {
-  return apiClient("/auth/logout", { method: "POST" });
+  return apiClient<ApiResponse<null>>("/auth/logout", {
+    method: "POST",
+  });
+}
+
+export function refreshToken() {
+  return apiClient<ApiResponse<{ accessToken: string }>>(
+    "/auth/refresh-token",
+    {
+      method: "POST",
+    },
+  );
+}
+
+export function forgotPassword(payload: ForgotPasswordRequest) {
+  return apiClient<ApiResponse<ForgotPasswordResponseData>>(
+    "/auth/forgot-password",
+    {
+      method: "POST",
+      body: payload,
+    },
+  );
+}
+
+export function resetPassword(payload: ResetPasswordRequest) {
+  return apiClient<ApiResponse<null>>("/auth/reset-password", {
+    method: "POST",
+    body: payload,
+  });
 }

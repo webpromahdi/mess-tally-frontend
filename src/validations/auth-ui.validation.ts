@@ -50,6 +50,15 @@ export const forgotPasswordFormSchema = z.object({
 });
 
 export const resetPasswordBaseSchema = z.object({
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("Please enter a valid email address"),
+  otp: z
+    .string()
+    .min(1, "Verification code is required")
+    .length(6, "Verification code must be exactly 6 digits")
+    .regex(/^\d{6}$/, "Verification code must contain only numbers"),
   password: z
     .string()
     .min(1, "New password is required")

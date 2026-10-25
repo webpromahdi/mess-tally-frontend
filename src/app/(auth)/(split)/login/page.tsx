@@ -1,4 +1,5 @@
 import Link from "next/link";
+import * as React from "react";
 import { BrandLogo } from "@/components";
 import { LoginForm } from "@/components/auth";
 
@@ -29,7 +30,15 @@ export default function LoginPage() {
         </div>
 
         {/* Imported Form Component */}
-        <LoginForm />
+        <React.Suspense
+          fallback={
+            <div className="w-full py-8 flex justify-center items-center">
+              <div className="size-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+            </div>
+          }
+        >
+          <LoginForm />
+        </React.Suspense>
 
         {/* Card Footer Navigation */}
         <div className="pt-2 text-center text-xs sm:text-sm text-muted-foreground">

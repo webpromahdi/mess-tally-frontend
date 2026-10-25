@@ -3,9 +3,12 @@
 import { useForm } from "@tanstack/react-form";
 import { AlertCircle, ArrowRight, Loader2 } from "lucide-react";
 import * as React from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useForgotPassword } from "@/hooks";
+import { getErrorMessage } from "@/lib/apiClient";
 import { cn } from "@/lib/utils";
 import { forgotPasswordFormSchema } from "@/validations/auth-ui.validation";
 
@@ -19,7 +22,9 @@ export function ForgotPasswordForm({
   onSuccess,
 }: ForgotPasswordFormProps) {
   const [formError, setFormError] = React.useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  const { mutateAsync: forgotPasswordMutation, isPending: isSubmitting } =
+    useForgotPassword();
 
   const form = useForm({
     defaultValues: {
@@ -34,19 +39,29 @@ export function ForgotPasswordForm({
         return;
       }
 
-      setIsSubmitting(true);
       setFormError(null);
 
       try {
-        // TODO: Connect to backend auth API (POST /api/auth/forgot-password)
-        // Simulated latency
-        await new Promise((resolve) => setTimeout(resolve, 800));
+        const response = await forgotPasswordMutation({
+          email: value.email,
+        });
+
+        toast.success("Reset Code Sent", {
+          description:
+            response?.message ||
+            "Please check your email for the password reset instructions.",
+        });
 
         onSuccess?.(value.email);
-      } catch {
-        setFormError("Unable to process request. Please try again later.");
-      } finally {
-        setIsSubmitting(false);
+      } catch (err: unknown) {
+        const message = getErrorMessage(
+          err,
+          "Unable to process request. Please try again later.",
+        );
+        setFormError(message);
+        toast.error("Request failed", {
+          description: message,
+        });
       }
     },
   });
