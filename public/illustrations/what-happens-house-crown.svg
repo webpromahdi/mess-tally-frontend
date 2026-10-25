@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 150" fill="none" width="100%" height="100%" aria-hidden="true">
+  <defs>
+    <radialGradient id="houseBackdrop" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ECC8E6" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#ECC8E6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="roofGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6B2560"/>
+      <stop offset="100%" stop-color="#3A0F34"/>
+    </linearGradient>
+    <linearGradient id="crownGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F5CE66"/>
+      <stop offset="100%" stop-color="#EAAA00"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Ambient Backdrop -->
+  <ellipse cx="110" cy="85" rx="85" ry="55" fill="url(#houseBackdrop)"/>
+
+  <!-- Base Ground Shadow -->
+  <ellipse cx="110" cy="128" rx="80" ry="12" fill="#3A0F34" fill-opacity="0.08"/>
+
+  <!-- Background Trees and Foliage -->
+  <!-- Left Tree -->
+  <ellipse cx="48" cy="100" rx="16" ry="22" fill="#8C3A7E" fill-opacity="0.85"/>
+  <ellipse cx="56" cy="104" rx="12" ry="16" fill="#501A4A"/>
+  <rect x="52" y="112" width="4" height="16" rx="2" fill="#3A0F34"/>
+
+  <!-- Right Tree -->
+  <ellipse cx="174" cy="98" rx="18" ry="24" fill="#6B2560" fill-opacity="0.9"/>
+  <ellipse cx="182" cy="102" rx="12" ry="18" fill="#3A0F34"/>
+  <rect x="176" y="114" width="4" height="14" rx="2" fill="#3A0F34"/>
+
+  <!-- House Body -->
+  <!-- Main Wall Left Face -->
+  <path d="M64 80 L110 65 L110 122 L64 126 Z" fill="#D4A0CB"/>
+
+  <!-- Main Wall Right Face -->
+  <path d="M110 65 L160 82 L160 124 L110 122 Z" fill="#ECC8E6"/>
+
+  <!-- Roof - Gabled Plum Face -->
+  <polygon points="108,38 164,58 110,65" fill="url(#roofGrad2)"/>
+  <polygon points="110,40 164,60 158,82 110,65" fill="url(#roofGrad2)"/>
+  <polygon points="60,78 110,40 112,65 64,80" fill="#501A4A"/>
+
+  <!-- Chimney -->
+  <rect x="74" y="48" width="10" height="18" rx="2" fill="#3A0F34"/>
+  <ellipse cx="79" cy="48" rx="6" ry="2" fill="#EAAA00"/>
+
+  <!-- Front Door -->
+  <rect x="124" y="96" width="16" height="26" rx="3" fill="#3A0F34"/>
+  <circle cx="137" cy="109" r="1.5" fill="#EAAA00"/>
+
+  <!-- Lit Windows -->
+  <!-- Upper Floor Window -->
+  <rect x="124" y="74" width="14" height="14" rx="2" fill="#FEFAEE"/>
+  <line x1="131" y1="74" x2="131" y2="88" stroke="#3A0F34" stroke-width="1.2"/>
+  <line x1="124" y1="81" x2="138" y2="81" stroke="#3A0F34" stroke-width="1.2"/>
+
+  <!-- Left Side Windows -->
+  <polygon points="74,86 94,80 94,98 74,103" fill="#FFFFFF" fill-opacity="0.95"/>
+  <line x1="84" y1="83" x2="84" y2="100" stroke="#B46EA8" stroke-width="1.5"/>
+  <line x1="74" y1="94" x2="94" y2="89" stroke="#B46EA8" stroke-width="1.5"/>
+
+  <!-- Little front bushes -->
+  <ellipse cx="62" cy="124" rx="10" ry="8" fill="#501A4A"/>
+  <ellipse cx="70" cy="125" rx="7" ry="6" fill="#8C3A7E"/>
+
+  <!-- FLOATING GOLDEN CROWN (Above Roof) -->
+  <g transform="translate(76, 12)">
+    <path d="M4 18 L10 6 L18 14 L26 6 L32 18 Z" fill="url(#crownGrad)"/>
+    <rect x="3" y="17" width="30" height="4" rx="1.5" fill="#C48B00"/>
+    <!-- Crown jewels / tips -->
+    <circle cx="10" cy="5" r="2" fill="#FEFAEE"/>
+    <circle cx="18" cy="13" r="1.8" fill="#FEFAEE"/>
+    <circle cx="26" cy="5" r="2" fill="#FEFAEE"/>
+    <!-- Little glow stars -->
+    <path d="M40 8 L41 11 L44 12 L41 13 L40 16 L39 13 L36 12 L39 11 Z" fill="#EAAA00"/>
+    <circle cx="0" cy="14" r="1.5" fill="#EAAA00"/>
+  </g>
+</svg>
