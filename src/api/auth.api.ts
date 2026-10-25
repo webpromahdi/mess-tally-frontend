@@ -20,6 +20,20 @@ export function userRegister(payload: {
   return apiClient("/auth/register", { method: "POST", body: payload });
 }
 
+export function verifyEmail(payload: { email: string; otp: string }) {
+  return apiClient("/auth/verify-email", { method: "POST", body: payload });
+}
+
+export function resendOtp(payload: {
+  email: string;
+  purpose?: "REGISTRATION" | "FORGOT_PASSWORD";
+}) {
+  return apiClient("/auth/resend-otp", {
+    method: "POST",
+    body: { purpose: "REGISTRATION", ...payload },
+  });
+}
+
 export function getMe() {
   return apiClient("/auth/me", { method: "GET" });
 }

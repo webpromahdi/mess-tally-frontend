@@ -14,7 +14,7 @@ import {
 
 interface RegisterFormProps {
   className?: string;
-  onSuccess?: () => void;
+  onSuccess?: (registeredEmail: string) => void;
 }
 
 /**
@@ -102,7 +102,6 @@ export function RegisterForm({ className, onSuccess }: RegisterFormProps) {
     defaultValues: {
       name: "",
       email: "",
-      phone: "",
       password: "",
       confirmPassword: "",
     },
@@ -124,7 +123,7 @@ export function RegisterForm({ className, onSuccess }: RegisterFormProps) {
         // Simulated latency
         await new Promise((resolve) => setTimeout(resolve, 800));
 
-        onSuccess?.();
+        onSuccess?.(value.email);
       } catch {
         setFormError("Unable to create account. Please try again.");
       } finally {
@@ -268,69 +267,6 @@ export function RegisterForm({ className, onSuccess }: RegisterFormProps) {
                 disabled={isSubmitting}
                 className={cn(
                   "transition-colors",
-                  hasError &&
-                    "border-destructive dark:border-error focus-visible:ring-destructive dark:focus-visible:ring-error",
-                )}
-              />
-              {hasError && (
-                <p
-                  id={errorId}
-                  role="alert"
-                  className="text-xs text-destructive dark:text-error flex items-center gap-1.5 mt-1 font-medium animate-in fade-in duration-150"
-                >
-                  <AlertCircle
-                    className="size-3.5 shrink-0"
-                    aria-hidden="true"
-                  />
-                  <span>{field.state.meta.errors[0]}</span>
-                </p>
-              )}
-            </div>
-          );
-        }}
-      </form.Field>
-
-      {/* Phone Number (Optional) */}
-      <form.Field
-        name="phone"
-        validators={{
-          onBlur: ({ value }) => {
-            const res = registerBaseSchema.shape.phone.safeParse(value);
-            return res.success ? undefined : res.error.errors[0]?.message;
-          },
-        }}
-      >
-        {(field) => {
-          const hasError = Boolean(field.state.meta.errors.length);
-          const errorId = "register-phone-error";
-
-          return (
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <Label
-                  htmlFor="register-phone"
-                  className="text-sm font-medium text-foreground"
-                >
-                  Phone number
-                </Label>
-                <span className="text-xs text-muted-foreground">
-                  Optional (bKash/Nagad)
-                </span>
-              </div>
-              <Input
-                id="register-phone"
-                type="tel"
-                autoComplete="tel"
-                inputMode="tel"
-                placeholder="01712345678"
-                value={field.state.value}
-                onChange={(e) => field.handleChange(e.target.value)}
-                onBlur={field.handleBlur}
-                aria-invalid={hasError}
-                aria-describedby={hasError ? errorId : undefined}
-                disabled={isSubmitting}
-                className={cn(
-                  "transition-colors tabular-nums",
                   hasError &&
                     "border-destructive dark:border-error focus-visible:ring-destructive dark:focus-visible:ring-error",
                 )}

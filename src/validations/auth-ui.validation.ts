@@ -27,16 +27,6 @@ export const registerBaseSchema = z.object({
     .string()
     .min(1, "Email is required")
     .email("Please enter a valid email address"),
-  phone: z
-    .string()
-    .optional()
-    .refine(
-      (val) => !val || /^(?:\+?88)?01[3-9]\d{8}$/.test(val.replace(/\s+/g, "")),
-      {
-        message:
-          "Please enter a valid Bangladeshi mobile number (e.g. 017xxxxxxxx)",
-      },
-    ),
   password: z
     .string()
     .min(1, "Password is required")
@@ -75,7 +65,20 @@ export const resetPasswordFormSchema = resetPasswordBaseSchema.refine(
   },
 );
 
+export const verifyEmailFormSchema = z.object({
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("Please enter a valid email address"),
+  otp: z
+    .string()
+    .min(1, "Verification code is required")
+    .length(6, "Verification code must be exactly 6 digits")
+    .regex(/^\d{6}$/, "Verification code must contain only numbers"),
+});
+
 export type LoginFormValues = z.infer<typeof loginFormSchema>;
 export type RegisterFormValues = z.infer<typeof registerFormSchema>;
 export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordFormSchema>;
 export type ResetPasswordFormValues = z.infer<typeof resetPasswordFormSchema>;
+export type VerifyEmailFormValues = z.infer<typeof verifyEmailFormSchema>;
