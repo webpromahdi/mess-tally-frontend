@@ -1,4 +1,5 @@
 export * from "./banner";
+export * from "./brand-logo";
 export * from "./drawer-sheet";
 export * from "./empty-state";
 export * from "./error-state";
@@ -12,3 +13,4 @@ export * from "./popover";
 export * from "./progress";
 export * from "./simple-dropdown";
 export * from "./toast";
+export * from "./user-menu";

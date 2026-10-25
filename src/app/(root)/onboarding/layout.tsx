@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { BrandLogo } from "@/components/brand-logo";
-import { UserMenu } from "@/components/user-menu";
+import { BrandLogo, UserMenu } from "@/components/shared";
 import { cn } from "@/lib/utils";
 
 export const metadata = {
