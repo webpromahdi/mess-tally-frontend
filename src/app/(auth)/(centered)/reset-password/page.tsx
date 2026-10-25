@@ -10,7 +10,9 @@ import { Button } from "@/components/ui/button";
 
 function ResetPasswordContent() {
   const searchParams = useSearchParams();
-  const token = searchParams?.get("token");
+  const email = searchParams?.get("email") || "";
+  const token =
+    searchParams?.get("token") || searchParams?.get("otp") || undefined;
   const isExpired =
     token === "expired" ||
     token === "invalid" ||
@@ -100,7 +102,11 @@ function ResetPasswordContent() {
             </div>
 
             {/* Imported Form Component */}
-            <ResetPasswordForm onSuccess={() => setIsSuccess(true)} />
+            <ResetPasswordForm
+              email={email}
+              otp={token}
+              onSuccess={() => setIsSuccess(true)}
+            />
 
             {/* Card Footer Navigation */}
             <div className="pt-4 border-t border-border text-center text-sm text-muted-foreground">

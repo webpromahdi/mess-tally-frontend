@@ -3,9 +3,12 @@
 import { useForm } from "@tanstack/react-form";
 import { AlertCircle, Eye, EyeOff, KeyRound, Loader2 } from "lucide-react";
 import * as React from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useResetPassword } from "@/hooks";
+import { getErrorMessage } from "@/lib/apiClient";
 import { cn } from "@/lib/utils";
 import {
   resetPasswordBaseSchema,
@@ -14,6 +17,8 @@ import {
 
 interface ResetPasswordFormProps {
   className?: string;
+  email?: string;
+  otp?: string;
   onSuccess?: () => void;
 }
 
@@ -94,20 +99,33 @@ function PasswordStrengthMeter({ password = "" }: { password?: string }) {
 
 export function ResetPasswordForm({
   className,
+  email,
+  otp,
   onSuccess,
 }: ResetPasswordFormProps) {
   const [formError, setFormError] = React.useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
 
+  const { mutateAsync: resetPasswordMutation, isPending: isSubmitting } =
+    useResetPassword();
+
   const form = useForm({
     defaultValues: {
+      email: email || "",
+      otp: otp || "",
       password: "",
       confirmPassword: "",
     },
     onSubmit: async ({ value }) => {
-      const result = resetPasswordFormSchema.safeParse(value);
+      const payload = {
+        email: value.email || email || "",
+        otp: value.otp || otp || "",
+        password: value.password,
+        confirmPassword: value.confirmPassword,
+      };
+
+      const result = resetPasswordFormSchema.safeParse(payload);
       if (!result.success) {
         setFormError(
           result.error.errors[0]?.message || "Please fix form errors.",
@@ -115,19 +133,30 @@ export function ResetPasswordForm({
         return;
       }
 
-      setIsSubmitting(true);
       setFormError(null);
 
       try {
-        // TODO: Connect to backend auth API (POST /api/auth/reset-password with token)
-        // Simulated latency
-        await new Promise((resolve) => setTimeout(resolve, 800));
+        const response = await resetPasswordMutation({
+          email: payload.email,
+          otp: payload.otp,
+          newPassword: payload.password,
+        });
+
+        toast.success("Password Updated", {
+          description:
+            response?.message || "Your password has been successfully reset.",
+        });
 
         onSuccess?.();
-      } catch {
-        setFormError("Unable to reset password. Link may have expired.");
-      } finally {
-        setIsSubmitting(false);
+      } catch (err: unknown) {
+        const message = getErrorMessage(
+          err,
+          "Unable to reset password. Link or code may have expired.",
+        );
+        setFormError(message);
+        toast.error("Reset failed", {
+          description: message,
+        });
       }
     },
   });
@@ -161,6 +190,143 @@ export function ResetPasswordForm({
             Dismiss
           </button>
         </div>
+      )}
+
+      {/* Account indicator if prefilled */}
+      {email ? (
+        <div className="p-3 rounded-xl bg-muted/60 border border-border text-xs flex items-center justify-between">
+          <span className="text-muted-foreground font-medium">Account:</span>
+          <span className="font-semibold text-foreground break-all">
+            {email}
+          </span>
+        </div>
+      ) : (
+        <form.Field
+          name="email"
+          validators={{
+            onBlur: ({ value }) => {
+              const res = resetPasswordBaseSchema.shape.email.safeParse(value);
+              return res.success ? undefined : res.error.errors[0]?.message;
+            },
+          }}
+        >
+          {(field) => {
+            const hasError = Boolean(field.state.meta.errors.length);
+            const errorId = "reset-email-error";
+            return (
+              <div className="space-y-1.5">
+                <Label
+                  htmlFor="reset-email"
+                  className="text-sm font-medium text-foreground"
+                >
+                  Registered Email Address
+                  <span
+                    className="text-destructive dark:text-error ml-0.5"
+                    aria-hidden="true"
+                  >
+                    *
+                  </span>
+                </Label>
+                <Input
+                  id="reset-email"
+                  type="email"
+                  placeholder="karim@example.com"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                  aria-invalid={hasError}
+                  aria-describedby={hasError ? errorId : undefined}
+                  disabled={isSubmitting}
+                  className={cn(
+                    "transition-colors",
+                    hasError &&
+                      "border-destructive dark:border-error focus-visible:ring-destructive dark:focus-visible:ring-error",
+                  )}
+                />
+                {hasError && (
+                  <p
+                    id={errorId}
+                    role="alert"
+                    className="text-xs text-destructive dark:text-error flex items-center gap-1.5 mt-1 font-medium animate-in fade-in duration-150"
+                  >
+                    <AlertCircle
+                      className="size-3.5 shrink-0"
+                      aria-hidden="true"
+                    />
+                    <span>{field.state.meta.errors[0]}</span>
+                  </p>
+                )}
+              </div>
+            );
+          }}
+        </form.Field>
+      )}
+
+      {/* 6-Digit OTP verification code field */}
+      {!otp && (
+        <form.Field
+          name="otp"
+          validators={{
+            onBlur: ({ value }) => {
+              const res = resetPasswordBaseSchema.shape.otp.safeParse(value);
+              return res.success ? undefined : res.error.errors[0]?.message;
+            },
+          }}
+        >
+          {(field) => {
+            const hasError = Boolean(field.state.meta.errors.length);
+            const errorId = "reset-otp-error";
+            return (
+              <div className="space-y-1.5">
+                <Label
+                  htmlFor="reset-otp"
+                  className="text-sm font-medium text-foreground"
+                >
+                  6-Digit Verification Code
+                  <span
+                    className="text-destructive dark:text-error ml-0.5"
+                    aria-hidden="true"
+                  >
+                    *
+                  </span>
+                </Label>
+                <Input
+                  id="reset-otp"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  placeholder="123456"
+                  value={field.state.value}
+                  onChange={(e) =>
+                    field.handleChange(e.target.value.replace(/\D/g, ""))
+                  }
+                  onBlur={field.handleBlur}
+                  aria-invalid={hasError}
+                  aria-describedby={hasError ? errorId : undefined}
+                  disabled={isSubmitting}
+                  className={cn(
+                    "font-mono tracking-widest text-center text-lg transition-colors",
+                    hasError &&
+                      "border-destructive dark:border-error focus-visible:ring-destructive dark:focus-visible:ring-error",
+                  )}
+                />
+                {hasError && (
+                  <p
+                    id={errorId}
+                    role="alert"
+                    className="text-xs text-destructive dark:text-error flex items-center gap-1.5 mt-1 font-medium animate-in fade-in duration-150"
+                  >
+                    <AlertCircle
+                      className="size-3.5 shrink-0"
+                      aria-hidden="true"
+                    />
+                    <span>{field.state.meta.errors[0]}</span>
+                  </p>
+                )}
+              </div>
+            );
+          }}
+        </form.Field>
       )}
 
       {/* New Password */}

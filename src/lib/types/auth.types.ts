@@ -69,3 +69,45 @@ export interface ResendOtpResponseData {
   resendAvailableInSeconds: number;
   resendsRemaining: number;
 }
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface ActiveMessSummary {
+  id: string;
+  name: string;
+  roomCode: string;
+  currency: string;
+  isJoinable: boolean;
+  requireApproval: boolean;
+  mealCutoffTime: string;
+}
+
+export interface LoginResponseData {
+  accessToken: string;
+  refreshToken: string;
+  activeMessId: string | null;
+  mess?: ActiveMessSummary | null;
+  user?: User;
+}
+
+export type AuthMeResponseData = User;
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ForgotPasswordResponseData {
+  email: string;
+  purpose: "FORGOT_PASSWORD";
+  expiresInSeconds: number;
+  resendAvailableInSeconds: number;
+  resendsRemaining: number;
+}
+
+export interface ResetPasswordRequest {
+  email: string;
+  otp: string;
+  newPassword: string;
+}

@@ -57,7 +57,7 @@ Before initiating work on any feature or screen:
 | Module / Feature | UI (Dummy Data) | API Integration | Current Status | Target Route |
 | :--- | :---: | :---: | :---: | :--- |
 | **01. Marketing & Public Pages** | 🟡 In Progress | N/A (Static) | Active | `/`, `/about`, `/contact`, `/features`, `/pricing` |
-| **02. Authentication & Access** | 🟢 Done | ⚪ Pending | Ready for Integration | `/login`, `/register`, `/forgot-password`, `/reset-password` |
+| **02. Authentication & Access** | 🟢 Done | 🟢 Done | Completed | `/login`, `/register`, `/forgot-password`, `/reset-password` |
 | **03. Mess Onboarding & Setup** | ⚪ Pending | ⚪ Pending | Queued | `/onboarding`, `/mess/join`, `/mess/create` |
 | **04. Dashboard Overview** | ⚪ Pending | ⚪ Pending | Queued | `/dashboard` |
 | **05. Daily Meals Matrix** | ⚪ Pending | ⚪ Pending | Queued | `/dashboard/meals` |
@@ -113,23 +113,23 @@ Before initiating work on any feature or screen:
 - [x] Reset password page (`/reset-password` — token & new password fields)
 - [x] Dummy validation display and button loading states
 
-#### Phase 2: Dynamic API Integration (A to Z)
-- [x] **2.1 Types:** Define auth request and response shapes in `src/lib/types/auth.types.ts` (`LoginRequest`, `RegisterRequest`, `VerifyEmailRequest`, `ResendOtpRequest`, `AuthResponse`, `User`, `UserRole`).
+#### Phase 2: Dynamic API Integration (A to Z) — **COMPLETED**
+- [x] **2.1 Types:** Define auth request and response shapes in `src/lib/types/auth.types.ts` (`LoginRequest`, `RegisterRequest`, `VerifyEmailRequest`, `ResendOtpRequest`, `LoginResponseData`, `AuthMeResponseData`, `User`, `UserRole`, `ActiveMessSummary`).
 - [x] **2.2 Validations:** Create Zod schemas in `src/validations/auth.validation.ts` (`loginSchema`, `registerSchema`, `verifyEmailSchema`, `resendOtpSchema`, `forgotPasswordSchema`, `resetPasswordSchema`).
-- [ ] **2.3 API Service:** Implement endpoints in `src/api/auth.api.ts`:
-  - `POST /auth/login` (email, password) → sets refresh cookie & returns accessToken + user.
+- [x] **2.3 API Service:** Implement endpoints in `src/api/auth.api.ts`:
+  - [x] `POST /auth/login` (email, password) → sets refresh cookie & returns accessToken + activeMessId.
   - [x] `POST /auth/register` (name, email, password) → returns 201 and dispatches 6-digit OTP to email.
   - [x] `POST /auth/verify-email` (email, otp) → verifies 6-digit OTP, creates user row, sets cookies, and logs in user.
   - [x] `POST /auth/resend-otp` (email, purpose) → resends 6-digit OTP with 60s cooldown (max 3 resends).
-  - `GET /auth/me` → fetches current authenticated user & active mess pointer.
-  - `POST /auth/logout` → clears session & cookies.
-  - `POST /auth/refresh-token` → automatic silent token refresh via cookie.
-  - `POST /auth/forgot-password` → sends reset email.
-  - `POST /auth/reset-password` → resets password using token.
-- [ ] **2.4 State Management:** Implement `src/store/auth.store.ts` (Zustand) for client user session, tokens, and active mess state.
-- [ ] **2.5 Route Protection:** Configure Next.js route proxy / middleware in `src/proxy.ts` (redirect unauthenticated users to `/login`, redirect authenticated users with active mess to `/dashboard`, or to `/onboarding` if no active mess).
-- [ ] **2.6 Form Hookup:** Connect all auth pages to TanStack Form with schema validation, loading states, and disabled submit buttons during submission.
-- [ ] **2.7 Feedback & Errors:** Integrate Sonner toasts for successful login/register and user-friendly error banners for invalid credentials (401) or email collision (409).
+  - [x] `GET /auth/me` → fetches current authenticated user & active mess pointer.
+  - [x] `POST /auth/logout` → clears session & cookies.
+  - [x] `POST /auth/refresh-token` → automatic silent token refresh via cookie.
+  - [x] `POST /auth/forgot-password` → sends reset email with 6-digit OTP.
+  - [x] `POST /auth/reset-password` → resets password using 6-digit OTP.
+- [x] **2.4 State Management:** Implement `src/store/auth.store.ts` (Zustand) for client user session, tokens, and active mess state.
+- [x] **2.5 Route Protection:** Configure Next.js route proxy / middleware in `src/proxy.ts` and `src/middleware.ts` (redirect unauthenticated users to `/login`, redirect authenticated users with active mess to `/dashboard`, or to `/onboarding` if no active mess).
+- [x] **2.6 Form Hookup:** Connect all auth pages to TanStack Form with schema validation, loading states, and disabled submit buttons during submission.
+- [x] **2.7 Feedback & Errors:** Integrate Sonner toasts for successful login/register and user-friendly error banners for invalid credentials (401) or email collision (409).
 
 ---
 

@@ -3,12 +3,17 @@
 import { useForm } from "@tanstack/react-form";
 import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useLogin } from "@/hooks";
+import { getErrorMessage } from "@/lib/apiClient";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store";
 import { loginFormSchema } from "@/validations/auth-ui.validation";
 
 interface LoginFormProps {
@@ -17,9 +22,12 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ className, onSuccess }: LoginFormProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [formError, setFormError] = React.useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
+
+  const { mutateAsync: loginMutation, isPending: isSubmitting } = useLogin();
 
   const form = useForm({
     defaultValues: {
@@ -35,21 +43,48 @@ export function LoginForm({ className, onSuccess }: LoginFormProps) {
         return;
       }
 
-      setIsSubmitting(true);
       setFormError(null);
 
       try {
-        // TODO: Connect to backend auth API (POST /api/auth/login per PRD AC 1.1.1 & AC 1.1.2)
-        // Simulated submission latency for UI verification
-        await new Promise((resolve) => setTimeout(resolve, 800));
+        const response = await loginMutation({
+          email: value.email,
+          password: value.password,
+        });
 
-        // Form state demonstration: In production, invalid credentials (401) set formError
-        // and keep all input values intact (AC 1.1.2)
-        onSuccess?.();
-      } catch {
-        setFormError("Invalid email or password. Please try again.");
-      } finally {
-        setIsSubmitting(false);
+        toast.success("Welcome back!", {
+          description: response?.message || "Signed in successfully.",
+        });
+
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          const redirect = searchParams?.get("redirect");
+          const activeMessId =
+            response?.data?.activeMessId ?? response?.data?.user?.activeMessId;
+
+          if (activeMessId) {
+            useAuthStore
+              .getState()
+              .setActiveMess(activeMessId, response?.data?.mess?.name ?? null);
+          }
+
+          if (redirect) {
+            router.push(redirect);
+          } else if (activeMessId) {
+            router.push("/dashboard");
+          } else {
+            router.push("/onboarding");
+          }
+        }
+      } catch (err: unknown) {
+        const message = getErrorMessage(
+          err,
+          "Invalid email or password. Please try again.",
+        );
+        setFormError(message);
+        toast.error("Sign in failed", {
+          description: message,
+        });
       }
     },
   });
