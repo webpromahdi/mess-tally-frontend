@@ -13,9 +13,9 @@ export default function RootGroupLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen">
-      {/* TODO: Add Sidebar here */}
-      <main className="flex-1 p-6">{children}</main>
+    <div className="flex min-h-screen flex-col w-full bg-background text-foreground">
+      {/* Root layout shell; sub-layouts (dashboard, onboarding) manage their specific headers and padding */}
+      <main className="flex-1 w-full">{children}</main>
     </div>
   );
 }

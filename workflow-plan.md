@@ -58,7 +58,7 @@ Before initiating work on any feature or screen:
 | :--- | :---: | :---: | :---: | :--- |
 | **01. Marketing & Public Pages** | 🟡 In Progress | N/A (Static) | Active | `/`, `/about`, `/contact`, `/features`, `/pricing` |
 | **02. Authentication & Access** | 🟢 Done | 🟢 Done | Completed | `/login`, `/register`, `/forgot-password`, `/reset-password` |
-| **03. Mess Onboarding & Setup** | ⚪ Pending | ⚪ Pending | Queued | `/onboarding`, `/mess/join`, `/mess/create` |
+| **03. Mess Onboarding & Setup** | 🟢 Done | ⚪ Pending | In Progress (Phase 1 Done) | `/onboarding`, `/onboarding/create`, `/onboarding/join`, `/onboarding/pending` |
 | **04. Dashboard Overview** | ⚪ Pending | ⚪ Pending | Queued | `/dashboard` |
 | **05. Daily Meals Matrix** | ⚪ Pending | ⚪ Pending | Queued | `/dashboard/meals` |
 | **06. Bazar / Grocery Expenses** | ⚪ Pending | ⚪ Pending | Queued | `/dashboard/bazar` |
@@ -141,11 +141,11 @@ Before initiating work on any feature or screen:
 - **Target Routes:** `src/app/(root)/onboarding/` (`/onboarding`, `/onboarding/create`, `/onboarding/join`).
 
 #### Phase 1: Screen Design (Dummy Data)
-- [ ] Onboarding choice screen: "Create New Mess" (Become Manager) vs "Join Existing Mess" (Enter Join Code).
-- [ ] Create Mess modal / form (Mess name, address, default meal cutoff time, initial currency).
-- [ ] Join Mess modal / form (Enter 6-character room code, show pending approval notice).
-- [ ] Pending Approval waiting screen (shows mess name and contact instructions while `status = PENDING`).
-- [ ] Role / Capacity notices (banner indicating Free mess limit of 5 active members).
+- [x] Onboarding choice screen: "Create New Mess" (Become Manager) vs "Join Existing Mess" (Enter Join Code).
+- [x] Create Mess modal / form (Mess name, address, default meal cutoff time, initial currency).
+- [x] Join Mess modal / form (Enter 6-character room code, show pending approval notice).
+- [x] Pending Approval waiting screen (shows mess name and contact instructions while `status = PENDING`).
+- [x] Role / Capacity notices (banner indicating Free mess limit of 5 active members).
 
 #### Phase 2: Dynamic API Integration (A to Z)
 - [ ] **3.1 Types:** Define `src/lib/types/mess.types.ts` (`Mess`, `CreateMessDto`, `JoinMessDto`, `MemberStatus`, `MessRole`).

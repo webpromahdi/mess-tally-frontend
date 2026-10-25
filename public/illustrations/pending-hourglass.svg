@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" fill="none" width="100%" height="100%" aria-hidden="true">
+  <defs>
+    <radialGradient id="hourglassBackdrop" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ECC8E6" stop-opacity="0.8"/>
+      <stop offset="65%" stop-color="#ECC8E6" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#ECC8E6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="sandGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F5CE66"/>
+      <stop offset="100%" stop-color="#EAAA00"/>
+    </linearGradient>
+    <linearGradient id="frameGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#501A4A"/>
+      <stop offset="100%" stop-color="#3A0F34"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Circular Aura Backdrop -->
+  <circle cx="80" cy="80" r="65" fill="url(#hourglassBackdrop)"/>
+
+  <!-- Base Shadow -->
+  <ellipse cx="80" cy="132" rx="38" ry="7" fill="#3A0F34" fill-opacity="0.12"/>
+
+  <!-- Hourglass Glass Body -->
+  <g>
+    <!-- Top and Bottom Glass Bulbs (Connected in Center) -->
+    <path d="M50 42 C50 68 74 76 77 80 C74 84 50 92 50 118 L110 118 C110 92 86 84 83 80 C86 76 110 68 110 42 Z"
+          fill="#FFFFFF"
+          fill-opacity="0.75"
+          stroke="#D4A0CB"
+          stroke-width="2"/>
+
+    <!-- Top Sand Bulk -->
+    <path d="M54 48 C54 62 70 70 80 75 C90 70 106 62 106 48 Z" fill="url(#sandGrad)"/>
+
+    <!-- Trickling Sand Stream -->
+    <line x1="80" y1="75" x2="80" y2="104" stroke="#EAAA00" stroke-width="2.5" stroke-dasharray="2 1"/>
+
+    <!-- Bottom Settling Sand Mound -->
+    <path d="M55 116 C55 106 70 98 80 98 C90 98 105 106 105 116 Z" fill="url(#sandGrad)"/>
+
+    <!-- Glass Reflection Highlights -->
+    <path d="M56 46 C56 58 64 66 70 70" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.8"/>
+    <path d="M56 114 C56 106 62 100 68 96" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.8"/>
+  </g>
+
+  <!-- Hourglass Frame Caps & Supports -->
+  <!-- Top Cap Plate -->
+  <rect x="42" y="34" width="76" height="8" rx="4" fill="url(#frameGrad)"/>
+  <rect x="46" y="32" width="68" height="4" rx="2" fill="#6B2560"/>
+
+  <!-- Bottom Cap Plate -->
+  <rect x="42" y="118" width="76" height="8" rx="4" fill="url(#frameGrad)"/>
+  <rect x="46" y="124" width="68" height="4" rx="2" fill="#6B2560"/>
+
+  <!-- Side Struts -->
+  <rect x="44" y="40" width="4" height="80" rx="2" fill="url(#frameGrad)"/>
+  <rect x="112" y="40" width="4" height="80" rx="2" fill="url(#frameGrad)"/>
+
+  <!-- Decorative Sparkles -->
+  <path d="M128 44 L129 48 L133 49 L129 50 L128 54 L127 50 L123 49 L127 48 Z" fill="#EAAA00"/>
+  <circle cx="36" cy="74" r="2" fill="#8C3A7E" opacity="0.6"/>
+  <circle cx="126" cy="108" r="2.5" fill="#EAAA00" opacity="0.8"/>
+</svg>
