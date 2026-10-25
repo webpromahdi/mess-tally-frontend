@@ -16,7 +16,7 @@ export function MarketingFooter() {
   return (
     <footer
       id="marketing-footer"
-      className="w-full max-w-full overflow-hidden border-t border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-card text-foreground transition-colors"
+      className="w-full max-w-full overflow-hidden border-t border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-background text-foreground transition-colors"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 sm:py-16 lg:py-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-12 gap-10 lg:gap-8 items-start">
