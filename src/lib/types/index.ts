@@ -8,6 +8,8 @@
  *   import type { ApiResponse, PaginatedResponse } from "@/lib/types";
  */
 
+export * from "./auth.types";
+
 // ---------------------------------------------------------------------------
 // Generic API response wrappers
 // ---------------------------------------------------------------------------

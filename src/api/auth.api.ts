@@ -1,34 +1,40 @@
 import apiClient from "@/lib/apiClient";
+import type {
+  ApiResponse,
+  RegisterRequest,
+  RegisterResponseData,
+  ResendOtpRequest,
+  ResendOtpResponseData,
+  VerifyEmailRequest,
+  VerifyEmailResponseData,
+} from "@/lib/types";
 
 /**
  * Auth API functions.
  * Each function maps to one backend endpoint.
  * These are plain async functions — TanStack Query hooks go in src/hooks/auth.hook.ts
- *
- * Replace/extend these based on your backend's auth contract.
  */
 
 export function userLogin(payload: { email: string; password: string }) {
   return apiClient("/auth/login", { method: "POST", body: payload });
 }
 
-export function userRegister(payload: {
-  name: string;
-  email: string;
-  password: string;
-}) {
-  return apiClient("/auth/register", { method: "POST", body: payload });
+export function userRegister(payload: RegisterRequest) {
+  return apiClient<ApiResponse<RegisterResponseData>>("/auth/register", {
+    method: "POST",
+    body: payload,
+  });
 }
 
-export function verifyEmail(payload: { email: string; otp: string }) {
-  return apiClient("/auth/verify-email", { method: "POST", body: payload });
+export function verifyEmail(payload: VerifyEmailRequest) {
+  return apiClient<ApiResponse<VerifyEmailResponseData>>("/auth/verify-email", {
+    method: "POST",
+    body: payload,
+  });
 }
 
-export function resendOtp(payload: {
-  email: string;
-  purpose?: "REGISTRATION" | "FORGOT_PASSWORD";
-}) {
-  return apiClient("/auth/resend-otp", {
+export function resendOtp(payload: ResendOtpRequest) {
+  return apiClient<ApiResponse<ResendOtpResponseData>>("/auth/resend-otp", {
     method: "POST",
     body: { purpose: "REGISTRATION", ...payload },
   });
