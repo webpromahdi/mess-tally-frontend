@@ -9,6 +9,7 @@
  */
 
 export * from "./auth.types";
+export * from "./dashboard.types";
 
 // ---------------------------------------------------------------------------
 // Generic API response wrappers

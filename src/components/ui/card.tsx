@@ -80,6 +80,19 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
+function Eyebrow({ className, ...props }: React.ComponentProps<"p">) {
+  return (
+    <p
+      data-slot="card-eyebrow"
+      className={cn(
+        "text-caption font-semibold tracking-widest text-ink-muted uppercase",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
 export {
   Card,
   CardHeader,
@@ -88,4 +101,5 @@ export {
   CardAction,
   CardDescription,
   CardContent,
+  Eyebrow,
 };
