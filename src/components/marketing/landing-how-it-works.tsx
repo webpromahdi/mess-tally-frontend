@@ -50,7 +50,7 @@ export function LandingHowItWorks() {
     <section
       id="how-it-works"
       aria-labelledby="how-it-works-heading"
-      className="w-full max-w-full py-16 sm:py-20 lg:py-28 bg-white dark:bg-card/40 border-b border-black/[0.04] dark:border-white/[0.06]"
+      className="w-full max-w-full py-16 sm:py-20 lg:py-28 bg-white dark:bg-background border-b border-black/[0.04] dark:border-white/[0.06]"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}

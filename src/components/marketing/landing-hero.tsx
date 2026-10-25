@@ -8,14 +8,8 @@ export function LandingHero() {
     <section
       id="hero"
       aria-labelledby="hero-heading"
-      className="relative w-full max-w-full overflow-hidden [contain:paint] bg-gradient-to-b from-[#FBF9FC] via-[#F8F5FA] to-white dark:from-background dark:via-background/95 dark:to-background pt-8 sm:pt-12 md:pt-16 pb-14 sm:pb-20 lg:pb-24 border-b border-black/[0.04] dark:border-white/[0.05]"
+      className="relative w-full max-w-full overflow-hidden [contain:paint] bg-white dark:bg-background pt-8 sm:pt-12 md:pt-16 pb-14 sm:pb-20 lg:pb-24 border-b border-black/[0.04] dark:border-white/[0.05]"
     >
-      {/* Subtle atmospheric ambient glow */}
-      <div
-        className="pointer-events-none absolute -top-24 inset-x-0 mx-auto w-full max-w-full h-80 bg-[radial-gradient(ellipse_at_top,rgba(58,15,52,0.06),transparent_70%)] dark:bg-[radial-gradient(ellipse_at_top,rgba(234,170,0,0.08),transparent_70%)] blur-2xl overflow-hidden"
-        aria-hidden="true"
-      />
-
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 xl:gap-12 items-center">
           {/* =========================================================================

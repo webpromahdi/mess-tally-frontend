@@ -57,7 +57,7 @@ export function LandingFeatureStrip() {
     <section
       id="core-features"
       aria-label="Core Feature Highlights"
-      className="w-full max-w-full bg-white dark:bg-card/60 py-10 sm:py-14 border-b border-black/[0.04] dark:border-white/[0.06]"
+      className="w-full max-w-full bg-white dark:bg-background py-10 sm:py-14 border-b border-black/[0.04] dark:border-white/[0.06]"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8 items-start">

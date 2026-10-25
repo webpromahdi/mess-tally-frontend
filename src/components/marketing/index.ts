@@ -7,7 +7,6 @@ export * from "./landing-feature-strip";
 export * from "./landing-hero";
 export * from "./landing-how-it-works";
 export * from "./landing-key-features";
-export * from "./landing-product-preview";
 export * from "./landing-story";
 export * from "./pricing-billing-toggle";
 export * from "./pricing-cards";

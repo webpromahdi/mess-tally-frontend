@@ -6,7 +6,6 @@ import {
   LandingHero,
   LandingHowItWorks,
   LandingKeyFeatures,
-  LandingProductPreview,
   LandingStory,
 } from "@/components/marketing";
 
@@ -43,13 +42,10 @@ export default function HomePage() {
       {/* Section 5: Key Features */}
       <LandingKeyFeatures />
 
-      {/* Section 6: Product Preview */}
-      <LandingProductPreview />
-
-      {/* Section 7: FAQ */}
+      {/* Section 6: FAQ */}
       <LandingFaq />
 
-      {/* Section 8: Final CTA */}
+      {/* Section 7: Final CTA */}
       <LandingCta />
     </div>
   );

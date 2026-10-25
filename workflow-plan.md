@@ -101,7 +101,6 @@ Before initiating work on any feature or screen:
   - [x] Our Story section with handwritten charts to digital dashboard asset & About CTA ([src/components/marketing/landing-story.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-story.tsx))
   - [x] How It Works 3-step workflow with connected direction arrows ([src/components/marketing/landing-how-it-works.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-how-it-works.tsx))
   - [x] Key Features 6-card detailed grid grounded in PRD capabilities ([src/components/marketing/landing-key-features.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-key-features.tsx))
-  - [x] Product Preview balanced 2-column section with dashboard overview asset ([src/components/marketing/landing-product-preview.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-product-preview.tsx))
   - [x] Frequently Asked Questions accessible accordion with 5 PRD-grounded answers ([src/components/marketing/landing-faq.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-faq.tsx))
   - [x] Final Deep Aubergine CTA section with Marigold sunburst and Get Started CTA ([src/components/marketing/landing-cta.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-cta.tsx))
   - [x] Multi-viewport responsive verification (320px, 375px, 390px, 768px, 1024px, 1440px) with 0px horizontal overflow across all tiers
