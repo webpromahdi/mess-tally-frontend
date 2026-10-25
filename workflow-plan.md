@@ -56,7 +56,7 @@ Before initiating work on any feature or screen:
 
 | Module / Feature | UI (Dummy Data) | API Integration | Current Status | Target Route |
 | :--- | :---: | :---: | :---: | :--- |
-| **01. Marketing & Public Pages** | 🟡 In Progress | N/A (Static) | Active | `/`, `/about`, `/contact`, `/features`, `/pricing` |
+| **01. Marketing & Public Pages** | 🟢 Done | N/A (Static) | Completed | `/`, `/about`, `/contact`, `/features`, `/pricing` |
 | **02. Authentication & Access** | 🟢 Done | 🟢 Done | Completed | `/login`, `/register`, `/forgot-password`, `/reset-password` |
 | **03. Mess Onboarding & Setup** | 🟢 Done | ⚪ Pending | In Progress (Phase 1 Done) | `/onboarding`, `/onboarding/create`, `/onboarding/join`, `/onboarding/pending` |
 | **04. Dashboard Overview** | ⚪ Pending | ⚪ Pending | Queued | `/dashboard` |
@@ -95,7 +95,16 @@ Before initiating work on any feature or screen:
   - [x] Bachelor flatmate FAQ accordion ([src/components/marketing/pricing-faq.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/pricing-faq.tsx))
   - [x] Zero-tolerance horizontal overflow containment verified across 320px and 390px viewports
 - [x] Mobile ergonomics & zero-overflow audit across all public routes (320px & 390px viewports, touch targets ≥ 44px)
-- [ ] Main landing home page & hero section with value proposition (`/` in `src/app/(marketing-pages)/page.tsx`)
+- [x] Main landing home page & hero section with value proposition (`/` in `src/app/(marketing-pages)/page.tsx`) — **COMPLETED**
+  - [x] Hero section with eyebrow badge, headline, CTA group, social trust avatars, and hero dashboard visual asset ([src/components/marketing/landing-hero.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-hero.tsx))
+  - [x] Core feature highlights 5-item strip with restrained brand backgrounds ([src/components/marketing/landing-feature-strip.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-feature-strip.tsx))
+  - [x] Our Story section with handwritten charts to digital dashboard asset & About CTA ([src/components/marketing/landing-story.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-story.tsx))
+  - [x] How It Works 3-step workflow with connected direction arrows ([src/components/marketing/landing-how-it-works.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-how-it-works.tsx))
+  - [x] Key Features 6-card detailed grid grounded in PRD capabilities ([src/components/marketing/landing-key-features.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-key-features.tsx))
+  - [x] Product Preview balanced 2-column section with dashboard overview asset ([src/components/marketing/landing-product-preview.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-product-preview.tsx))
+  - [x] Frequently Asked Questions accessible accordion with 5 PRD-grounded answers ([src/components/marketing/landing-faq.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-faq.tsx))
+  - [x] Final Deep Aubergine CTA section with Marigold sunburst and Get Started CTA ([src/components/marketing/landing-cta.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-cta.tsx))
+  - [x] Multi-viewport responsive verification (320px, 375px, 390px, 768px, 1024px, 1440px) with 0px horizontal overflow across all tiers
 
 ---
 
