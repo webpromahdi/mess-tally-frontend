@@ -1,5 +1,12 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getMe, logout, userLogin, userRegister } from "@/api";
+import {
+  getMe,
+  logout,
+  resendOtp,
+  userLogin,
+  userRegister,
+  verifyEmail,
+} from "@/api";
 
 /**
  * TanStack Query hooks for authentication.
@@ -20,6 +27,18 @@ export function useLogin() {
 export function useRegister() {
   return useMutation({
     mutationFn: userRegister,
+  });
+}
+
+export function useVerifyEmail() {
+  return useMutation({
+    mutationFn: verifyEmail,
+  });
+}
+
+export function useResendOtp() {
+  return useMutation({
+    mutationFn: resendOtp,
   });
 }
 

@@ -2,13 +2,24 @@
 
 import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import * as React from "react";
 import { BrandLogo } from "@/components";
-import { RegisterForm } from "@/components/auth";
+import { RegisterForm, VerifyEmailForm } from "@/components/auth";
 import { Button } from "@/components/ui/button";
 
-export default function RegisterPage() {
-  const [isSuccess, setIsSuccess] = React.useState(false);
+type RegisterStep = "register" | "verify" | "success";
+
+function RegisterPageContent() {
+  const searchParams = useSearchParams();
+  const queryStep = searchParams?.get("step");
+  const queryEmail = searchParams?.get("email") || "";
+
+  const [step, setStep] = React.useState<RegisterStep>(
+    queryStep === "verify" ? "verify" : "register",
+  );
+  const [registeredEmail, setRegisteredEmail] =
+    React.useState<string>(queryEmail);
 
   return (
     <div className="w-full space-y-6">
@@ -25,7 +36,7 @@ export default function RegisterPage() {
 
       {/* Auth Card Container */}
       <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm space-y-6">
-        {isSuccess ? (
+        {step === "success" ? (
           <div className="text-center space-y-5 animate-in fade-in duration-200">
             <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
               <CheckCircle2 className="size-7" />
@@ -33,11 +44,11 @@ export default function RegisterPage() {
 
             <div className="space-y-2">
               <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                Account Created Successfully!
+                Email Verified Successfully!
               </h1>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Welcome to MessTally! Your account has been registered. You can
-                now sign in and join or create your mess.
+                Welcome to MessTally! Your account has been verified and
+                activated. You can now sign in and join or create your mess.
               </p>
             </div>
 
@@ -50,6 +61,25 @@ export default function RegisterPage() {
               </Button>
             </div>
           </div>
+        ) : step === "verify" ? (
+          <>
+            <div className="space-y-1.5 text-center">
+              <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                Verify your email
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Enter the 6-digit confirmation code sent to activate your
+                account.
+              </p>
+            </div>
+
+            {/* OTP Verification Form */}
+            <VerifyEmailForm
+              email={registeredEmail || "your email"}
+              onBack={() => setStep("register")}
+              onSuccess={() => setStep("success")}
+            />
+          </>
         ) : (
           <>
             <div className="space-y-1.5 text-center">
@@ -63,7 +93,12 @@ export default function RegisterPage() {
             </div>
 
             {/* Imported Form Component */}
-            <RegisterForm onSuccess={() => setIsSuccess(true)} />
+            <RegisterForm
+              onSuccess={(email) => {
+                setRegisteredEmail(email);
+                setStep("verify");
+              }}
+            />
 
             {/* Card Footer Navigation */}
             <div className="pt-2 text-center text-xs sm:text-sm text-muted-foreground">
@@ -81,5 +116,19 @@ export default function RegisterPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="w-full py-12 flex justify-center items-center">
+          <div className="size-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+        </div>
+      }
+    >
+      <RegisterPageContent />
+    </React.Suspense>
   );
 }

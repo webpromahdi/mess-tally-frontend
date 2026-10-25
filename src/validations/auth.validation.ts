@@ -25,5 +25,17 @@ export const registerSchema = z
     path: ["confirmPassword"],
   });
 
+export const verifyEmailSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  otp: z.string().length(6, "Verification code must be exactly 6 digits"),
+});
+
+export const resendOtpSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  purpose: z.enum(["REGISTRATION", "FORGOT_PASSWORD"]).default("REGISTRATION"),
+});
+
 export type LoginSchema = z.infer<typeof loginSchema>;
 export type RegisterSchema = z.infer<typeof registerSchema>;
+export type VerifyEmailSchema = z.infer<typeof verifyEmailSchema>;
+export type ResendOtpSchema = z.infer<typeof resendOtpSchema>;

@@ -108,16 +108,19 @@ Before initiating work on any feature or screen:
 #### Phase 1: Screen Design (Dummy Data) — **COMPLETED**
 - [x] Login page layout (`/login` — split screen on desktop, centered on mobile)
 - [x] Register page layout (`/register` — name, email, password, terms checkbox)
+- [x] Email OTP verification step on register page (`/register` — 6-digit OTP segmented input, countdown timer, resend cooldown)
 - [x] Forgot password page (`/forgot-password` — email verification prompt)
 - [x] Reset password page (`/reset-password` — token & new password fields)
 - [x] Dummy validation display and button loading states
 
 #### Phase 2: Dynamic API Integration (A to Z)
-- [ ] **2.1 Types:** Define auth request and response shapes in `src/lib/types/auth.types.ts` (`LoginRequest`, `RegisterRequest`, `AuthResponse`, `User`, `UserRole`).
-- [ ] **2.2 Validations:** Create Zod schemas in `src/validations/auth.validation.ts` (`loginSchema`, `registerSchema`, `forgotPasswordSchema`, `resetPasswordSchema`).
+- [ ] **2.1 Types:** Define auth request and response shapes in `src/lib/types/auth.types.ts` (`LoginRequest`, `RegisterRequest`, `VerifyEmailRequest`, `ResendOtpRequest`, `AuthResponse`, `User`, `UserRole`).
+- [ ] **2.2 Validations:** Create Zod schemas in `src/validations/auth.validation.ts` (`loginSchema`, `registerSchema`, `verifyEmailSchema`, `resendOtpSchema`, `forgotPasswordSchema`, `resetPasswordSchema`).
 - [ ] **2.3 API Service:** Implement endpoints in `src/api/auth.api.ts`:
   - `POST /auth/login` (email, password) → sets refresh cookie & returns accessToken + user.
-  - `POST /auth/register` (name, email, password) → returns 201 with user.
+  - `POST /auth/register` (name, email, password) → returns 201 and dispatches 6-digit OTP to email.
+  - `POST /auth/verify-email` (email, otp) → verifies 6-digit OTP, creates user row, sets cookies, and logs in user.
+  - `POST /auth/resend-otp` (email, purpose) → resends 6-digit OTP with 60s cooldown (max 3 resends).
   - `GET /auth/me` → fetches current authenticated user & active mess pointer.
   - `POST /auth/logout` → clears session & cookies.
   - `POST /auth/refresh-token` → automatic silent token refresh via cookie.
