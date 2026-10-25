@@ -260,7 +260,7 @@ export function ContactForm() {
       {submissionFeedback && (
         <output
           aria-live="polite"
-          className="block rounded-lg border border-border bg-accent/60 p-3.5 text-xs text-foreground flex items-start gap-2.5"
+          className="rounded-lg border border-border bg-accent/60 p-3.5 text-xs text-foreground flex items-start gap-2.5"
         >
           <CheckCircle2
             className="size-4 text-primary dark:text-brand-accent shrink-0 mt-0.5"

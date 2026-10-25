@@ -56,7 +56,7 @@ Before initiating work on any feature or screen:
 
 | Module / Feature | UI (Dummy Data) | API Integration | Current Status | Target Route |
 | :--- | :---: | :---: | :---: | :--- |
-| **01. Marketing & Public Pages** | 🟡 In Progress | N/A (Static) | Active | `/`, `/about`, `/contact`, `/features`, `/pricing` |
+| **01. Marketing & Public Pages** | 🟢 Done | N/A (Static) | Completed | `/`, `/about`, `/contact`, `/features`, `/pricing` |
 | **02. Authentication & Access** | 🟢 Done | 🟢 Done | Completed | `/login`, `/register`, `/forgot-password`, `/reset-password` |
 | **03. Mess Onboarding & Setup** | 🟢 Done | ⚪ Pending | In Progress (Phase 1 Done) | `/onboarding`, `/onboarding/create`, `/onboarding/join`, `/onboarding/pending` |
 | **04. Dashboard Overview** | ⚪ Pending | ⚪ Pending | Queued | `/dashboard` |
@@ -95,7 +95,16 @@ Before initiating work on any feature or screen:
   - [x] Bachelor flatmate FAQ accordion ([src/components/marketing/pricing-faq.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/pricing-faq.tsx))
   - [x] Zero-tolerance horizontal overflow containment verified across 320px and 390px viewports
 - [x] Mobile ergonomics & zero-overflow audit across all public routes (320px & 390px viewports, touch targets ≥ 44px)
-- [ ] Main landing home page & hero section with value proposition (`/` in `src/app/(marketing-pages)/page.tsx`)
+- [x] Main landing home page & hero section with value proposition (`/` in `src/app/(marketing-pages)/page.tsx`) — **COMPLETED**
+  - [x] Hero section with eyebrow badge, headline, CTA group, social trust avatars, and hero dashboard visual asset ([src/components/marketing/landing-hero.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-hero.tsx))
+  - [x] Core feature highlights 5-item strip with restrained brand backgrounds ([src/components/marketing/landing-feature-strip.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-feature-strip.tsx))
+  - [x] Our Story section with handwritten charts to digital dashboard asset & About CTA ([src/components/marketing/landing-story.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-story.tsx))
+  - [x] How It Works 3-step workflow with connected direction arrows ([src/components/marketing/landing-how-it-works.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-how-it-works.tsx))
+  - [x] Key Features 6-card detailed grid grounded in PRD capabilities ([src/components/marketing/landing-key-features.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-key-features.tsx))
+  - [x] Product Preview balanced 2-column section with dashboard overview asset ([src/components/marketing/landing-product-preview.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-product-preview.tsx))
+  - [x] Frequently Asked Questions accessible accordion with 5 PRD-grounded answers ([src/components/marketing/landing-faq.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-faq.tsx))
+  - [x] Final Deep Aubergine CTA section with Marigold sunburst and Get Started CTA ([src/components/marketing/landing-cta.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-cta.tsx))
+  - [x] Multi-viewport responsive verification (320px, 375px, 390px, 768px, 1024px, 1440px) with 0px horizontal overflow across all tiers
 
 ---
 
@@ -138,14 +147,20 @@ Before initiating work on any feature or screen:
   - [API.md § 8: Mess](file:///D:/Projects/mess-tally-backend/API.md#mess)
   - [API.md § 9: Members](file:///D:/Projects/mess-tally-backend/API.md#members)
   - [plan.md § 5: Phase 1](file:///D:/Projects/mess-tally-backend/plan.md#dev-a)
-- **Target Routes:** `src/app/(root)/onboarding/` (`/onboarding`, `/onboarding/create`, `/onboarding/join`).
+- **Target Routes:** `src/app/(root)/onboarding/` (`/onboarding`, `/onboarding/create`, `/onboarding/join`, `/onboarding/pending`).
 
-#### Phase 1: Screen Design (Dummy Data)
-- [x] Onboarding choice screen: "Create New Mess" (Become Manager) vs "Join Existing Mess" (Enter Join Code).
-- [x] Create Mess modal / form (Mess name, address, default meal cutoff time, initial currency).
-- [x] Join Mess modal / form (Enter 6-character room code, show pending approval notice).
-- [x] Pending Approval waiting screen (shows mess name and contact instructions while `status = PENDING`).
-- [x] Role / Capacity notices (banner indicating Free mess limit of 5 active members).
+#### Phase 1: Screen Design (Dummy Data) — **COMPLETED**
+- [x] Dedicated Onboarding Header (`src/components/onboarding/onboarding-header.tsx`) with transparent background, brand logo, and decoupled user menu.
+- [x] Authenticated User Profile Menu (`src/components/user-menu.tsx`) with avatar, display name, email, streamlined single-line actions (Dashboard, Profile, Settings), and destructive Sign Out action hooked to `useLogout()`.
+- [x] Screen jank / layout shift resolution: Eliminated Radix `RemoveScroll` body-locking jumps across header dropdown and select menus using `modal={false}` and `scrollbar-gutter: stable;` on `html`.
+- [x] Shared Custom Select Primitive (`src/components/ui/select.tsx`): Built accessible, non-modal dropdown select on Radix primitives with zero-jank overlay positioning, custom `h-11` input-matched trigger, subtle Deep Aubergine (`#3A0F34`) selected highlight, checkmark indicator, and full keyboard navigation.
+- [x] Polished Create Mess form controls: Upgraded native HTML selects for Currency (`BDT`, `USD`, `EUR`, `INR`) and Daily Meal Cutoff Time (`10:00 AM`, `11:00 AM`, `12:00 PM`, `08:00 PM`) to the custom `Select` primitive.
+- [x] Onboarding choice screen: "Create New Mess" (Become Manager) vs "Join Existing Mess" (Enter Join Code) with custom illustrations ([src/components/onboarding/onboarding-choice-cards.tsx](file:///d:/Projects/mess-tally-frontend/src/components/onboarding/onboarding-choice-cards.tsx)).
+- [x] Create Mess screen & form with 2-column layout and "What happens next?" guide ([src/components/onboarding/create-mess-form.tsx](file:///d:/Projects/mess-tally-frontend/src/components/onboarding/create-mess-form.tsx)).
+- [x] Join Mess screen & form with room code entry and "Need a room code?" guide ([src/components/onboarding/join-mess-form.tsx](file:///d:/Projects/mess-tally-frontend/src/components/onboarding/join-mess-form.tsx)).
+- [x] Pending Approval waiting screen with status badge, mess details card, and cancel action ([src/app/(root)/onboarding/pending/page.tsx](file:///d:/Projects/mess-tally-frontend/src/app/(root)/onboarding/pending/page.tsx)).
+- [x] Free Plan Notice Banner (up to 5 active members with zero subscription fee notice).
+- [x] Performance & Bundle Size Optimization: Converted all onboarding page shells and choice cards to React Server Components, keeping only interactive form leaves in the client bundle.
 
 #### Phase 2: Dynamic API Integration (A to Z)
 - [ ] **3.1 Types:** Define `src/lib/types/mess.types.ts` (`Mess`, `CreateMessDto`, `JoinMessDto`, `MemberStatus`, `MessRole`).
