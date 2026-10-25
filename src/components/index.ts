@@ -5,5 +5,6 @@ export * from "./marketing";
 export * from "./meals";
 export * from "./shared";
 export * from "./shell";
+export * from "./summary";
 export * from "./user-menu";
 export * from "./utility";
