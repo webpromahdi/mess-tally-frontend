@@ -138,14 +138,20 @@ Before initiating work on any feature or screen:
   - [API.md § 8: Mess](file:///D:/Projects/mess-tally-backend/API.md#mess)
   - [API.md § 9: Members](file:///D:/Projects/mess-tally-backend/API.md#members)
   - [plan.md § 5: Phase 1](file:///D:/Projects/mess-tally-backend/plan.md#dev-a)
-- **Target Routes:** `src/app/(root)/onboarding/` (`/onboarding`, `/onboarding/create`, `/onboarding/join`).
+- **Target Routes:** `src/app/(root)/onboarding/` (`/onboarding`, `/onboarding/create`, `/onboarding/join`, `/onboarding/pending`).
 
-#### Phase 1: Screen Design (Dummy Data)
-- [x] Onboarding choice screen: "Create New Mess" (Become Manager) vs "Join Existing Mess" (Enter Join Code).
-- [x] Create Mess modal / form (Mess name, address, default meal cutoff time, initial currency).
-- [x] Join Mess modal / form (Enter 6-character room code, show pending approval notice).
-- [x] Pending Approval waiting screen (shows mess name and contact instructions while `status = PENDING`).
-- [x] Role / Capacity notices (banner indicating Free mess limit of 5 active members).
+#### Phase 1: Screen Design (Dummy Data) — **COMPLETED**
+- [x] Dedicated Onboarding Header (`src/components/onboarding/onboarding-header.tsx`) with transparent background, brand logo, and decoupled user menu.
+- [x] Authenticated User Profile Menu (`src/components/user-menu.tsx`) with avatar, display name, email, streamlined single-line actions (Dashboard, Profile, Settings), and destructive Sign Out action hooked to `useLogout()`.
+- [x] Screen jank / layout shift resolution: Eliminated Radix `RemoveScroll` body-locking jumps across header dropdown and select menus using `modal={false}` and `scrollbar-gutter: stable;` on `html`.
+- [x] Shared Custom Select Primitive (`src/components/ui/select.tsx`): Built accessible, non-modal dropdown select on Radix primitives with zero-jank overlay positioning, custom `h-11` input-matched trigger, subtle Deep Aubergine (`#3A0F34`) selected highlight, checkmark indicator, and full keyboard navigation.
+- [x] Polished Create Mess form controls: Upgraded native HTML selects for Currency (`BDT`, `USD`, `EUR`, `INR`) and Daily Meal Cutoff Time (`10:00 AM`, `11:00 AM`, `12:00 PM`, `08:00 PM`) to the custom `Select` primitive.
+- [x] Onboarding choice screen: "Create New Mess" (Become Manager) vs "Join Existing Mess" (Enter Join Code) with custom illustrations ([src/components/onboarding/onboarding-choice-cards.tsx](file:///d:/Projects/mess-tally-frontend/src/components/onboarding/onboarding-choice-cards.tsx)).
+- [x] Create Mess screen & form with 2-column layout and "What happens next?" guide ([src/components/onboarding/create-mess-form.tsx](file:///d:/Projects/mess-tally-frontend/src/components/onboarding/create-mess-form.tsx)).
+- [x] Join Mess screen & form with room code entry and "Need a room code?" guide ([src/components/onboarding/join-mess-form.tsx](file:///d:/Projects/mess-tally-frontend/src/components/onboarding/join-mess-form.tsx)).
+- [x] Pending Approval waiting screen with status badge, mess details card, and cancel action ([src/app/(root)/onboarding/pending/page.tsx](file:///d:/Projects/mess-tally-frontend/src/app/(root)/onboarding/pending/page.tsx)).
+- [x] Free Plan Notice Banner (up to 5 active members with zero subscription fee notice).
+- [x] Performance & Bundle Size Optimization: Converted all onboarding page shells and choice cards to React Server Components, keeping only interactive form leaves in the client bundle.
 
 #### Phase 2: Dynamic API Integration (A to Z)
 - [ ] **3.1 Types:** Define `src/lib/types/mess.types.ts` (`Mess`, `CreateMessDto`, `JoinMessDto`, `MemberStatus`, `MessRole`).
