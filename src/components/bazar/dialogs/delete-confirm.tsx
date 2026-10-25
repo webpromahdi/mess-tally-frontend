@@ -9,7 +9,7 @@ import { formatBDT } from "@/lib/format";
 import type { BazarEntry } from "@/lib/types/bazar.types";
 
 /** Confirmation before a bazar entry is removed; shows the effect on the totals. */
-export function DeleteConfirm({
+export function BazarDeleteConfirm({
   entry,
   payerName,
   newRate,
