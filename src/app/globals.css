@@ -228,9 +228,155 @@
   --color-silver-100: #f8fafc;
   --color-silver-50: #ffffff;
 
+  --breakpoint-xs: 22.5rem;
+
+  /* Neutral grays */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111113;
+  --color-gray-950: #0a0a0b;
+
+  /* Surfaces & text (semantic) */
+  --color-canvas: #f7f5f9;
+  --color-canvas-tint: #f3ecf3;
+  --color-surface: #ffffff;
+  --color-line: #ebe6ee;
+  --color-line-strong: #dcd5e0;
+  --color-ink: #111113;
+  --color-ink-muted: #4b5563;
+  --color-ink-subtle: #6b7280;
+  --color-success-strong: #047857;
+
+  /* Chart palette */
+  --color-chart-1: #3a0f34;
+  --color-chart-2: #eaaa00;
+  --color-chart-3: #8c3a7e;
+  --color-chart-4: #d4a0cb;
+  --color-chart-5: #a07200;
+  --color-chart-grid: #ebe6ee;
+
+  /* Type scale (Design.md §5.2) */
+  --text-display: 2.25rem;
+  --text-display--line-height: 1.15;
+  --text-display--letter-spacing: -0.02em;
+  --text-display--font-weight: 700;
+  --text-h1: 1.75rem;
+  --text-h1--line-height: 1.2;
+  --text-h1--letter-spacing: -0.015em;
+  --text-h1--font-weight: 700;
+  --text-h2: 1.375rem;
+  --text-h2--line-height: 1.25;
+  --text-h2--letter-spacing: -0.01em;
+  --text-h2--font-weight: 600;
+  --text-h3: 1.125rem;
+  --text-h3--line-height: 1.3;
+  --text-h3--font-weight: 600;
+  --text-h4: 1rem;
+  --text-h4--line-height: 1.35;
+  --text-h4--font-weight: 600;
+  --text-body-lg: 1rem;
+  --text-body-lg--line-height: 1.6;
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.65;
+  --text-body-sm: 0.8125rem;
+  --text-body-sm--line-height: 1.5;
+  --text-label: 0.75rem;
+  --text-label--line-height: 1.4;
+  --text-label--letter-spacing: 0.02em;
+  --text-label--font-weight: 500;
+  --text-caption: 0.6875rem;
+  --text-caption--line-height: 1.4;
+  --text-caption--letter-spacing: 0.01em;
+  --text-amount-lg: 1.75rem;
+  --text-amount-lg--line-height: 1.2;
+  --text-amount-lg--font-weight: 600;
+  --text-amount-md: 1.25rem;
+  --text-amount-md--line-height: 1.25;
+  --text-amount-md--font-weight: 600;
+  --text-amount: 1.125rem;
+  --text-amount--line-height: 1.3;
+  --text-amount--font-weight: 500;
+  --text-amount-sm: 0.875rem;
+  --text-amount-sm--line-height: 1.4;
+  --text-amount-sm--font-weight: 500;
+
+  /* Depth */
+  --shadow-card:
+    0 1px 2px rgb(58 15 52 / 0.04), 0 8px 24px -16px rgb(58 15 52 / 0.12);
+  --shadow-pop:
+    0 12px 32px -8px rgb(26 5 23 / 0.22), 0 2px 6px rgb(26 5 23 / 0.06);
+  --shadow-frame: 0 24px 64px -24px rgb(26 5 23 / 0.35);
+
+  /* Motion */
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-shimmer: shimmer 1.5s linear infinite;
+
+  @keyframes shimmer {
+    from {
+      background-position: 100% 0;
+    }
+    to {
+      background-position: -100% 0;
+    }
+  }
+
   --font-sans:
     var(--font-inter), var(--font-hind-siliguri), "Noto Sans Bengali",
     system-ui, sans-serif;
+}
+
+/* Custom Utilities */
+@utility w-drawer {
+  width: min(85vw, 20rem);
+}
+
+@utility h-chart {
+  height: 17.5rem;
+  @media (width >= 40rem) {
+    height: 22.5rem;
+  }
+}
+
+@utility pb-bottom-nav {
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+}
+
+@utility h-bottom-nav {
+  height: calc(4rem + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@utility pb-safe {
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+}
+
+@utility skeleton-shimmer {
+  background-color: var(--color-silver-300);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(255 255 255 / 0.65) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+}
+
+@utility grid-rows-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 200ms var(--ease-out-soft);
+}
+
+@utility grid-rows-expand {
+  grid-template-rows: 1fr;
 }
 
 *,

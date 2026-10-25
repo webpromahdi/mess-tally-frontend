@@ -47,3 +47,4 @@ next-env.d.ts
 .agents/
 skills-lock.json
 fix-responsive-issue.md
+migration-plan.md

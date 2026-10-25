@@ -6,3 +6,5 @@
  *   import { useLogin, useGetMe } from "@/hooks";
  */
 export * from "./auth.hook";
+export * from "./useMediaQuery.hook";
+export * from "./useReducedMotion.hook";

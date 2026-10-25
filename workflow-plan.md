@@ -8,6 +8,7 @@
 > - [API.md](file:///D:/Projects/mess-tally-backend/API.md) — Route endpoints, HTTP methods, JSON request/response contracts, authorization rules, and error codes.  
 > - [prd.md](file:///D:/Projects/mess-tally-backend/prd.md) — Business logic, calculation formulas (meal rate, balance, greedy settlement), roles, and user stories.  
 > **Frontend Design & Architectural Guidelines:**  
+> - [migration-plan.md](file:///d:/Projects/mess-tally-frontend/migration-plan.md) — Comprehensive migration specification for Figma AI-generated UI (Modules 04–09) into Next.js App Router.  
 > - [Design.md](file:///d:/Projects/mess-tally-frontend/Design.md) — Color tokens, typography, UX patterns, and 11 benchmark design references.  
 > - [responsive.md](file:///d:/Projects/mess-tally-frontend/responsive.md) — Viewport breakpoints, mobile-first touch ergonomics, and adaptive layout rules.  
 > - [AGENTS.md](file:///d:/Projects/mess-tally-frontend/AGENTS.md) — Next.js 16 conventions, barrel imports, state boundaries (TanStack Query vs Zustand vs TanStack Form), and directory structure.  
@@ -59,7 +60,7 @@ Before initiating work on any feature or screen:
 | **01. Marketing & Public Pages** | 🟢 Done | N/A (Static) | Completed | `/`, `/about`, `/contact`, `/features`, `/pricing` |
 | **02. Authentication & Access** | 🟢 Done | 🟢 Done | Completed | `/login`, `/register`, `/forgot-password`, `/reset-password` |
 | **03. Mess Onboarding & Setup** | 🟢 Done | ⚪ Pending | In Progress (Phase 1 Done) | `/onboarding`, `/onboarding/create`, `/onboarding/join`, `/onboarding/pending` |
-| **04. Dashboard Overview** | ⚪ Pending | ⚪ Pending | Queued | `/dashboard` |
+| **04. Dashboard Overview** | 🟢 Done | ⚪ Pending | In Progress (Phase 1 Done) | `/dashboard` |
 | **05. Daily Meals Matrix** | ⚪ Pending | ⚪ Pending | Queued | `/dashboard/meals` |
 | **06. Bazar / Grocery Expenses** | ⚪ Pending | ⚪ Pending | Queued | `/dashboard/bazar` |
 | **07. Utility Bills & Advance Fund** | ⚪ Pending | ⚪ Pending | Queued | `/dashboard/utilities` |
@@ -181,13 +182,17 @@ Before initiating work on any feature or screen:
   - [Design.md § 2: Benchmark references](file:///d:/Projects/mess-tally-frontend/Design.md#2-research-summary) (`chat_skanalytic_dashboard.png`, `chat_interoly_expenses.png`).
 - **Target Route:** `src/app/(root)/dashboard/page.tsx`.
 
-#### Phase 1: Screen Design (Dummy Data)
-- [ ] Metric summary cards (Current Month, Total Mess Meals, Meal Rate ৳, Total Bazar Spent ৳, Utility Fund Balance ৳).
-- [ ] User's Personal Financial Pill / Hero Banner (Your Meals, Your Meal Cost, Bazar Paid, Net Balance: "You owe ৳ X" or "You get back ৳ Y").
-- [ ] Quick Action Bar (Add Daily Meal, Log Bazar, Add Utility Bill, Ask TallyBot).
-- [ ] Recent Activity Stream / Timeline (latest meal changes, recent grocery entries).
-- [ ] Role-Conditional Manager widgets (Pending member approval counter, Month status badge `ACTIVE`/`CLOSED`).
-- [ ] Responsive layouts (cards stack cleanly on mobile, 3-column grid on desktop).
+#### Phase 1: Screen Design (Dummy Data) — **COMPLETED**
+- [x] Metric summary cards (Current Month, Total Mess Meals, Meal Rate ৳, Total Bazar Spent ৳, Utility Fund Balance ৳) ([src/components/dashboard/stat-card.tsx](file:///d:/Projects/mess-tally-frontend/src/components/dashboard/stat-card.tsx), [src/components/dashboard/meal-rate-card.tsx](file:///d:/Projects/mess-tally-frontend/src/components/dashboard/meal-rate-card.tsx)).
+- [x] User's Personal Financial Pill / Hero Banner with signed balance +/−, Receiver/Giver indicators, and settlement transfer lines ([src/components/dashboard/my-balance-card.tsx](file:///d:/Projects/mess-tally-frontend/src/components/dashboard/my-balance-card.tsx)).
+- [x] Quick Action Bar & Header with greeting, role badge, month status, and conditional Manager shortcuts ("Add Meals", "Add Bazar Trip") ([src/components/dashboard/dashboard-header.tsx](file:///d:/Projects/mess-tally-frontend/src/components/dashboard/dashboard-header.tsx)).
+- [x] Diverging Member Meal Balance Chart (horizontal Recharts + accessible table fallback) and Bazar Share Donut Chart ([src/components/dashboard/member-balance-chart.tsx](file:///d:/Projects/mess-tally-frontend/src/components/dashboard/member-balance-chart.tsx), [src/components/dashboard/bazar-share-chart.tsx](file:///d:/Projects/mess-tally-frontend/src/components/dashboard/bazar-share-chart.tsx)).
+- [x] Contextual Action Queue banners (Pending join approvals, Month closed notice, Utility fund replenishment alert) ([src/components/dashboard/action-queue.tsx](file:///d:/Projects/mess-tally-frontend/src/components/dashboard/action-queue.tsx)).
+- [x] Mess Info Card with room code copy trigger, plan badge, and active members avatar stack ([src/components/dashboard/mess-info-card.tsx](file:///d:/Projects/mess-tally-frontend/src/components/dashboard/mess-info-card.tsx)).
+- [x] 12-Column Asymmetric Workspace layout with mobile priority reordering and edge-to-edge chart treatment ([src/components/dashboard/dashboard-layout.tsx](file:///d:/Projects/mess-tally-frontend/src/components/dashboard/dashboard-layout.tsx)).
+- [x] Pattern B AppShell layout integration with persistent desktop sidebar (collapsible to 64px rail), topbar, mobile drawer, and 5-target bottom nav ([src/components/shell/AppShell.tsx](file:///d:/Projects/mess-tally-frontend/src/components/shell/AppShell.tsx)).
+- [x] Full visual state coverage with development-only scenario switcher for testing all 10 states (Manager, Member, Closed, Replenish, Empty, No-month Manager/Member, Skeleton, Inline Error, Page Error) ([src/components/dashboard/dashboard-scenarios.tsx](file:///d:/Projects/mess-tally-frontend/src/components/dashboard/dashboard-scenarios.tsx)).
+- [x] Responsive layout verification across 320px, 375px/390px, 768px, 1024px, 1440px with 0px horizontal overflow.
 
 #### Phase 2: Dynamic API Integration (A to Z)
 - [ ] **4.1 Types:** `src/lib/types/dashboard.types.ts` matching `GET /dashboard` response.
