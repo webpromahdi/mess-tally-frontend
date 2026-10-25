@@ -13,7 +13,7 @@ import type {
 } from "@/lib/types/bazar.types";
 import { cn } from "@/lib/utils";
 import { type BazarStateOptions, BazarView } from "./bazar-view";
-import type { DialogTarget } from "./dialogs";
+import type { BazarDialogTarget } from "./dialogs";
 import { BazarSkeleton } from "./layout";
 
 export type BazarScenarioKey =
@@ -41,7 +41,7 @@ interface ScenarioConfig {
   state?: BazarStateOptions;
   initialFilter?: BazarFilter;
   initialSort?: BazarSort;
-  initialDialog?: DialogTarget;
+  initialDialog?: BazarDialogTarget;
   initialDeleteId?: string;
   listError?: boolean;
 }

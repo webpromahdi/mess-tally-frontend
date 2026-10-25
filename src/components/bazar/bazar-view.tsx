@@ -31,11 +31,15 @@ import type {
   BazarSort,
   SortKey,
 } from "@/lib/types/bazar.types";
-import { BazarEntryDialog, DeleteConfirm, type DialogTarget } from "./dialogs";
+import {
+  BazarDeleteConfirm,
+  type BazarDialogTarget,
+  BazarEntryDialog,
+} from "./dialogs";
 import { BazarFilters, BazarHeader, BazarSummaryStrip } from "./layout";
-import { BazarCardList, BazarTable, PAGE_SIZE } from "./table";
+import { BAZAR_PAGE_SIZE, BazarCardList, BazarTable } from "./table";
 
-export const SAVE_ERROR = "Couldn’t save. Try again.";
+export const BAZAR_SAVE_ERROR = "Couldn’t save. Try again.";
 const LATENCY_MS = 450;
 
 export interface BazarStateOptions {
@@ -50,7 +54,7 @@ export interface BazarViewProps {
   state?: BazarStateOptions;
   initialFilter?: BazarFilter;
   initialSort?: BazarSort;
-  initialDialog?: DialogTarget;
+  initialDialog?: BazarDialogTarget;
   initialDeleteId?: string;
   /** Replace the list card with an inline error (summary strip stays). */
   listError?: boolean;
@@ -114,7 +118,7 @@ export function BazarView({
         if (!state?.failSaves) return;
         setData((d) => restore(d, id, previous));
         setFailedId(id);
-        setToast(SAVE_ERROR);
+        setToast(BAZAR_SAVE_ERROR);
       }, LATENCY_MS);
       timers.current.push(t);
     },
@@ -141,7 +145,7 @@ export function BazarView({
   const [filter, setFilter] = useState<BazarFilter>(initialFilter ?? noFilter);
   const [sort, setSort] = useState<BazarSort>(initialSort ?? defaultSort);
   const [page, setPage] = useState(1);
-  const [dialog, setDialog] = useState<DialogTarget | null>(
+  const [dialog, setDialog] = useState<BazarDialogTarget | null>(
     initialDialog ?? null,
   );
   const [deleting, setDeleting] = useState<BazarEntry | null>(
@@ -156,9 +160,12 @@ export function BazarView({
     () => sortEntries(filterEntries(data.entries, filter), sort, data.members),
     [data.entries, data.members, filter, sort],
   );
-  const pages = Math.max(1, Math.ceil(matches.length / PAGE_SIZE));
+  const pages = Math.max(1, Math.ceil(matches.length / BAZAR_PAGE_SIZE));
   const safePage = Math.min(page, pages);
-  const rows = matches.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const rows = matches.slice(
+    (safePage - 1) * BAZAR_PAGE_SIZE,
+    safePage * BAZAR_PAGE_SIZE,
+  );
 
   const changeFilter = (next: BazarFilter) => {
     setFilter(next);
@@ -217,7 +224,7 @@ export function BazarView({
   const filtered = isFiltered(filter);
   const shownTo = Math.min(
     matches.length,
-    desktop ? safePage * PAGE_SIZE : matches.length,
+    desktop ? safePage * BAZAR_PAGE_SIZE : matches.length,
   );
 
   let listContent: React.ReactNode;
@@ -350,7 +357,7 @@ export function BazarView({
         onClose={closeDialog}
       />
 
-      <DeleteConfirm
+      <BazarDeleteConfirm
         entry={deleting}
         payerName={deleting ? nameOf(deleting.memberId) : ""}
         newRate={deleting ? removeBazar(data, deleting.id).mealRate : 0}

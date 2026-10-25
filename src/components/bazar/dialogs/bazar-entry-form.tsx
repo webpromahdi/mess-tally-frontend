@@ -16,7 +16,7 @@ import type {
 } from "@/lib/types/bazar.types";
 import { cn } from "@/lib/utils";
 
-export interface FormValues {
+export interface BazarFormValues {
   memberId: string;
   date: string;
   amount: string;
@@ -28,7 +28,7 @@ interface BazarEntryFormProps {
   month: BazarMonth;
   /** Present when editing. */
   entry?: BazarEntry;
-  initialValues?: Partial<FormValues>;
+  initialValues?: Partial<BazarFormValues>;
   /** Show validation immediately (static validation screen). */
   initialSubmitted?: boolean;
   autoFocus?: boolean;
@@ -57,7 +57,7 @@ export function BazarEntryForm({
     (m) => m.status === "ACTIVE" || m.id === entry?.memberId,
   );
   const viewerIsPayer = payers.some((m) => m.id === data.viewer.memberId);
-  const [values, setValues] = useState<FormValues>({
+  const [values, setValues] = useState<BazarFormValues>({
     memberId: entry
       ? entry.memberId
       : viewerIsPayer
@@ -88,7 +88,7 @@ export function BazarEntryForm({
 
   const preview =
     errors.length === 0 ? upsertBazar(data, input, "preview") : null;
-  const patch = (next: Partial<FormValues>) =>
+  const patch = (next: Partial<BazarFormValues>) =>
     setValues((v) => ({ ...v, ...next }));
 
   const submit = (e: FormEvent) => {

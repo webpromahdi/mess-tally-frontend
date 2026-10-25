@@ -7,12 +7,12 @@ import type {
   BazarEntry,
   BazarInput,
 } from "@/lib/types/bazar.types";
-import { BazarEntryForm, type FormValues } from "./bazar-entry-form";
+import { BazarEntryForm, type BazarFormValues } from "./bazar-entry-form";
 
-export interface DialogTarget {
+export interface BazarDialogTarget {
   /** Undefined = new entry. */
   entry?: BazarEntry;
-  initialValues?: Partial<FormValues>;
+  initialValues?: Partial<BazarFormValues>;
   initialSubmitted?: boolean;
 }
 
@@ -24,7 +24,7 @@ export function BazarEntryDialog({
   onDelete,
   onClose,
 }: {
-  target: DialogTarget | null;
+  target: BazarDialogTarget | null;
   data: BazarData;
   onSave: (input: BazarInput) => void;
   onDelete: (entry: BazarEntry) => void;

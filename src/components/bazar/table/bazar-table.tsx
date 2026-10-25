@@ -21,7 +21,7 @@ import type {
 } from "@/lib/types/bazar.types";
 import { cn } from "@/lib/utils";
 
-export const PAGE_SIZE = 8;
+export const BAZAR_PAGE_SIZE = 8;
 
 interface BazarTableProps {
   rows: BazarEntry[];
@@ -100,9 +100,9 @@ export function BazarTable({
   onEdit,
   onDelete,
 }: BazarTableProps) {
-  const pages = Math.max(1, Math.ceil(matchCount / PAGE_SIZE));
-  const from = matchCount === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
-  const to = Math.min(matchCount, page * PAGE_SIZE);
+  const pages = Math.max(1, Math.ceil(matchCount / BAZAR_PAGE_SIZE));
+  const from = matchCount === 0 ? 0 : (page - 1) * BAZAR_PAGE_SIZE + 1;
+  const to = Math.min(matchCount, page * BAZAR_PAGE_SIZE);
   const nameOf = (id: string) =>
     members.find((m) => m.id === id)?.name ?? "Former member";
 

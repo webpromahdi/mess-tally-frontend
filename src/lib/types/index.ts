@@ -12,6 +12,7 @@ export * from "./auth.types";
 export * from "./bazar.types";
 export * from "./dashboard.types";
 export * from "./meal.types";
+export * from "./utility.types";
 
 // ---------------------------------------------------------------------------
 // Generic API response wrappers

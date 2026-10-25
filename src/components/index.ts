@@ -6,3 +6,4 @@ export * from "./meals";
 export * from "./shared";
 export * from "./shell";
 export * from "./user-menu";
+export * from "./utility";
