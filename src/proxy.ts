@@ -1,13 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-/**
- * Route protection and network boundary.
- * Next.js 16 proxy boundary enforcing authentication rules on routes.
- *
- * Rules:
- * - Unauthenticated users visiting /dashboard/* or /onboarding/* are redirected to /login?redirect=<path>
- * - Authenticated users visiting /login, /register, etc. are redirected to /dashboard
- */
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("accessToken")?.value;
