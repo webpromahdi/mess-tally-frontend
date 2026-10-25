@@ -114,13 +114,13 @@ Before initiating work on any feature or screen:
 - [x] Dummy validation display and button loading states
 
 #### Phase 2: Dynamic API Integration (A to Z)
-- [ ] **2.1 Types:** Define auth request and response shapes in `src/lib/types/auth.types.ts` (`LoginRequest`, `RegisterRequest`, `VerifyEmailRequest`, `ResendOtpRequest`, `AuthResponse`, `User`, `UserRole`).
-- [ ] **2.2 Validations:** Create Zod schemas in `src/validations/auth.validation.ts` (`loginSchema`, `registerSchema`, `verifyEmailSchema`, `resendOtpSchema`, `forgotPasswordSchema`, `resetPasswordSchema`).
+- [x] **2.1 Types:** Define auth request and response shapes in `src/lib/types/auth.types.ts` (`LoginRequest`, `RegisterRequest`, `VerifyEmailRequest`, `ResendOtpRequest`, `AuthResponse`, `User`, `UserRole`).
+- [x] **2.2 Validations:** Create Zod schemas in `src/validations/auth.validation.ts` (`loginSchema`, `registerSchema`, `verifyEmailSchema`, `resendOtpSchema`, `forgotPasswordSchema`, `resetPasswordSchema`).
 - [ ] **2.3 API Service:** Implement endpoints in `src/api/auth.api.ts`:
   - `POST /auth/login` (email, password) → sets refresh cookie & returns accessToken + user.
-  - `POST /auth/register` (name, email, password) → returns 201 and dispatches 6-digit OTP to email.
-  - `POST /auth/verify-email` (email, otp) → verifies 6-digit OTP, creates user row, sets cookies, and logs in user.
-  - `POST /auth/resend-otp` (email, purpose) → resends 6-digit OTP with 60s cooldown (max 3 resends).
+  - [x] `POST /auth/register` (name, email, password) → returns 201 and dispatches 6-digit OTP to email.
+  - [x] `POST /auth/verify-email` (email, otp) → verifies 6-digit OTP, creates user row, sets cookies, and logs in user.
+  - [x] `POST /auth/resend-otp` (email, purpose) → resends 6-digit OTP with 60s cooldown (max 3 resends).
   - `GET /auth/me` → fetches current authenticated user & active mess pointer.
   - `POST /auth/logout` → clears session & cookies.
   - `POST /auth/refresh-token` → automatic silent token refresh via cookie.

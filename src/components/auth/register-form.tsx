@@ -3,9 +3,12 @@
 import { useForm } from "@tanstack/react-form";
 import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 import * as React from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useRegister } from "@/hooks";
+import { getErrorMessage } from "@/lib/apiClient";
 import { cn } from "@/lib/utils";
 import {
   registerBaseSchema,
@@ -94,9 +97,11 @@ function PasswordStrengthMeter({ password = "" }: { password?: string }) {
 
 export function RegisterForm({ className, onSuccess }: RegisterFormProps) {
   const [formError, setFormError] = React.useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+
+  const { mutateAsync: registerMutation, isPending: isSubmitting } =
+    useRegister();
 
   const form = useForm({
     defaultValues: {
@@ -115,19 +120,31 @@ export function RegisterForm({ className, onSuccess }: RegisterFormProps) {
         return;
       }
 
-      setIsSubmitting(true);
       setFormError(null);
 
       try {
-        // TODO: Connect to backend auth API (POST /api/auth/register per PRD AC 1.2)
-        // Simulated latency
-        await new Promise((resolve) => setTimeout(resolve, 800));
+        const response = await registerMutation({
+          name: value.name,
+          email: value.email,
+          password: value.password,
+        });
+
+        toast.success("Verification code sent!", {
+          description:
+            response?.message ||
+            "Please check your email for the 6-digit confirmation code.",
+        });
 
         onSuccess?.(value.email);
-      } catch {
-        setFormError("Unable to create account. Please try again.");
-      } finally {
-        setIsSubmitting(false);
+      } catch (err: unknown) {
+        const message = getErrorMessage(
+          err,
+          "Unable to create account. Please try again.",
+        );
+        setFormError(message);
+        toast.error("Registration failed", {
+          description: message,
+        });
       }
     },
   });

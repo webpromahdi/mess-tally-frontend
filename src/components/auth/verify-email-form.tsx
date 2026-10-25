@@ -11,8 +11,11 @@ import {
   RotateCw,
 } from "lucide-react";
 import * as React from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useResendOtp, useVerifyEmail } from "@/hooks";
+import { getErrorMessage } from "@/lib/apiClient";
 import { cn } from "@/lib/utils";
 import { verifyEmailFormSchema } from "@/validations/auth-ui.validation";
 
@@ -35,8 +38,11 @@ export function VerifyEmailForm({
 }: VerifyEmailFormProps) {
   const [formError, setFormError] = React.useState<string | null>(null);
   const [resendSuccess, setResendSuccess] = React.useState(false);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [isResending, setIsResending] = React.useState(false);
+
+  const { mutateAsync: verifyEmailMutation, isPending: isSubmitting } =
+    useVerifyEmail();
+  const { mutateAsync: resendOtpMutation, isPending: isResending } =
+    useResendOtp();
 
   // Timers and attempt counters
   const [expirySeconds, setExpirySeconds] = React.useState(
@@ -112,20 +118,30 @@ export function VerifyEmailForm({
         return;
       }
 
-      setIsSubmitting(true);
       setFormError(null);
 
       try {
-        // Simulated latency for Phase 1 UI (POST /auth/verify-email in Phase 2)
-        await new Promise((resolve) => setTimeout(resolve, 800));
+        const response = await verifyEmailMutation({
+          email: payload.email,
+          otp: payload.otp,
+        });
+
+        toast.success("Email Verified!", {
+          description:
+            response?.message ||
+            "Your account has been activated successfully.",
+        });
 
         onSuccess?.();
-      } catch {
-        setFormError(
+      } catch (err: unknown) {
+        const message = getErrorMessage(
+          err,
           "Incorrect verification code. Please check your email and try again.",
         );
-      } finally {
-        setIsSubmitting(false);
+        setFormError(message);
+        toast.error("Verification failed", {
+          description: message,
+        });
       }
     },
   });
@@ -194,27 +210,55 @@ export function VerifyEmailForm({
   const handleResendCode = async () => {
     if (resendCooldown > 0 || resendsRemaining <= 0 || isResending) return;
 
-    setIsResending(true);
     setFormError(null);
 
     try {
-      // Simulated resend latency (POST /auth/resend-otp in Phase 2)
-      await new Promise((resolve) => setTimeout(resolve, 600));
+      const response = await resendOtpMutation({
+        email,
+        purpose: "REGISTRATION",
+      });
 
-      setResendCooldown(DEFAULT_RESEND_COOLDOWN);
-      setExpirySeconds(DEFAULT_EXPIRATION_SECONDS);
-      setResendsRemaining((prev) => Math.max(0, prev - 1));
+      const resData = response?.data;
+      if (resData?.resendAvailableInSeconds) {
+        setResendCooldown(resData.resendAvailableInSeconds);
+      } else {
+        setResendCooldown(DEFAULT_RESEND_COOLDOWN);
+      }
+
+      if (resData?.expiresInSeconds) {
+        setExpirySeconds(resData.expiresInSeconds);
+      } else {
+        setExpirySeconds(DEFAULT_EXPIRATION_SECONDS);
+      }
+
+      if (typeof resData?.resendsRemaining === "number") {
+        setResendsRemaining(resData.resendsRemaining);
+      } else {
+        setResendsRemaining((prev) => Math.max(0, prev - 1));
+      }
+
       setResendSuccess(true);
       setTimeout(() => setResendSuccess(false), 4000);
+
+      toast.success("Code Resent", {
+        description:
+          response?.message ||
+          "A new 6-digit verification code has been sent to your email.",
+      });
 
       // Reset digit fields
       setDigits(Array(TOTAL_DIGITS).fill(""));
       form.setFieldValue("otp", "");
       inputRefs.current[0]?.focus();
-    } catch {
-      setFormError("Failed to resend verification code. Please try again.");
-    } finally {
-      setIsResending(false);
+    } catch (err: unknown) {
+      const message = getErrorMessage(
+        err,
+        "Failed to resend verification code. Please try again.",
+      );
+      setFormError(message);
+      toast.error("Resend failed", {
+        description: message,
+      });
     }
   };
 
