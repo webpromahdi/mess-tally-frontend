@@ -1,3 +1,4 @@
+export * from "./bazar";
 export * from "./brand-logo";
 export * from "./dashboard";
 export * from "./marketing";
