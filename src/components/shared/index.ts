@@ -6,6 +6,7 @@ export * from "./field";
 export * from "./icon-tile";
 export * from "./logo";
 export * from "./money-pill";
+export * from "./native-select";
 export * from "./number-stepper";
 export * from "./popover";
 export * from "./progress";
