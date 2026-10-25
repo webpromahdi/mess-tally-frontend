@@ -1,5 +1,4 @@
 "use client";
-
 import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -47,8 +46,8 @@ function RegisterPageContent() {
                 Email Verified Successfully!
               </h1>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Welcome to MessTally! Your account has been verified and
-                activated. You can now sign in and join or create your mess.
+                Welcome to MessTally! Your account has been activated and you
+                are signed in. Let&apos;s get started with your mess.
               </p>
             </div>
 
@@ -57,7 +56,7 @@ function RegisterPageContent() {
                 asChild
                 className="w-full h-11 min-h-11 text-base font-semibold"
               >
-                <Link href="/login">Proceed to Sign In</Link>
+                <Link href="/dashboard">Continue to Dashboard</Link>
               </Button>
             </div>
           </div>
