@@ -7,8 +7,7 @@ import {
   Twitter,
 } from "lucide-react";
 import Link from "next/link";
-
-import { BrandLogo } from "@/components/brand-logo";
+import { BrandLogo } from "@/components/shared";
 
 export function MarketingFooter() {
   const currentYear = new Date().getFullYear();

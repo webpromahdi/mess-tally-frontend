@@ -61,12 +61,12 @@ Before initiating work on any feature or screen:
 | **02. Authentication & Access** | 🟢 Done | 🟢 Done | Completed | `/login`, `/register`, `/forgot-password`, `/reset-password` |
 | **03. Mess Onboarding & Setup** | 🟢 Done | ⚪ Pending | In Progress (Phase 1 Done) | `/onboarding`, `/onboarding/create`, `/onboarding/join`, `/onboarding/pending` |
 | **04. Dashboard Overview** | 🟢 Done | ⚪ Pending | In Progress (Phase 1 Done) | `/dashboard` |
-| **05. Daily Meals Matrix** | ⚪ Pending | ⚪ Pending | Queued | `/dashboard/meals` |
-| **06. Bazar / Grocery Expenses** | ⚪ Pending | ⚪ Pending | Queued | `/dashboard/bazar` |
-| **07. Utility Bills & Advance Fund** | ⚪ Pending | ⚪ Pending | Queued | `/dashboard/utilities` |
-| **08. Monthly Summary & Settlement** | ⚪ Pending | ⚪ Pending | Queued | `/dashboard/summary` |
-| **09. Members & Roles Management** | ⚪ Pending | ⚪ Pending | Queued | `/dashboard/members` |
-| **10. Settings & Mess Profile** | ⚪ Pending | ⚪ Pending | Queued | `/dashboard/settings`, `/profile` |
+| **05. Daily Meals Matrix** | 🟢 Done | ⚪ Pending | In Progress (Phase 1 Done) | `/dashboard/meals` |
+| **06. Bazar / Grocery Expenses** | 🟢 Done | ⚪ Pending | In Progress (Phase 1 Done) | `/dashboard/bazar` |
+| **07. Utility Bills & Advance Fund** | 🟢 Done | ⚪ Pending | In Progress (Phase 1 Done) | `/dashboard/utilities` |
+| **08. Monthly Summary & Settlement** | 🟢 Done | ⚪ Pending | In Progress (Phase 1 Done) | `/dashboard/summary` |
+| **09. Members & Roles Management** | 🟢 Done | ⚪ Pending | In Progress (Phase 1 Done) | `/dashboard/members` |
+| **10. Settings & Mess Profile** | 🟡 Partial | ⚪ Pending | In Progress (Shell + Placeholder) | `/dashboard/settings`, `/profile` |
 | **11. Subscription (bKash PRO)** | ⚪ Pending | ⚪ Pending | Queued | `/dashboard/subscription` |
 | **12. AI Chatbot (TallyBot)** | ⚪ Pending | ⚪ Pending | Queued | Floating drawer / `/dashboard/ai-chat` |
 
@@ -80,7 +80,7 @@ Before initiating work on any feature or screen:
 
 ### Module 01: Marketing & Public Pages
 - **Backend Reference:** Not applicable (static public routes).
-- **Frontend References:** [Design.md](file:///d:/Projects/mess-tally-frontend/Design.md), [responsive.md](file:///d:/Projects/mess-tally-frontend/responsive.md), [fix-responsive-issue.md](file:///d:/Projects/mess-tally-frontend/fix-responsive-issue.md).
+- **Frontend References:** [Design.md](file:///d:/Projects/mess-tally-frontend/Design.md), [responsive.md](file:///d:/Projects/mess-tally-frontend/responsive.md).
 - **Routes:** `src/app/(marketing-pages)/` (`/`, `/about`, `/contact`, `/features`, `/pricing`).
 
 #### Phase 1: Screen Design & Responsive Layout
@@ -150,8 +150,8 @@ Before initiating work on any feature or screen:
 - **Target Routes:** `src/app/(root)/onboarding/` (`/onboarding`, `/onboarding/create`, `/onboarding/join`, `/onboarding/pending`).
 
 #### Phase 1: Screen Design (Dummy Data) — **COMPLETED**
-- [x] Dedicated Onboarding Header (`src/components/onboarding/onboarding-header.tsx`) with transparent background, brand logo, and decoupled user menu.
-- [x] Authenticated User Profile Menu (`src/components/user-menu.tsx`) with avatar, display name, email, streamlined single-line actions (Dashboard, Profile, Settings), and destructive Sign Out action hooked to `useLogout()`.
+- [x] Dedicated Onboarding Header ([src/app/(root)/onboarding/layout.tsx](file:///d:/Projects/mess-tally-frontend/src/app/(root)/onboarding/layout.tsx)) with transparent background, brand logo ([src/components/shared/brand-logo.tsx](file:///d:/Projects/mess-tally-frontend/src/components/shared/brand-logo.tsx)), and decoupled user menu.
+- [x] Authenticated User Profile Menu ([src/components/shared/user-menu.tsx](file:///d:/Projects/mess-tally-frontend/src/components/shared/user-menu.tsx)) with avatar, display name, email, streamlined single-line actions (Dashboard, Profile, Settings), and destructive Sign Out action hooked to `useLogout()`.
 - [x] Screen jank / layout shift resolution: Eliminated Radix `RemoveScroll` body-locking jumps across header dropdown and select menus using `modal={false}` and `scrollbar-gutter: stable;` on `html`.
 - [x] Shared Custom Select Primitive (`src/components/ui/select.tsx`): Built accessible, non-modal dropdown select on Radix primitives with zero-jank overlay positioning, custom `h-11` input-matched trigger, subtle Deep Aubergine (`#3A0F34`) selected highlight, checkmark indicator, and full keyboard navigation.
 - [x] Polished Create Mess form controls: Upgraded native HTML selects for Currency (`BDT`, `USD`, `EUR`, `INR`) and Daily Meal Cutoff Time (`10:00 AM`, `11:00 AM`, `12:00 PM`, `08:00 PM`) to the custom `Select` primitive.
@@ -209,12 +209,15 @@ Before initiating work on any feature or screen:
   - [plan.md § 4: Decisions D1–D3, D11](file:///D:/Projects/mess-tally-backend/plan.md#4-decisions-needed-before-phase-2-prd-gaps)
 - **Target Route:** `src/app/(root)/dashboard/meals/page.tsx`.
 
-#### Phase 1: Screen Design (Dummy Data)
-- [ ] Daily Meal Matrix / Spreadsheet view (Rows: Active members, Columns: Days of month, Cells: Meal count e.g. 0, 1, 2, 3).
-- [ ] Mobile Daily Carousel / Single-Day View (easy thumb entry with `+` / `-` steppers).
-- [ ] Daily Cutoff Timer & Status Alert (warns when cutoff time has passed for today).
-- [ ] Manager "Bulk Save" bar for updating the entire house tally at once.
-- [ ] Individual Member meal breakdown modal / drawer.
+#### Phase 1: Screen Design (Dummy Data) — **COMPLETED**
+- [x] Daily Meal Matrix / Spreadsheet view with sticky member names column & day totals footer ([src/components/meals/grid/meals-matrix-table.tsx](file:///d:/Projects/mess-tally-frontend/src/components/meals/grid/meals-matrix-table.tsx)).
+- [x] Mobile Daily Carousel / Single-Day View (easy thumb entry with `+` / `−` steppers) ([src/components/meals/grid/meals-mobile-cards.tsx](file:///d:/Projects/mess-tally-frontend/src/components/meals/grid/meals-mobile-cards.tsx)).
+- [x] Daily Cutoff Timer & Status Alert banner ([src/components/meals/layout/meals-header.tsx](file:///d:/Projects/mess-tally-frontend/src/components/meals/layout/meals-header.tsx)).
+- [x] Manager "Day bulk entry" modal / sheet for editing house meals for any day ([src/components/meals/dialogs/day-entry-dialog.tsx](file:///d:/Projects/mess-tally-frontend/src/components/meals/dialogs/day-entry-dialog.tsx)).
+- [x] Anchored cell editor popover with member/guest steppers ([src/components/meals/popover/meal-cell-popover.tsx](file:///d:/Projects/mess-tally-frontend/src/components/meals/popover/meal-cell-popover.tsx)).
+- [x] Monthly summary strip (Total Meals, House Bazar, Meal Rate) ([src/components/meals/layout/meals-summary-strip.tsx](file:///d:/Projects/mess-tally-frontend/src/components/meals/layout/meals-summary-strip.tsx)).
+- [x] Pure domain calculations & matrix helpers ([src/lib/meals.ts](file:///d:/Projects/mess-tally-frontend/src/lib/meals.ts)) and static fixtures ([src/fixtures/meal.fixtures.ts](file:///d:/Projects/mess-tally-frontend/src/fixtures/meal.fixtures.ts)).
+- [x] Interactive dev scenario switcher with all 16 states ([src/components/meals/meals-scenarios.tsx](file:///d:/Projects/mess-tally-frontend/src/components/meals/meals-scenarios.tsx)).
 
 #### Phase 2: Dynamic API Integration (A to Z)
 - [ ] **5.1 Types:** `src/lib/types/meal.types.ts` (`MealEntry`, `DailyMealSummary`, `BulkMealUpdateDto`).
@@ -236,12 +239,15 @@ Before initiating work on any feature or screen:
   - [prd.md § 2.1: Module 4](file:///D:/Projects/mess-tally-backend/prd.md)
 - **Target Route:** `src/app/(root)/dashboard/bazar/page.tsx`.
 
-#### Phase 1: Screen Design (Dummy Data)
-- [ ] Bazar expense table / card feed (Date, Shopper name, Amount ৳, Category tags, Description/Items list).
-- [ ] Shopper breakdown summary card (Total spent by each member this month).
-- [ ] "Add Bazar Entry" Drawer / Modal (Amount, Date picker, Shopper selector, Itemized notes).
-- [ ] Category chips (Vegetables, Meat/Fish, Spices, Oil/Rice, Miscellaneous).
-- [ ] Delete / Edit confirmation dialogs.
+#### Phase 1: Screen Design (Dummy Data) — **COMPLETED**
+- [x] Bazar expense table with sorting, search, category filtering, member filter ([src/components/bazar/table/bazar-table.tsx](file:///d:/Projects/mess-tally-frontend/src/components/bazar/table/bazar-table.tsx)).
+- [x] Mobile Bazar Card List with touch-friendly layout ([src/components/bazar/table/bazar-card-list.tsx](file:///d:/Projects/mess-tally-frontend/src/components/bazar/table/bazar-card-list.tsx)).
+- [x] Shopper breakdown summary card & monthly totals strip ([src/components/bazar/layout/shopper-summary.tsx](file:///d:/Projects/mess-tally-frontend/src/components/bazar/layout/shopper-summary.tsx), [src/components/bazar/layout/bazar-header.tsx](file:///d:/Projects/mess-tally-frontend/src/components/bazar/layout/bazar-header.tsx)).
+- [x] "Add Bazar Entry" / Edit modal form with amount, date, shopper select, category chips, items list ([src/components/bazar/dialogs/bazar-entry-dialog.tsx](file:///d:/Projects/mess-tally-frontend/src/components/bazar/dialogs/bazar-entry-dialog.tsx)).
+- [x] Category chips & search toolbar ([src/components/bazar/table/bazar-filters.tsx](file:///d:/Projects/mess-tally-frontend/src/components/bazar/table/bazar-filters.tsx)).
+- [x] Delete confirmation dialog ([src/components/bazar/dialogs/delete-confirm.tsx](file:///d:/Projects/mess-tally-frontend/src/components/bazar/dialogs/delete-confirm.tsx)).
+- [x] Pure domain calculations & helpers ([src/lib/bazar.ts](file:///d:/Projects/mess-tally-frontend/src/lib/bazar.ts)) and static fixtures ([src/fixtures/bazar.fixtures.ts](file:///d:/Projects/mess-tally-frontend/src/fixtures/bazar.fixtures.ts)).
+- [x] Interactive dev scenario switcher covering 11 visual states ([src/components/bazar/bazar-scenarios.tsx](file:///d:/Projects/mess-tally-frontend/src/components/bazar/bazar-scenarios.tsx)).
 
 #### Phase 2: Dynamic API Integration (A to Z)
 - [ ] **6.1 Types:** `src/lib/types/bazar.types.ts` (`BazarExpense`, `CreateBazarDto`, `BazarCategory`).
@@ -263,12 +269,15 @@ Before initiating work on any feature or screen:
   - [prd.md § 1.5 #2 & #3](file:///D:/Projects/mess-tally-backend/prd.md) (Utilities never mix with meal calculations).
 - **Target Route:** `src/app/(root)/dashboard/utilities/page.tsx`.
 
-#### Phase 1: Screen Design (Dummy Data)
-- [ ] Utility Fund Overview Card (Total Deposits Collected − Total Bills Paid = Current Month Fund Balance ৳).
-- [ ] Utility Bills Tab (Electricity, Gas, Water, Internet, Maid/Cook, Waste, Other).
-- [ ] Deposits Collection Tab (Manager records advance collected from each member).
-- [ ] Per-member equal split ledger (showing who paid deposit and remaining per-member utility share).
-- [ ] "Add Utility Bill" & "Record Member Deposit" modals.
+#### Phase 1: Screen Design (Dummy Data) — **COMPLETED**
+- [x] Utility Fund Overview summary strip (Total Bills, Total Deposits, Fund Balance, Per-Member Equal Split Share) ([src/components/utility/layout/utility-summary-strip.tsx](file:///d:/Projects/mess-tally-frontend/src/components/utility/layout/utility-summary-strip.tsx)).
+- [x] Utility Bills ledger table with category badge, payer, amount, split badge ([src/components/utility/table/ledger-table.tsx](file:///d:/Projects/mess-tally-frontend/src/components/utility/table/ledger-table.tsx)) and mobile card view ([src/components/utility/table/ledger-card-list.tsx](file:///d:/Projects/mess-tally-frontend/src/components/utility/table/ledger-card-list.tsx)).
+- [x] Member Deposits collection grid with balance indicators ([src/components/utility/table/member-deposits.tsx](file:///d:/Projects/mess-tally-frontend/src/components/utility/table/member-deposits.tsx)).
+- [x] Header with tabs (Bills vs Member Deposits vs All) & Month Closed pill ([src/components/utility/layout/utility-header.tsx](file:///d:/Projects/mess-tally-frontend/src/components/utility/layout/utility-header.tsx)).
+- [x] "Add Utility Bill" and "Record Deposit" dialogs ([src/components/utility/dialogs/entry-dialog.tsx](file:///d:/Projects/mess-tally-frontend/src/components/utility/dialogs/entry-dialog.tsx)).
+- [x] Delete confirmation dialog ([src/components/utility/dialogs/delete-confirm.tsx](file:///d:/Projects/mess-tally-frontend/src/components/utility/dialogs/delete-confirm.tsx)).
+- [x] Pure domain calculations & helpers ([src/lib/utility.ts](file:///d:/Projects/mess-tally-frontend/src/lib/utility.ts)) and static fixtures ([src/fixtures/utility.fixtures.ts](file:///d:/Projects/mess-tally-frontend/src/fixtures/utility.fixtures.ts)).
+- [x] Interactive dev scenario switcher covering 10 visual states ([src/components/utility/utility-scenarios.tsx](file:///d:/Projects/mess-tally-frontend/src/components/utility/utility-scenarios.tsx)).
 
 #### Phase 2: Dynamic API Integration (A to Z)
 - [ ] **7.1 Types:** `src/lib/types/utility.types.ts` (`UtilityExpense`, `UtilityDeposit`, `UtilitySplitType`, `UtilityCategory`).
@@ -290,16 +299,15 @@ Before initiating work on any feature or screen:
   - [prd.md § 1.3: Debt Settlement math](file:///D:/Projects/mess-tally-backend/prd.md#13-core-value-proposition)
 - **Target Route:** `src/app/(root)/dashboard/summary/page.tsx`.
 
-#### Phase 1: Screen Design (Dummy Data)
-- [ ] Month Financial Ledger Table:
-  - Columns: Member Name, Total Meals, Meal Cost (৳), Total Bazar Paid (৳), Net Meal Balance (৳).
-- [ ] Meal Rate Derivation Card (`Meal Rate = Total Bazar Spend / Total House Meals`).
-- [ ] Peer-to-Peer Settlement Card Grid:
-  - Visual directional cards: "Rahim pays Karim ৳ 850" with copy-transfer details.
-- [ ] Month Lifecycle Bar:
-  - Month status badge (`ACTIVE` vs `CLOSED`).
-  - Manager actions: "Close Month" (locks entries) / "Reopen Month".
-- [ ] Export Buttons (Download CSV Statement, Download PDF Report).
+#### Phase 1: Screen Design (Dummy Data) — **COMPLETED**
+- [x] Month Financial Ledger table with meal counts, individual meal cost, bazar paid, and net balance badges ([src/components/summary/table/member-statement-table.tsx](file:///d:/Projects/mess-tally-frontend/src/components/summary/table/member-statement-table.tsx)) and mobile cards view ([src/components/summary/table/member-statement-cards.tsx](file:///d:/Projects/mess-tally-frontend/src/components/summary/table/member-statement-cards.tsx)).
+- [x] Summary KPI Strip with Total Bazar, Total Meals, Meal Rate, and Net Balance ([src/components/summary/layout/summary-kpi-strip.tsx](file:///d:/Projects/mess-tally-frontend/src/components/summary/layout/summary-kpi-strip.tsx)).
+- [x] Meal Rate Derivation & Formula Explainer card with animated interactive breakdown ([src/components/summary/settlement/formula-explainer.tsx](file:///d:/Projects/mess-tally-frontend/src/components/summary/settlement/formula-explainer.tsx)).
+- [x] Peer-to-Peer Greedy Settlement transfer cards with sender, receiver, amount, and copy-transfer trigger ([src/components/summary/settlement/settlement-card.tsx](file:///d:/Projects/mess-tally-frontend/src/components/summary/settlement/settlement-card.tsx)).
+- [x] Utility Fund reserve card ([src/components/summary/settlement/fund-summary-card.tsx](file:///d:/Projects/mess-tally-frontend/src/components/summary/settlement/fund-summary-card.tsx)).
+- [x] Header with Month Lifecycle badge (`ACTIVE` vs `CLOSED`), Month switcher, and CSV/PDF export buttons ([src/components/summary/layout/summary-header.tsx](file:///d:/Projects/mess-tally-frontend/src/components/summary/layout/summary-header.tsx)).
+- [x] Pure domain calculations (greedy settlement solver, meal rate derivation) ([src/lib/summary.ts](file:///d:/Projects/mess-tally-frontend/src/lib/summary.ts)) and static fixtures ([src/fixtures/summary.fixtures.ts](file:///d:/Projects/mess-tally-frontend/src/fixtures/summary.fixtures.ts)).
+- [x] Interactive dev scenario switcher covering 10 visual states ([src/components/summary/summary-scenarios.tsx](file:///d:/Projects/mess-tally-frontend/src/components/summary/summary-scenarios.tsx)).
 
 #### Phase 2: Dynamic API Integration (A to Z)
 - [ ] **8.1 Types:** `src/lib/types/summary.types.ts` (`MonthlySummary`, `MemberLedger`, `SettlementTransfer`).
@@ -320,15 +328,17 @@ Before initiating work on any feature or screen:
   - [plan.md § 4: Decisions D5, D8, D10, D12](file:///D:/Projects/mess-tally-backend/plan.md#4-decisions-needed-before-phase-2-prd-gaps)
 - **Target Route:** `src/app/(root)/dashboard/members/page.tsx`.
 
-#### Phase 1: Screen Design (Dummy Data)
-- [ ] Active Members Table / Card grid (Avatar, Name, Email, Role badge: Owner / Manager / Member, Joined Date).
-- [ ] Pending Approval Requests Section (Approve / Reject buttons with counter badge).
-- [ ] Room Code Share Card (Copy join code, QR code display, Regenerate code button).
-- [ ] Member Action Menu:
-  - "Make Manager" / "Remove Manager" (Transfer manager flag).
-  - "Transfer Ownership" (Owner only modal).
-  - "Remove from Mess" / "Leave Mess".
-- [ ] Capacity Warning Banner: "5 of 5 Free Member slots used. Upgrade to PRO for unlimited members."
+#### Phase 1: Screen Design (Dummy Data) — **COMPLETED**
+- [x] Active Members roster table with sortable columns, role badges, joined date, and action triggers ([src/components/members/roster/roster-table.tsx](file:///d:/Projects/mess-tally-frontend/src/components/members/roster/roster-table.tsx)) and mobile cards view ([src/components/members/roster/roster-cards.tsx](file:///d:/Projects/mess-tally-frontend/src/components/members/roster/roster-cards.tsx)).
+- [x] Pending join approval requests card with approve/reject buttons and pending badge counter ([src/components/members/roster/join-requests-card.tsx](file:///d:/Projects/mess-tally-frontend/src/components/members/roster/join-requests-card.tsx)).
+- [x] Room Code & Invite Share sheet with copy code, QR representation, share links, and regenerate trigger ([src/components/members/dialogs/invite-sheet.tsx](file:///d:/Projects/mess-tally-frontend/src/components/members/dialogs/invite-sheet.tsx)).
+- [x] Member Action sheet for mobile/desktop action triggers ([src/components/members/dialogs/member-actions-sheet.tsx](file:///d:/Projects/mess-tally-frontend/src/components/members/dialogs/member-actions-sheet.tsx)).
+- [x] Role management dialog ("Make Manager" / "Remove Manager", Transfer Ownership) ([src/components/members/dialogs/role-dialog.tsx](file:///d:/Projects/mess-tally-frontend/src/components/members/dialogs/role-dialog.tsx)).
+- [x] Confirmation sheet for destructive actions (remove member, reject request) ([src/components/members/dialogs/confirm-sheet.tsx](file:///d:/Projects/mess-tally-frontend/src/components/members/dialogs/confirm-sheet.tsx)).
+- [x] Leave mess card for active members with safety warnings ([src/components/members/dialogs/leave-card.tsx](file:///d:/Projects/mess-tally-frontend/src/components/members/dialogs/leave-card.tsx)).
+- [x] Free Plan capacity warning card (e.g. 5/5 slots used, PRO upgrade prompt) ([src/components/members/roster/plan-usage-card.tsx](file:///d:/Projects/mess-tally-frontend/src/components/members/roster/plan-usage-card.tsx)).
+- [x] Pure domain calculations & helpers ([src/lib/members.ts](file:///d:/Projects/mess-tally-frontend/src/lib/members.ts)) and static fixtures ([src/fixtures/member.fixtures.ts](file:///d:/Projects/mess-tally-frontend/src/fixtures/member.fixtures.ts)).
+- [x] Interactive dev scenario switcher covering 11 visual states ([src/components/members/members-scenarios.tsx](file:///d:/Projects/mess-tally-frontend/src/components/members/members-scenarios.tsx)).
 
 #### Phase 2: Dynamic API Integration (A to Z)
 - [ ] **9.1 Types:** `src/lib/types/member.types.ts` (`MessMember`, `MemberRole`, `MemberStatus`).
@@ -349,7 +359,8 @@ Before initiating work on any feature or screen:
   - [API.md § 17: Profile](file:///D:/Projects/mess-tally-backend/API.md#profile)
 - **Target Routes:** `src/app/(root)/dashboard/settings/page.tsx`, `src/app/(root)/profile/page.tsx`.
 
-#### Phase 1: Screen Design (Dummy Data)
+#### Phase 1: Screen Design (Dummy Data) — **IN PROGRESS (Shell + Placeholder)**
+- [x] Graceful Settings Page shell & tabbed overview ([src/app/(root)/dashboard/settings/page.tsx](file:///d:/Projects/mess-tally-frontend/src/app/(root)/dashboard/settings/page.tsx)) linking to Member management and Dashboard.
 - [ ] User Profile Settings (Name, Phone number, Profile image upload, Change Password tab).
 - [ ] Mess Configuration (Mess name, Physical address, Timezone, Daily meal cutoff time e.g. 10:00 PM).
 - [ ] Notification Preferences (Email alerts for monthly closing, Bazar reminder).

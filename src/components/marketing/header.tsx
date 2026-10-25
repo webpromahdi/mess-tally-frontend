@@ -11,8 +11,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
-
-import { BrandLogo } from "@/components/brand-logo";
+import { BrandLogo } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,

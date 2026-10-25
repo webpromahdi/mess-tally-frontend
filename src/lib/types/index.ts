@@ -12,6 +12,8 @@ export * from "./auth.types";
 export * from "./bazar.types";
 export * from "./dashboard.types";
 export * from "./meal.types";
+export * from "./member.types";
+export * from "./summary.types";
 export * from "./utility.types";
 
 // ---------------------------------------------------------------------------
