@@ -10,6 +10,7 @@
 
 export * from "./auth.types";
 export * from "./dashboard.types";
+export * from "./meal.types";
 
 // ---------------------------------------------------------------------------
 // Generic API response wrappers
