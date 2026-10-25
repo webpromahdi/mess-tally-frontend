@@ -1,11 +1,44 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
-import { OnboardingHeader } from "@/components/onboarding";
+import { BrandLogo } from "@/components/brand-logo";
+import { UserMenu } from "@/components/user-menu";
+import { cn } from "@/lib/utils";
 
 export const metadata = {
   title: "Mess Onboarding & Setup | MessTally",
   description:
     "Set up or join your shared living mess on MessTally. Automated meal rates, bazar expenses, and financial peace of mind for bachelor flatmates.",
 };
+
+interface OnboardingHeaderProps {
+  className?: string;
+}
+
+function OnboardingHeader({ className }: OnboardingHeaderProps) {
+  return (
+    <header
+      className={cn("w-full bg-transparent transition-colors", className)}
+    >
+      <div className="mx-auto flex h-18 sm:h-20 w-full max-w-5xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Left: Prominent MessTally Brand Logo */}
+        <Link
+          href="/onboarding"
+          className="inline-flex items-center rounded-lg py-1 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label="MessTally Home"
+        >
+          <BrandLogo
+            variant="auto"
+            className="h-10 sm:h-11 md:h-11.5 w-auto transition-transform hover:scale-[1.01]"
+            priority
+          />
+        </Link>
+
+        {/* Right: Authenticated User Profile Menu */}
+        <UserMenu />
+      </div>
+    </header>
+  );
+}
 
 export default function OnboardingLayout({
   children,
