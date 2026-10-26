@@ -24,7 +24,7 @@ export function LandingHero() {
         {/* Seamless left-to-right gradient mask dissolving image into warm off-white canvas */}
         <div className="relative w-full h-full flex items-end justify-end [mask-image:linear-gradient(to_right,transparent_0%,rgba(0,0,0,0.12)_14%,rgba(0,0,0,0.65)_30%,black_48%,black_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,rgba(0,0,0,0.12)_14%,rgba(0,0,0,0.65)_30%,black_48%,black_100%)]">
           <Image
-            src="/images/hero-messtally-dashboard.png"
+            src="https://i.ibb.co.com/pv9qTgkk/hero-messtally-dashboard.png"
             alt="MessTally shared living dashboard on laptop and mobile showing meal counts, expenses, and member balances"
             width={1774}
             height={887}
@@ -140,7 +140,7 @@ export function LandingHero() {
         <div className="lg:hidden w-full pt-8 pb-2">
           <div className="relative w-full max-w-xl mx-auto [mask-image:linear-gradient(to_bottom,black_82%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_82%,transparent_100%)]">
             <Image
-              src="/images/hero-messtally-dashboard.png"
+              src="https://i.ibb.co.com/pv9qTgkk/hero-messtally-dashboard.png"
               alt="MessTally shared living dashboard on laptop and mobile showing meal counts, expenses, and member balances"
               width={1774}
               height={887}
