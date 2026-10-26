@@ -61,10 +61,10 @@ export function UserMenu({
   // Prefer explicit prop if provided, else fall back to session user
   const user = userProp !== undefined ? userProp : currentUser;
 
-  const displayName = user?.name?.trim() || "Mahdi Hasan";
-  const email = user?.email?.trim() || "alhasanmahdi6@gmail.com";
+  const displayName = user?.name?.trim() || "Your account";
+  const email = user?.email?.trim() ?? "";
   const avatarUrl = user?.profile?.imageUrl;
-  const initials = getInitials(user?.name) || "MA";
+  const initials = getInitials(user?.name);
 
   const handleLogout = React.useCallback(() => {
     if (isLoggingOut) return;
@@ -169,9 +169,11 @@ export function UserMenu({
               <span className="font-semibold text-sm text-foreground leading-tight truncate">
                 {displayName}
               </span>
-              <span className="text-xs text-muted-foreground truncate leading-tight mt-0.5">
-                {email}
-              </span>
+              {email && (
+                <span className="text-xs text-muted-foreground truncate leading-tight mt-0.5">
+                  {email}
+                </span>
+              )}
             </div>
           </div>
         </DropdownMenuLabel>

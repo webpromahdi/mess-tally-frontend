@@ -40,31 +40,18 @@ function BlockError({ className }: { className?: string }) {
   );
 }
 
-function getSettlementForViewer(viewerId: string): SettlementLine[] {
-  if (viewerId === "m_mahdi") {
-    return [
-      { label: "From Sumon", amount: 1812.2 },
-      { label: "From Karim", amount: 751.21 },
-    ];
-  }
-  if (viewerId === "m_karim") {
-    return [
-      { label: "Pay Mahdi", amount: 751.21 },
-      { label: "Pay Rahim", amount: 512.2 },
-    ];
-  }
-  return [];
-}
-
 /** Composes every dashboard block for a month that exists. `errors` scopes failures to single blocks. */
 export function DashboardView({
   data,
   errors = [],
   formulaOpen,
+  settlement = [],
 }: {
   data: DashboardData;
   errors?: DashboardBlock[];
   formulaOpen?: boolean;
+  /** Closed-month settlement lines for the viewer (from `GET /summary`). */
+  settlement?: SettlementLine[];
 }) {
   const { viewer, mess, month, meal, fund } = data;
 
@@ -124,13 +111,13 @@ export function DashboardView({
   const empty = meal.totalMeals === 0 && meal.totalBazar === 0;
 
   // Closed months are final, so show the caller's own transfers.
-  const settlement: SettlementLine[] | undefined = closed
-    ? getSettlementForViewer(viewer.memberId)
+  const settlementLines: SettlementLine[] | undefined = closed
+    ? settlement
     : undefined;
 
   const kpiError = <BlockError />;
   const guestHint =
-    meal.totalGuestMeals > 0
+    (meal.totalGuestMeals ?? 0) > 0
       ? "Includes guest meals"
       : "Across all active members";
 
@@ -189,7 +176,7 @@ export function DashboardView({
           <MyBalanceCard
             balance={data.myBalance ?? 0}
             closed={closed}
-            settlement={settlement}
+            settlement={settlementLines}
           />
         )
       }

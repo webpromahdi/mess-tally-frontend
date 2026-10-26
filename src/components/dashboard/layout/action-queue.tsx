@@ -18,7 +18,11 @@ export function ActionQueue({ data }: { data: DashboardData }) {
         tone="neutral"
         icon={<Lock />}
         title={`${month.longLabel} is closed`}
-        description={`Closed on ${month.closedOn}. Figures are final and read-only.`}
+        description={
+          month.closedOn
+            ? `Closed on ${month.closedOn}. Figures are final and read-only.`
+            : "Figures are final and read-only."
+        }
         action={
           <Button variant="outline" size="sm" asChild>
             <Link href="/dashboard/summary">View settlement</Link>

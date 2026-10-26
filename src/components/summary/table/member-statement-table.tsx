@@ -161,7 +161,7 @@ export function MemberStatementTable({
                 </th>
                 <td className={cn(cell, "text-right tabular-nums")}>
                   {m.meals}
-                  {m.guestMeals > 0 && (
+                  {(m.guestMeals ?? 0) > 0 && (
                     <span className="ml-1 text-ink-muted">
                       (+{m.guestMeals} guest)
                     </span>

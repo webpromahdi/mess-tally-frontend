@@ -1,5 +1,6 @@
+import { FileText } from "lucide-react";
 import type { Metadata } from "next";
-import { SummaryScenarios } from "@/components/summary";
+import { NotConnectedState } from "@/components/shared";
 
 export const metadata: Metadata = {
   title: "Monthly Summary & Settlement | MessTally",
@@ -8,5 +9,11 @@ export const metadata: Metadata = {
 };
 
 export default function SummaryPage() {
-  return <SummaryScenarios />;
+  return (
+    <NotConnectedState
+      title="Monthly Summary"
+      description="The summary and settlement design is ready, but it isn't connected to your mess data yet. Live totals and transfers will appear here once this module is wired."
+      icon={<FileText />}
+    />
+  );
 }

@@ -96,7 +96,7 @@ export default function JoinMessPage() {
                     2
                   </span>
                   <span className="leading-relaxed">
-                    You'll be notified once it's approved.
+                    Refresh the pending screen to check the latest status.
                   </span>
                 </li>
 

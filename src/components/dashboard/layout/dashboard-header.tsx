@@ -2,13 +2,10 @@ import { Lock, Plus, ShoppingBasket } from "lucide-react";
 import Link from "next/link";
 import { Badge, StatusDot } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { viewerRoleLabel } from "@/lib/mappers/dashboard.mapper";
 import type { DashboardData } from "@/lib/types/dashboard.types";
 
-export function roleLabel(viewer: DashboardData["viewer"]) {
-  if (viewer.role === "OWNER")
-    return viewer.isManager ? "Owner · Manager" : "Owner";
-  return viewer.isManager ? "Member · Manager" : "Member";
-}
+export const roleLabel = viewerRoleLabel;
 
 /** Greeting + scope line + manager quick actions (hidden for members and closed months, §12.6). */
 export function DashboardHeader({ data }: { data: DashboardData }) {

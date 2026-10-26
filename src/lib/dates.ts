@@ -22,6 +22,20 @@ const MONTHS = [
   "Nov",
   "Dec",
 ];
+const MONTHS_LONG = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 export interface DayInfo {
   /** ISO date */
@@ -83,4 +97,19 @@ export function formatDayLong(iso: string) {
 
 export function isFuture(iso: string, today: string) {
   return iso > today;
+}
+
+/** `"2026-10"` → `"Oct 2026"` or `"October 2026"`. Timezone-safe (no Date parsing). */
+export function monthLabel(key: string, long = false) {
+  const [year, month] = key.split("-").map(Number);
+  if (!year || !month || month < 1 || month > 12) return key;
+  return `${(long ? MONTHS_LONG : MONTHS)[month - 1]} ${year}`;
+}
+
+/** ISO timestamp → `"1 Oct 2026"` (UTC, matching backend month ranges). */
+export function formatDate(iso: string | null | undefined) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 }

@@ -43,7 +43,7 @@ export function settlementTransfers(
 /** F1–F5: totals, meal rate (0 when there are no meals), per-member cost and balance. */
 export function buildMealBlock(inputs: MemberLedgerInput[]): MealBlock {
   const totalMeals = inputs.reduce((s, m) => s + m.meals, 0);
-  const totalGuestMeals = inputs.reduce((s, m) => s + m.guestMeals, 0);
+  const totalGuestMeals = inputs.reduce((s, m) => s + (m.guestMeals ?? 0), 0);
   const totalBazar = inputs.reduce((s, m) => s + m.bazarPaid, 0);
   const mealRate = totalMeals > 0 ? totalBazar / totalMeals : 0;
   const members: MemberRow[] = inputs.map((m) => {

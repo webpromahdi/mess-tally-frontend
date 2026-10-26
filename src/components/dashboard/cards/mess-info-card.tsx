@@ -39,12 +39,14 @@ export function MessInfoCard({
           <Eyebrow>Your mess</Eyebrow>
           <CardTitle className="mt-1 truncate">{mess.name}</CardTitle>
         </div>
-        <Badge
-          variant={mess.plan === "FREE" ? "plan-free" : "plan-pro"}
-          size="sm"
-        >
-          {mess.plan}
-        </Badge>
+        {mess.plan ? (
+          <Badge
+            variant={mess.plan === "FREE" ? "plan-free" : "plan-pro"}
+            size="sm"
+          >
+            {mess.plan}
+          </Badge>
+        ) : null}
       </CardHeader>
       <CardContent className="flex flex-1 flex-col gap-4">
         <div className="flex items-center justify-between gap-3 rounded-xl border border-dashed border-line-strong bg-canvas p-3">

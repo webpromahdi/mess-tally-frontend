@@ -19,6 +19,9 @@ export function AppShell({
   user,
   mess,
   month,
+  months,
+  selectedMonthKey,
+  onSelectMonth,
   pendingCount,
   active = "dashboard",
   pageTitle,
@@ -89,6 +92,9 @@ export function AppShell({
         <Topbar
           mess={mess}
           month={month}
+          months={months}
+          selectedMonthKey={selectedMonthKey}
+          onSelectMonth={onSelectMonth}
           pageTitle={pageTitle}
           drawerOpen={drawer}
           onOpenDrawer={() => setDrawer(true)}
