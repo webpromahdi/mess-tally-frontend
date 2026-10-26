@@ -4,7 +4,7 @@ import { ArrowRight, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
-import { BrandLogo } from "@/components/shared";
+import { BrandLogo, UserMenu } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -14,12 +14,18 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { siteConfig } from "@/config/site";
+import { useCurrentUser } from "@/hooks";
 import { cn } from "@/lib/utils";
 
 export function MarketingHeader() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
+  const { isAuthenticated, isLoading: isAuthLoading } = useCurrentUser();
+
+  // While the session resolves we render the account menu (which shows its own
+  // skeleton) so returning users never see a flash of the signed-out CTAs.
+  const showUserMenu = isAuthLoading || isAuthenticated;
 
   // Monitor window scroll to slightly increase backdrop density and shadow on scroll
   React.useEffect(() => {
@@ -94,45 +100,58 @@ export function MarketingHeader() {
           })}
         </nav>
 
-        {/* Desktop Actions (≥ 768px) - Clean Sign In & Marigold Capsule CTA */}
+        {/* Desktop Actions (≥ 768px) - Signed-out CTAs or signed-in account menu */}
         <div className="hidden md:flex items-center gap-3 shrink-0">
-          <Link
-            href="/login"
-            id="desktop-signin-link"
-            className="text-[14px] font-semibold text-neutral-800 dark:text-neutral-200 hover:text-[#3A0F34] dark:hover:text-[#EAAA00] px-3.5 py-1.5 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            Sign In
-          </Link>
+          {showUserMenu ? (
+            <UserMenu />
+          ) : (
+            <>
+              <Link
+                href="/login"
+                id="desktop-signin-link"
+                className="text-[14px] font-semibold text-neutral-800 dark:text-neutral-200 hover:text-[#3A0F34] dark:hover:text-[#EAAA00] px-3.5 py-1.5 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                Sign In
+              </Link>
 
-          <Button
-            asChild
-            variant="brand-accent"
-            id="desktop-get-started-button"
-            className="rounded-full px-5 sm:px-5.5 py-2 sm:py-2.5 text-sm font-bold bg-[#EAAA00] hover:bg-[#D99600] active:scale-[0.98] text-[#3A0F34] shadow-xs shadow-amber-500/10 hover:shadow-md hover:shadow-amber-500/20 transition-all group"
-          >
-            <Link href="/register" className="inline-flex items-center gap-1.5">
-              <span>Get Started</span>
-              <ArrowRight
-                className="size-4 transition-transform group-hover:translate-x-0.5"
-                aria-hidden="true"
-              />
-            </Link>
-          </Button>
+              <Button
+                asChild
+                variant="brand-accent"
+                id="desktop-get-started-button"
+                className="rounded-full px-5 sm:px-5.5 py-2 sm:py-2.5 text-sm font-bold bg-[#EAAA00] hover:bg-[#D99600] active:scale-[0.98] text-[#3A0F34] shadow-xs shadow-amber-500/10 hover:shadow-md hover:shadow-amber-500/20 transition-all group"
+              >
+                <Link
+                  href="/register"
+                  className="inline-flex items-center gap-1.5"
+                >
+                  <span>Get Started</span>
+                  <ArrowRight
+                    className="size-4 transition-transform group-hover:translate-x-0.5"
+                    aria-hidden="true"
+                  />
+                </Link>
+              </Button>
+            </>
+          )}
         </div>
 
-        {/* Mobile Header Actions (< 768px): Inline Get Started Pill + Slide-over Drawer Trigger */}
+        {/* Mobile Header Actions (< 768px): Account/CTA + Slide-over Drawer Trigger */}
         <div className="flex md:hidden items-center gap-1.5 shrink-0">
-          <Button
-            asChild
-            size="sm"
-            variant="brand-accent"
-            className="rounded-full px-3 py-1 text-xs font-bold bg-[#EAAA00] hover:bg-[#D99600] text-[#3A0F34] shadow-2xs h-7.5 sm:h-8 whitespace-nowrap shrink-0"
-          >
-            <Link href="/register" className="inline-flex items-center gap-1">
-              <span>Get Started</span>
-              <ArrowRight className="size-3" aria-hidden="true" />
-            </Link>
-          </Button>
+          {showUserMenu ? (
+            <UserMenu />
+          ) : (
+            <Button
+              asChild
+              size="sm"
+              variant="brand-accent"
+              className="rounded-full px-3 py-1 text-xs font-bold bg-[#EAAA00] hover:bg-[#D99600] text-[#3A0F34] shadow-2xs h-7.5 sm:h-8 whitespace-nowrap shrink-0"
+            >
+              <Link href="/register" className="inline-flex items-center gap-1">
+                <span>Get Started</span>
+                <ArrowRight className="size-3" aria-hidden="true" />
+              </Link>
+            </Button>
+          )}
 
           {/* Accessible Mobile Slide-over Drawer Trigger */}
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
@@ -211,29 +230,54 @@ export function MarketingHeader() {
 
               {/* Drawer Bottom Full-Width Auth Actions */}
               <div className="p-4 sm:p-5 border-t border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-muted/10 space-y-2.5">
-                <Button
-                  asChild
-                  variant="brand-accent"
-                  className="w-full min-h-[48px] rounded-xl text-base font-bold bg-[#EAAA00] hover:bg-[#D99600] text-[#3A0F34] shadow-md justify-center transition-all"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <Link
-                    href="/register"
-                    className="inline-flex items-center gap-2"
-                  >
-                    <span>Get Started</span>
-                    <ArrowRight className="size-4.5" aria-hidden="true" />
-                  </Link>
-                </Button>
+                {showUserMenu ? (
+                  <>
+                    <Button
+                      asChild
+                      variant="brand-accent"
+                      className="w-full min-h-[48px] rounded-xl text-base font-bold bg-[#EAAA00] hover:bg-[#D99600] text-[#3A0F34] shadow-md justify-center transition-all"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Link
+                        href="/dashboard"
+                        className="inline-flex items-center gap-2"
+                      >
+                        <span>Go to Dashboard</span>
+                        <ArrowRight className="size-4.5" aria-hidden="true" />
+                      </Link>
+                    </Button>
 
-                <Button
-                  asChild
-                  variant="outline"
-                  className="w-full min-h-[44px] rounded-xl text-base font-semibold justify-center border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <Link href="/login">Sign In</Link>
-                </Button>
+                    <div className="flex justify-center rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-card py-0.5">
+                      <UserMenu className="w-full justify-start" />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      asChild
+                      variant="brand-accent"
+                      className="w-full min-h-[48px] rounded-xl text-base font-bold bg-[#EAAA00] hover:bg-[#D99600] text-[#3A0F34] shadow-md justify-center transition-all"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Link
+                        href="/register"
+                        className="inline-flex items-center gap-2"
+                      >
+                        <span>Get Started</span>
+                        <ArrowRight className="size-4.5" aria-hidden="true" />
+                      </Link>
+                    </Button>
+
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="w-full min-h-[44px] rounded-xl text-base font-semibold justify-center border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Link href="/login">Sign In</Link>
+                    </Button>
+                  </>
+                )}
 
                 <p className="text-center text-xs text-muted-foreground pt-1 font-normal">
                   Free for all bachelor messes &amp; flatmates
