@@ -1,7 +1,11 @@
-/** Shapes mirror the future `GET /api/v1/dashboard?month=` response (plan.md). */
+/**
+ * Dashboard view model plus the raw `GET /api/v1/dashboard?month=` contract.
+ * UI components consume `DashboardData`; API functions return `DashboardResponseData`.
+ */
 export type Role = "OWNER" | "MEMBER";
 export type MonthStatus = "ACTIVE" | "CLOSED";
 export type Plan = "FREE" | "PRO";
+export type BalanceStatus = "RECEIVER" | "GIVER" | "SETTLED";
 
 export interface Viewer {
   memberId: string;
@@ -15,7 +19,8 @@ export interface MessInfo {
   id: string;
   name: string;
   roomCode: string;
-  plan: Plan;
+  /** `null` while `GET /subscription` is still loading or failed. */
+  plan: Plan | null;
   managerFirstName: string;
   /** ACTIVE members only; PENDING/REJECTED are excluded (PRD 1.5). */
   activeMembers: string[];
@@ -36,8 +41,8 @@ export interface MemberLedgerInput {
   name: string;
   /** Total meals including guest meals (F1). */
   meals: number;
-  /** Subset of `meals` that were guest meals. */
-  guestMeals: number;
+  /** Subset of `meals` that were guest meals. Not exposed by `GET /summary` yet. */
+  guestMeals?: number;
   bazarPaid: number;
 }
 
@@ -50,7 +55,8 @@ export interface MemberRow extends MemberLedgerInput {
 /** Summary meal block (F1–F5). Never contains utility numbers. */
 export interface MealBlock {
   totalMeals: number;
-  totalGuestMeals: number;
+  /** Not exposed by `GET /summary`/`GET /dashboard` yet; omit rather than guess. */
+  totalGuestMeals?: number;
   totalBazar: number;
   mealRate: number;
   members: MemberRow[];
@@ -79,3 +85,40 @@ export interface DashboardData {
 
 /** Blocks that can fail independently (inline error state). */
 export type DashboardBlock = "kpis" | "fund" | "memberBalances" | "bazarShare";
+
+// ---------------------------------------------------------------------------
+// Raw API contract — GET /api/v1/dashboard?month=YYYY-MM (API.md §49)
+// ---------------------------------------------------------------------------
+
+export interface DashboardMonthDto {
+  id: string;
+  /** `YYYY-MM`, e.g. "2026-10". */
+  name: string;
+  startDate: string;
+  endDate: string;
+  status: MonthStatus;
+  /** `false` when no month row exists yet. Reads never create one. */
+  exists: boolean;
+}
+
+export interface DashboardMealMeDto {
+  memberId: string;
+  totalMeals: number;
+  mealCost: number;
+  bazarPaid: number;
+  mealBalance: number;
+  balanceStatus: BalanceStatus;
+}
+
+export interface DashboardResponseData {
+  month: DashboardMonthDto;
+  meal: {
+    totalMeals: number;
+    totalBazar: number;
+    mealRate: number;
+    me: DashboardMealMeDto;
+  };
+  utility: FundBlock;
+  /** Number for managers, `null` for other members. */
+  pendingMemberCount: number | null;
+}

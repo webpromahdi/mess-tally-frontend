@@ -5,6 +5,7 @@ export * from "./MonthSelector";
 export * from "./MoreSheet";
 export * from "./nav";
 export * from "./ProfileMenu";
+export * from "./ShellSkeleton";
 export * from "./SidebarContent";
 export * from "./TallyBotSheet";
 export * from "./Topbar";

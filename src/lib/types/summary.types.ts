@@ -1,4 +1,6 @@
 import type {
+  BalanceStatus,
+  DashboardMonthDto,
   FundBlock,
   MealBlock,
   MessInfo,
@@ -49,3 +51,39 @@ export interface SummarySort {
 // Backward-compatible type aliases
 export type DepositRow = SummaryDepositRow;
 export type Transfer = SummaryTransfer;
+
+// ---------------------------------------------------------------------------
+// Raw API contract — GET /api/v1/summary?month=YYYY-MM (API.md §46)
+// ---------------------------------------------------------------------------
+
+export interface SummaryMemberDto {
+  memberId: string;
+  name: string;
+  avatarUrl: string | null;
+  status: "ACTIVE" | "LEFT";
+  totalMeals: number;
+  mealCost: number;
+  bazarPaid: number;
+  mealBalance: number;
+  balanceStatus: BalanceStatus;
+}
+
+export interface SummarySettlementDto {
+  fromMemberId: string;
+  toMemberId: string;
+  amount: number;
+}
+
+export interface SummaryResponseData {
+  month: DashboardMonthDto;
+  canSettle: boolean;
+  totals: {
+    totalMeals: number;
+    totalBazar: number;
+    mealRate: number;
+    totalPositiveBalance: number;
+  };
+  members: SummaryMemberDto[];
+  settlement: SummarySettlementDto[];
+  isLocked: boolean;
+}

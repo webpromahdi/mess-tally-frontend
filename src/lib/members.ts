@@ -8,7 +8,9 @@ import type {
   MembersSort,
 } from "@/lib/types/member.types";
 
-export const TODAY = "2026-10-25";
+function todayIso() {
+  return new Date().toISOString().slice(0, 10);
+}
 const NEXT_CODE = "H8Q2LD";
 
 export function activeMembers(data: MembersData): MemberRecord[] {
@@ -45,7 +47,7 @@ export function approveMember(data: MembersData, id: string): MembersData {
   return patch(data, id, (m) => ({
     ...m,
     status: "ACTIVE",
-    joinedOn: TODAY,
+    joinedOn: todayIso(),
     requestedLabel: null,
     activeBalance: 0,
   }));
@@ -68,7 +70,7 @@ export function setManager(
 }
 
 export function removeMember(data: MembersData, id: string): MembersData {
-  return patch(data, id, (m) => ({ ...m, status: "LEFT", leftOn: TODAY }));
+  return patch(data, id, (m) => ({ ...m, status: "LEFT", leftOn: todayIso() }));
 }
 
 export function regenerateCode(data: MembersData): MembersData {

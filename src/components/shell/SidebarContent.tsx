@@ -150,7 +150,9 @@ export function SidebarContent({
             <PanelLeftOpen className="hidden size-5 text-white/80 group-hover:block" />
           </button>
         ) : (
-          <Logo inverse className="flex-1" />
+          <Link href="/" className="flex-1">
+            <Logo inverse />
+          </Link>
         )}
         {onToggleCollapse && !collapsed && (
           <Button

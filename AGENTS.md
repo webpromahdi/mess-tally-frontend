@@ -12,12 +12,12 @@ npx shadcn add <c> # Install shadcn component into src/components/ui/
 ```
 
 ## 2. Core Project Context & Single Source of Truth
-- **Workflow & Checklists**: Follow [workflow-plan.md](file:///d:/Projects/mess-tally-frontend/workflow-plan.md) for module status and two-phase execution.
-- **Backend Grounding**: Ground all features in [D:\Projects\mess-tally-backend](file:///D:/Projects/mess-tally-backend):
-  - [API.md](file:///D:/Projects/mess-tally-backend/API.md) (endpoints & schemas)
-  - [plan.md](file:///D:/Projects/mess-tally-backend/plan.md) (phase status & decisions D1–D14)
-  - [prd.md](file:///D:/Projects/mess-tally-backend/prd.md) (formulas & business logic)
-- **Design System**: [Design.md](file:///d:/Projects/mess-tally-frontend/Design.md) (tokens, visual hierarchy) & [responsive.md](file:///d:/Projects/mess-tally-frontend/responsive.md).
+- **Workflow & Checklists**: Follow [workflow-plan.md](./workflow-plan.md) for module status and two-phase execution.
+- **Backend Grounding**: Ground all features in [mess-tally-backend](../mess-tally-backend):
+  - [API.md](../mess-tally-backend/API.md) (endpoints & schemas)
+  - [plan.md](../mess-tally-backend/plan.md) (phase status & decisions D1–D14)
+  - [prd.md](../mess-tally-backend/prd.md) (formulas & business logic)
+- **Design System**: [Design.md](./Design.md) (tokens, visual hierarchy) & [responsive.md](./responsive.md).
 
 ## 3. Architecture Boundaries & File Placement
 | Concern | Library / Tool | Location | Hard Rules |

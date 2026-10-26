@@ -75,7 +75,7 @@ export function MemberStatementCards({
                 <Mini
                   label="Meals"
                   value={
-                    m.guestMeals > 0
+                    (m.guestMeals ?? 0) > 0
                       ? `${m.meals} (+${m.guestMeals} guest)`
                       : String(m.meals)
                   }

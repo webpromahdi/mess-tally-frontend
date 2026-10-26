@@ -3,7 +3,7 @@
 > **Version:** 1.0 · **Status:** Draft — Research + Planning Phase  
 > **Scope:** Frontend design only. No backend or server-side code.  
 > **Build order:** Authentication → Mess Onboarding → Dashboard → Meals → Bazar → Utility → Summary → Members → Settings → AI Chatbot → Paywall  
-> 📱 **Responsive Standards Notice:** All responsive behavior follows [responsive.md](file:///d:/Projects/mess-tally-frontend/responsive.md). If Design.md and responsive.md disagree, responsive.md wins.
+> 📱 **Responsive Standards Notice:** All responsive behavior follows [responsive.md](./responsive.md). If Design.md and responsive.md disagree, responsive.md wins.
 
 ---
 
@@ -84,7 +84,7 @@ The product also features **TallyBot** — an AI chatbot that answers financial 
 ## 2. Research Summary
 
 > **Evidence & Methodology Note:** The Mobbin MCP service was not accessible due to subscription constraints (returning `"Mobbin MCP requires a paid plan"` for all queries). To provide concrete visual evidence, the user supplied **11 real UI design references** from Dribbble and Behance (5 attached in chat + 6 in the project directory `screen-idea/`).  
-> In accordance with user guidance, these references are evaluated as **designer concepts** exploring modern layout structures, visual density, and component patterns, rather than empirical telemetry of shipped production software. Every extracted pattern has been critically vetted against MessTally's core product requirements: **shared bachelor flatmate living in Bangladesh, mobile-first usage (390px base), financial transparency, and strict WCAG 2.1 AA accessibility**. All detailed screen extractions are recorded in [`screen-idea/REFERENCE_ANALYSIS.md`](file:///d:/Projects/mess-tally-frontend/screen-idea/REFERENCE_ANALYSIS.md).
+> In accordance with user guidance, these references are evaluated as **designer concepts** exploring modern layout structures, visual density, and component patterns, rather than empirical telemetry of shipped production software. Every extracted pattern has been critically vetted against MessTally's core product requirements: **shared bachelor flatmate living in Bangladesh, mobile-first usage (390px base), financial transparency, and strict WCAG 2.1 AA accessibility**. All detailed screen extractions are recorded in [`screen-idea/REFERENCE_ANALYSIS.md`](./screen-idea/REFERENCE_ANALYSIS.md).
 
 ### 2.1 UI References Analyzed
 
@@ -629,7 +629,7 @@ MessTally users write in English and Banglish (Bengali in Latin script). The fon
 
 ## 6. Layout
 
-> 📱 **Responsive Standards Notice:** All responsive behavior follows [responsive.md](file:///d:/Projects/mess-tally-frontend/responsive.md). If Design.md and responsive.md disagree, responsive.md wins.
+> 📱 **Responsive Standards Notice:** All responsive behavior follows [responsive.md](./responsive.md). If Design.md and responsive.md disagree, responsive.md wins.
 
 ### 6.1 Universal Breakpoint Hierarchy
 
@@ -2223,7 +2223,7 @@ MessTally is built on **Next.js 16 + Tailwind CSS v4**. Developers must verify t
 
 ### 19.1 Do's
 
-- Follow all universal responsive design standards in [responsive.md](file:///d:/Projects/mess-tally-frontend/responsive.md) (single source of truth for responsive behavior; wins over Design.md if in conflict).
+- Follow all universal responsive design standards in [responsive.md](./responsive.md) (single source of truth for responsive behavior; wins over Design.md if in conflict).
 - Always use design tokens (`var(--color-*)` or shadcn variables) — never hardcode raw hex values.
 - Apply `tabular-nums` with font stack `'Inter', 'Hind Siliguri', 'Noto Sans Bengali', system-ui, sans-serif` to every BDT currency amount, meal count, and rate figure (Inter supplies native fixed-width `tnum` for Latin digits; Hind Siliguri supplies `৳` U+09F3 via fallback; visually check `৳` sizing against Inter digits).
 - Enforce font size ≥ 16px (1rem) on all `<input>`, `<select>`, and `<textarea>` elements on mobile (`< 768px`) to prevent uncontrollable iOS Safari automatic zoom (`responsive.md` Section 6).

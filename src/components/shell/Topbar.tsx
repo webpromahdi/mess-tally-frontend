@@ -13,11 +13,22 @@ import type { ShellProps } from "./types";
 export function Topbar({
   mess,
   month,
+  months,
+  selectedMonthKey,
+  onSelectMonth,
   pageTitle = "Dashboard",
   drawerOpen,
   onOpenDrawer,
   onOpenBot,
-}: Pick<ShellProps, "mess" | "month" | "pageTitle"> & {
+}: Pick<
+  ShellProps,
+  | "mess"
+  | "month"
+  | "months"
+  | "selectedMonthKey"
+  | "onSelectMonth"
+  | "pageTitle"
+> & {
   drawerOpen: boolean;
   onOpenDrawer: () => void;
   onOpenBot: () => void;
@@ -52,7 +63,12 @@ export function Topbar({
         </nav>
 
         <div className="ml-auto flex items-center gap-1 sm:gap-2">
-          <MonthSelector month={month} />
+          <MonthSelector
+            month={month}
+            months={months}
+            selectedKey={selectedMonthKey}
+            onSelectMonth={onSelectMonth}
+          />
           <Button
             variant="ghost"
             size="icon"

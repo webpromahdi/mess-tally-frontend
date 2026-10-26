@@ -1,5 +1,5 @@
-import { DashboardScenarios } from "@/components/dashboard/dashboard-scenarios";
+import { DashboardPage } from "@/components/dashboard/dashboard-page";
 
-export default function DashboardPage() {
-  return <DashboardScenarios initialScenario="manager" />;
+export default function Page() {
+  return <DashboardPage />;
 }

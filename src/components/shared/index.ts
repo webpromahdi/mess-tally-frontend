@@ -8,6 +8,7 @@ export * from "./icon-tile";
 export * from "./logo";
 export * from "./money-pill";
 export * from "./native-select";
+export * from "./not-connected-state";
 export * from "./number-stepper";
 export * from "./popover";
 export * from "./progress";

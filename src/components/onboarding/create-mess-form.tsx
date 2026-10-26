@@ -21,65 +21,73 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useCreateMess } from "@/hooks";
+import { getApiMessage } from "@/lib/apiError";
 
-interface CreateMessFormProps {
-  onSuccess?: (createdMess: {
-    id: string;
-    name: string;
-    roomCode: string;
-    currency: string;
-    mealCutoffTime: string;
-  }) => void;
-  onCancel?: () => void;
+const CUTOFF_OPTIONS = [
+  { value: "10:00", label: "10:00 AM" },
+  { value: "11:00", label: "11:00 AM" },
+  { value: "12:00", label: "12:00 PM" },
+  { value: "20:00", label: "08:00 PM" },
+];
+
+interface CreatedMess {
+  id: string;
+  name: string;
+  roomCode: string;
+  currency: string;
+  mealCutoffTime: string;
 }
 
-export function CreateMessForm({ onSuccess }: CreateMessFormProps) {
-  const [name, setName] = useState("Green Road Flat");
-  const [address, setAddress] = useState("Green Road, Dhanmondi, Dhaka");
+export function CreateMessForm() {
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState("");
   const [currency, setCurrency] = useState("BDT");
-  const [mealCutoffTime, setMealCutoffTime] = useState("11:00 AM");
+  const [mealCutoffTime, setMealCutoffTime] = useState("11:00");
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{ name?: string }>({});
-  const [createdData, setCreatedData] = useState<{
-    id: string;
-    name: string;
-    roomCode: string;
-    currency: string;
-    mealCutoffTime: string;
-  } | null>(null);
+  const createMess = useCreateMess();
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [createdData, setCreatedData] = useState<CreatedMess | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!name.trim()) {
-      setErrors({ name: "Mess name is required." });
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      setNameError("Mess name is required.");
       return;
     }
 
-    setErrors({});
-    setIsLoading(true);
+    setNameError(null);
+    setSubmitError(null);
 
-    setTimeout(() => {
-      setIsLoading(false);
-      // Generate clean room code following backend convention: 3-letter prefix + 8-char code
-      const prefix = name.trim().slice(0, 3).toUpperCase().padEnd(3, "M");
-      const generatedCode = `${prefix}-K7P9M2X4`;
-
-      const result = {
-        id: `mock-mess-${Date.now()}`,
-        name: name.trim(),
-        roomCode: generatedCode,
+    createMess.mutate(
+      {
+        name: trimmedName,
+        address: address.trim() || undefined,
         currency,
         mealCutoffTime,
-      };
-
-      setCreatedData(result);
-      if (onSuccess) {
-        onSuccess(result);
-      }
-    }, 600);
+      },
+      {
+        onSuccess: (response) => {
+          const mess = response.data.mess;
+          setCreatedData({
+            id: mess.id,
+            name: mess.name,
+            roomCode: mess.roomCode,
+            currency: mess.currency,
+            mealCutoffTime: mess.mealCutoffTime,
+          });
+        },
+        onError: (error) => {
+          setSubmitError(
+            getApiMessage(error, "We couldn't create your mess. Try again."),
+          );
+        },
+      },
+    );
   };
 
   const handleCopyCode = async () => {
@@ -148,7 +156,7 @@ export function CreateMessForm({ onSuccess }: CreateMessFormProps) {
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+        <div className="flex items-center justify-center pt-2">
           <Button
             asChild
             size="lg"
@@ -158,16 +166,6 @@ export function CreateMessForm({ onSuccess }: CreateMessFormProps) {
               <span>Go to Dashboard</span>
               <ArrowRight className="size-4 ml-1.5" />
             </Link>
-          </Button>
-
-          <Button
-            type="button"
-            variant="outline"
-            size="lg"
-            onClick={() => setCreatedData(null)}
-            className="w-full sm:w-auto h-11 rounded-xl"
-          >
-            Create Another
           </Button>
         </div>
       </div>
@@ -194,16 +192,16 @@ export function CreateMessForm({ onSuccess }: CreateMessFormProps) {
           value={name}
           onChange={(e) => {
             setName(e.target.value);
-            if (errors.name) setErrors({});
+            if (nameError) setNameError(null);
           }}
           placeholder="e.g. Green Road Flat"
           className="h-11 rounded-lg"
-          aria-invalid={Boolean(errors.name)}
+          aria-invalid={Boolean(nameError)}
         />
-        {errors.name && (
+        {nameError && (
           <p className="text-xs text-destructive flex items-center gap-1 pt-0.5">
             <AlertCircle className="size-3.5" />
-            <span>{errors.name}</span>
+            <span>{nameError}</span>
           </p>
         )}
       </div>
@@ -249,10 +247,11 @@ export function CreateMessForm({ onSuccess }: CreateMessFormProps) {
               </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="10:00 AM">10:00 AM</SelectItem>
-              <SelectItem value="11:00 AM">11:00 AM</SelectItem>
-              <SelectItem value="12:00 PM">12:00 PM</SelectItem>
-              <SelectItem value="08:00 PM">08:00 PM</SelectItem>
+              {CUTOFF_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -279,14 +278,24 @@ export function CreateMessForm({ onSuccess }: CreateMessFormProps) {
         </div>
       </div>
 
+      {submitError && (
+        <p
+          role="alert"
+          className="flex items-start gap-1.5 rounded-lg bg-destructive/10 p-2.5 text-xs text-destructive"
+        >
+          <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
+          <span>{submitError}</span>
+        </p>
+      )}
+
       {/* Submit Button */}
       <div className="pt-2">
         <Button
           type="submit"
-          disabled={isLoading}
+          disabled={createMess.isPending}
           className="w-full h-11 sm:h-12 rounded-xl text-sm sm:text-base font-semibold shadow-xs"
         >
-          {isLoading ? (
+          {createMess.isPending ? (
             <>
               <Loader2 className="size-4 animate-spin mr-2" />
               <span>Creating Mess...</span>

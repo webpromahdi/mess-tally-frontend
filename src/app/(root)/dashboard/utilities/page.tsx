@@ -1,5 +1,6 @@
+import { Wallet } from "lucide-react";
 import type { Metadata } from "next";
-import { UtilityScenarios } from "@/components/utility";
+import { NotConnectedState } from "@/components/shared";
 
 export const metadata: Metadata = {
   title: "Utility Bills & Advance Fund | MessTally",
@@ -8,5 +9,11 @@ export const metadata: Metadata = {
 };
 
 export default function UtilitiesPage() {
-  return <UtilityScenarios />;
+  return (
+    <NotConnectedState
+      title="Utility Fund"
+      description="The utility fund design is ready, but it isn't connected to your mess data yet. Real deposits and bills will appear here once this module is wired."
+      icon={<Wallet />}
+    />
+  );
 }
