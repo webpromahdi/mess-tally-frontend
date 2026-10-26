@@ -30,7 +30,7 @@ export default function ContactPage() {
       <section
         id="contact-hero"
         aria-labelledby="contact-hero-heading"
-        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 lg:pt-20 pb-8 text-center"
+        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-28 sm:pt-32 lg:pt-36 pb-8 text-center"
       >
         <h1
           id="contact-hero-heading"

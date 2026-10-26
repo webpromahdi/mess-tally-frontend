@@ -97,7 +97,7 @@ Before initiating work on any feature or screen:
   - [x] Zero-tolerance horizontal overflow containment verified across 320px and 390px viewports
 - [x] Mobile ergonomics & zero-overflow audit across all public routes (320px & 390px viewports, touch targets ≥ 44px)
 - [x] Main landing home page & hero section with value proposition (`/` in `src/app/(marketing-pages)/page.tsx`) — **COMPLETED**
-  - [x] Hero section with eyebrow badge, headline, CTA group, social trust avatars, and hero dashboard visual asset ([src/components/marketing/landing-hero.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-hero.tsx))
+  - [x] Hero section recreated to closely match reference design: eyebrow badge, hand-drawn golden curve underline under 'together.', primary 'Get Started' and secondary 'See How It Works' play CTAs, trust badge, and high-fidelity mess dashboard visual asset ([src/components/marketing/landing-hero.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-hero.tsx))
   - [x] Core feature highlights 5-item strip with restrained brand backgrounds ([src/components/marketing/landing-feature-strip.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-feature-strip.tsx))
   - [x] Our Story section with handwritten charts to digital dashboard asset & About CTA ([src/components/marketing/landing-story.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-story.tsx))
   - [x] How It Works 3-step workflow with connected direction arrows ([src/components/marketing/landing-how-it-works.tsx](file:///d:/Projects/mess-tally-frontend/src/components/marketing/landing-how-it-works.tsx))

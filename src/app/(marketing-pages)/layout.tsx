@@ -7,7 +7,7 @@ export default function MarketingPagesLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col w-full max-w-full overflow-x-hidden bg-white dark:bg-background text-foreground antialiased selection:bg-brand-accent/30 selection:text-brand-accent-foreground">
+    <div className="relative flex min-h-screen flex-col w-full max-w-full overflow-x-hidden bg-background text-foreground antialiased selection:bg-brand-accent/30 selection:text-brand-accent-foreground">
       {/* Accessible skip link for keyboard users */}
       <a
         href="#main-content"
@@ -16,13 +16,13 @@ export default function MarketingPagesLayout({
         Skip to main content
       </a>
 
-      {/* Shared Responsive Marketing Navigation Bar */}
+      {/* Shared Responsive Marketing Navigation Bar (Floats seamlessly over page content) */}
       <MarketingHeader />
 
       {/* Main Content Landmark with Zero-Tolerance Horizontal Overflow Containment */}
       <main
         id="main-content"
-        className="flex-1 w-full min-w-0 max-w-full overflow-x-hidden -mt-16 sm:-mt-20 pt-16 sm:pt-20"
+        className="flex-1 w-full min-w-0 max-w-full overflow-x-hidden"
       >
         {children}
       </main>

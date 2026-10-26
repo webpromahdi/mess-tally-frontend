@@ -13,7 +13,7 @@ export default function TermsOfServicePage() {
   const lastUpdated = "October 2026";
 
   return (
-    <div className="w-full bg-white dark:bg-background py-12 sm:py-16 lg:py-20">
+    <div className="w-full bg-white dark:bg-background pt-28 sm:pt-32 lg:pt-36 pb-16 sm:pb-20">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-10">
         {/* Navigation Breadcrumb */}
         <div>

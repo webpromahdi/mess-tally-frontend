@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Play, Shield } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -8,99 +8,146 @@ export function LandingHero() {
     <section
       id="hero"
       aria-labelledby="hero-heading"
-      className="relative w-full max-w-full overflow-hidden [contain:paint] bg-white dark:bg-background pt-8 sm:pt-12 md:pt-16 pb-14 sm:pb-20 lg:pb-24 border-b border-black/[0.04] dark:border-white/[0.05]"
+      className="relative w-full max-w-full overflow-hidden [contain:paint] bg-[#FAF8F5] dark:bg-background border-b border-black/[0.04] dark:border-white/[0.05] min-h-[580px] lg:min-h-[620px] xl:min-h-[680px] flex items-center"
     >
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 xl:gap-12 items-center">
-          {/* Left Column: Value Proposition, Headline, Actions & Trust Proof */}
-          <div className="lg:col-span-6 space-y-6 sm:space-y-7 text-left">
-            {/* Eyebrow Pill Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs sm:text-xs font-bold tracking-wider uppercase bg-[#F3EBF5] text-[#3A0F34] dark:bg-purple-950/60 dark:text-purple-200 border border-[#E8D6EB] dark:border-purple-800/40 shadow-2xs">
-              <span className="size-1.5 rounded-full bg-[#3A0F34] dark:bg-purple-300" />
-              <span>Shared Meals. Clear Records. Together.</span>
-            </div>
+      {/* Subtle warm ambient glow behind right daylight scene */}
+      <div
+        className="pointer-events-none absolute -top-16 right-0 -z-10 h-[500px] w-[500px] sm:w-[680px] sm:h-[680px] rounded-full bg-gradient-to-bl from-amber-100/30 via-orange-50/15 to-transparent blur-3xl"
+        aria-hidden="true"
+      />
 
-            {/* Main Headline */}
-            <h1
-              id="hero-heading"
-              className="text-4xl sm:text-5xl lg:text-[54px] xl:text-6xl font-extrabold tracking-tight text-foreground leading-[1.12]"
-            >
-              Manage your mess life{" "}
-              <span className="text-[#3A0F34] dark:text-[#EAAA00]">
-                together.
-              </span>
-            </h1>
+      {/* Full-bleed ambient visual blend for desktop (matches reference design) */}
+      <div
+        className="hidden lg:flex absolute right-0 bottom-0 top-0 w-[55%] xl:w-[58%] 2xl:w-[62%] items-end justify-end pointer-events-none select-none overflow-hidden"
+        aria-hidden="true"
+      >
+        {/* Seamless left-to-right gradient mask dissolving image into warm off-white canvas */}
+        <div className="relative w-full h-full flex items-end justify-end [mask-image:linear-gradient(to_right,transparent_0%,rgba(0,0,0,0.12)_14%,rgba(0,0,0,0.65)_30%,black_48%,black_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,rgba(0,0,0,0.12)_14%,rgba(0,0,0,0.65)_30%,black_48%,black_100%)]">
+          <Image
+            src="/images/hero-messtally-dashboard.png"
+            alt="MessTally shared living dashboard on laptop and mobile showing meal counts, expenses, and member balances"
+            width={1774}
+            height={887}
+            priority
+            sizes="(max-width: 1024px) 100vw, 60vw"
+            className="w-full h-auto max-h-full object-contain object-bottom-right"
+          />
+        </div>
+      </div>
 
-            {/* Concise Product Description */}
-            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl">
-              Track meals, share expenses, manage utility bills and settle
-              balances — all in one place. Built for students and young
-              professionals living together in Bangladesh.
-            </p>
-
-            {/* CTA Button Group */}
-            <div className="flex flex-wrap items-center gap-3.5 pt-1">
-              <Button
-                asChild
-                size="lg"
-                className="rounded-full px-6 sm:px-7 py-3 sm:py-3.5 h-auto text-sm sm:text-base font-semibold bg-[#3A0F34] hover:bg-[#2D0B29] text-white dark:bg-[#EAAA00] dark:text-[#3A0F34] dark:hover:bg-[#d89c00] shadow-md hover:shadow-lg transition-all group"
-              >
-                <Link href="/register" id="hero-cta-get-started">
-                  <span>Get Started</span>
-                  <ArrowRight
-                    className="size-4 transition-transform group-hover:translate-x-1"
-                    aria-hidden="true"
-                  />
-                </Link>
-              </Button>
-
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="rounded-full px-6 sm:px-7 py-3 sm:py-3.5 h-auto text-sm sm:text-base font-semibold bg-white dark:bg-card hover:bg-neutral-50 dark:hover:bg-neutral-800 text-foreground border-border/80 shadow-2xs transition-all"
-              >
-                <Link href="/features" id="hero-cta-learn-more">
-                  Learn More
-                </Link>
-              </Button>
-            </div>
-
-            {/* Real Social Trust & Audience Indicator */}
-            <div className="flex items-center gap-3 pt-2">
-              <div aria-hidden="true" className="flex items-center -space-x-2">
-                {/* Avatar 1: Tanvir */}
-                <span className="inline-flex size-8 sm:size-9 items-center justify-center rounded-full ring-2 ring-white dark:ring-background bg-gradient-to-tr from-amber-500 to-orange-400 text-white font-bold text-xs shadow-xs">
-                  TB
-                </span>
-                {/* Avatar 2: Rafi */}
-                <span className="inline-flex size-8 sm:size-9 items-center justify-center rounded-full ring-2 ring-white dark:ring-background bg-gradient-to-tr from-purple-600 to-pink-500 text-white font-bold text-xs shadow-xs">
-                  RM
-                </span>
-                {/* Avatar 3: Sakib */}
-                <span className="inline-flex size-8 sm:size-9 items-center justify-center rounded-full ring-2 ring-white dark:ring-background bg-gradient-to-tr from-emerald-500 to-teal-400 text-white font-bold text-xs shadow-xs">
-                  SK
-                </span>
-              </div>
-              <p className="text-xs sm:text-sm font-medium text-muted-foreground">
-                Built for students and flatmates
-              </p>
-            </div>
+      {/* Main Content Container */}
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full pt-24 sm:pt-28 lg:pt-32 pb-10 sm:pb-14 lg:pb-16">
+        <div className="w-full lg:w-[52%] xl:w-[48%] flex flex-col items-start text-left space-y-6 sm:space-y-7">
+          {/* Eyebrow Pill Badge */}
+          <div className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 bg-[#FAF4F8] dark:bg-aubergine-900/60 border border-[#E6D8E4] dark:border-aubergine-800/50 shadow-2xs">
+            <span
+              className="size-2 rounded-full bg-[#EAAA00] shrink-0"
+              aria-hidden="true"
+            />
+            <span className="text-[11px] sm:text-xs font-bold tracking-wider uppercase text-[#3A0F34] dark:text-[#EAAA00]">
+              Shared meals. Clear records. Together.
+            </span>
           </div>
 
-          {/* Right Column: Hero Dashboard Preview Visual */}
-          <div className="lg:col-span-6 w-full">
-            <div className="relative mx-auto w-full max-w-xl lg:max-w-none rounded-2xl sm:rounded-3xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_20px_50px_rgba(58,15,52,0.12)] dark:shadow-none overflow-hidden bg-white dark:bg-card transition-transform duration-300 hover:scale-[1.01]">
-              <Image
-                src="https://i.ibb.co.com/Hp9CYgFB/Mess-Tally-Expense-Dashboard-1.png"
-                alt="MessTally Finance Dashboard preview showing meals, monthly expenses, utility fund and individual member balances"
-                width={1448}
-                height={1086}
-                priority
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-                className="w-full h-auto object-cover select-none"
-              />
-            </div>
+          {/* Main Headline */}
+          <h1
+            id="hero-heading"
+            className="text-[32px] sm:text-4xl md:text-5xl lg:text-[54px] xl:text-[60px] font-extrabold tracking-tight text-[#3A0F34] dark:text-foreground leading-[1.15] sm:leading-[1.12]"
+          >
+            Manage your
+            <span className="block mt-1 sm:mt-1.5 whitespace-normal lg:whitespace-nowrap">
+              mess life{" "}
+              <span className="relative inline-block text-[#EAAA00]">
+                together.
+                {/* Warm golden hand-drawn curve underline matching reference design */}
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 240 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="absolute -bottom-2 sm:-bottom-2.5 left-0 w-full h-3 sm:h-3.5 text-[#EAAA00] select-none pointer-events-none"
+                  preserveAspectRatio="none"
+                >
+                  <path
+                    d="M3 13C45 4.5 135 4 237 11.5"
+                    stroke="currentColor"
+                    strokeWidth="4.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </span>
+            </span>
+          </h1>
+
+          {/* Subtitle Description */}
+          <p className="text-base sm:text-lg text-[#4B5563] dark:text-muted-foreground leading-relaxed max-w-[480px]">
+            MessTally helps you track meals, bazar, bills and settlements in one
+            place, so everyone in your mess stays on the same page.
+          </p>
+
+          {/* CTA Button Group */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-4 pt-1 w-full sm:w-auto">
+            {/* Primary CTA: Get Started */}
+            <Button
+              asChild
+              size="lg"
+              id="hero-cta-get-started"
+              className="h-auto min-h-[48px] sm:min-h-[52px] rounded-xl px-7 sm:px-8 py-3.5 text-base font-bold bg-[#EAAA00] hover:bg-[#D99600] active:scale-[0.98] text-[#3A0F34] shadow-md shadow-amber-500/15 hover:shadow-lg hover:shadow-amber-500/25 transition-all group justify-center border-0"
+            >
+              <Link href="/register" className="inline-flex items-center gap-2">
+                <span>Get Started</span>
+                <ArrowRight
+                  className="size-4.5 transition-transform group-hover:translate-x-1"
+                  aria-hidden="true"
+                />
+              </Link>
+            </Button>
+
+            {/* Secondary CTA: See How It Works */}
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              id="hero-cta-how-it-works"
+              className="h-auto min-h-[48px] sm:min-h-[52px] rounded-xl px-6 sm:px-7 py-3.5 text-base font-semibold bg-white dark:bg-card hover:bg-neutral-50/90 dark:hover:bg-neutral-800 active:scale-[0.98] text-[#3A0F34] dark:text-foreground border border-neutral-200/90 dark:border-neutral-700/80 shadow-xs hover:shadow-md transition-all justify-center group"
+            >
+              <Link
+                href="#how-it-works"
+                className="inline-flex items-center gap-2.5"
+              >
+                <span
+                  className="flex size-7 items-center justify-center rounded-full bg-[#3A0F34] text-white shrink-0 shadow-2xs group-hover:scale-105 transition-transform"
+                  aria-hidden="true"
+                >
+                  <Play className="size-3 fill-white text-white ml-0.5" />
+                </span>
+                <span>See How It Works</span>
+              </Link>
+            </Button>
+          </div>
+
+          {/* Micro-Trust Assurance */}
+          <div className="flex items-center gap-2 pt-1 text-xs sm:text-[13px] text-neutral-500 dark:text-neutral-400">
+            <Shield
+              className="size-4 shrink-0 text-neutral-400 dark:text-neutral-500"
+              aria-hidden="true"
+            />
+            <span>Free to start. No credit card needed.</span>
+          </div>
+        </div>
+
+        {/* Mobile / Tablet visual display (graceful stacking below 1024px) */}
+        <div className="lg:hidden w-full pt-8 pb-2">
+          <div className="relative w-full max-w-xl mx-auto [mask-image:linear-gradient(to_bottom,black_82%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_82%,transparent_100%)]">
+            <Image
+              src="/images/hero-messtally-dashboard.png"
+              alt="MessTally shared living dashboard on laptop and mobile showing meal counts, expenses, and member balances"
+              width={1774}
+              height={887}
+              priority
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 600px"
+              className="w-full h-auto object-contain select-none"
+            />
           </div>
         </div>
       </div>

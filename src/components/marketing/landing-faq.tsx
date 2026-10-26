@@ -50,7 +50,7 @@ export function LandingFaq() {
     <section
       id="faq"
       aria-labelledby="faq-heading"
-      className="w-full max-w-full py-16 sm:py-20 lg:py-28 bg-white dark:bg-background border-b border-black/[0.04] dark:border-white/[0.06]"
+      className="w-full max-w-full py-16 sm:py-20 lg:py-28 bg-[#FAF8F5] dark:bg-background border-b border-black/[0.04] dark:border-white/[0.06] transition-colors"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
@@ -59,9 +59,14 @@ export function LandingFaq() {
              ========================================================================= */}
           <div className="lg:col-span-5 space-y-5 sm:space-y-6 text-left">
             {/* Pill Eyebrow */}
-            <div className="inline-flex items-center gap-2 rounded-full px-3.5 py-1 text-xs font-bold uppercase tracking-wider bg-[#F3EBF5] text-[#3A0F34] dark:bg-purple-950/60 dark:text-purple-200 border border-[#E8D6EB] dark:border-purple-800/40 shadow-2xs">
-              <span className="size-1.5 rounded-full bg-[#3A0F34] dark:bg-purple-300" />
-              <span>FAQ</span>
+            <div className="inline-flex items-center gap-2 rounded-full px-3.5 sm:px-4 py-1.5 bg-white/80 dark:bg-aubergine-900/50 border border-[#E4D9EB] dark:border-aubergine-800/60 shadow-2xs mb-1">
+              <span
+                className="size-2 rounded-full bg-[#EAAA00] shrink-0"
+                aria-hidden="true"
+              />
+              <span className="text-[11px] sm:text-xs font-bold tracking-wider uppercase text-[#3A0F34] dark:text-[#EAAA00]">
+                FAQ
+              </span>
             </div>
 
             {/* Heading */}

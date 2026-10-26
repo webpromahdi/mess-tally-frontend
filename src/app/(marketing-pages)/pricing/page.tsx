@@ -360,7 +360,7 @@ export default function PricingPage() {
       <section
         id="pricing-hero"
         aria-labelledby="pricing-hero-heading"
-        className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 lg:pt-20 pb-8 text-center overflow-hidden"
+        className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-28 sm:pt-32 lg:pt-36 pb-8 text-center overflow-hidden"
       >
         {/* Soft background ambient gradient (WOW Agency aesthetic) */}
         <div
