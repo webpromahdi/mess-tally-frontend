@@ -5,7 +5,6 @@ import {
   LandingFeatureStrip,
   LandingHero,
   LandingHowItWorks,
-  LandingKeyFeatures,
   LandingStory,
 } from "@/components/marketing";
 
@@ -31,7 +30,6 @@ export default function HomePage() {
       <LandingFeatureStrip />
       <LandingStory />
       <LandingHowItWorks />
-      <LandingKeyFeatures />
       <LandingFaq />
       <LandingCta />
     </div>

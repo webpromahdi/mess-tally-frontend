@@ -7,7 +7,7 @@ export function LandingCta() {
     <section
       id="cta"
       aria-labelledby="cta-heading"
-      className="w-full max-w-full overflow-hidden [contain:paint] py-12 sm:py-16 lg:py-20 bg-white dark:bg-background"
+      className="w-full max-w-full overflow-hidden [contain:paint] py-12 sm:py-16 lg:py-20 bg-[#FAF8F5] dark:bg-background border-b border-black/[0.04] dark:border-white/[0.06] transition-colors"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Main Banner Card (proportions & gradient matched to reference) */}

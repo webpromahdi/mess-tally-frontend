@@ -22,7 +22,7 @@ export default function AboutUsPage() {
       <section
         id="about-hero"
         aria-labelledby="about-hero-heading"
-        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-20"
+        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-28 sm:pt-32 lg:pt-36 pb-10 sm:pb-14 lg:pb-20"
       >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-16 items-center">
           {/* Left Column: Narrative */}
@@ -83,8 +83,8 @@ export default function AboutUsPage() {
 
       {/* =========================================================================
           SECTION 2: OUR STORY
-          Left: Eyebrow, headline, and concise origin narrative (no em dash)
-          Right: Paper chart to digital dashboard graphic
+          Left: Paper chart to digital dashboard graphic
+          Right: Eyebrow, headline, and concise origin narrative (no em dash)
          ========================================================================= */}
       <section
         id="our-story"
@@ -92,8 +92,21 @@ export default function AboutUsPage() {
         className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-20 scroll-mt-20"
       >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-16 items-center">
-          {/* Left Column: Story Content */}
-          <div className="lg:col-span-6 space-y-5 sm:space-y-6">
+          {/* Left Column (Desktop): Story Graphic */}
+          <div className="lg:col-span-6 order-2 lg:order-1">
+            <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl sm:rounded-3xl shadow-sm border border-border/40 bg-muted">
+              <Image
+                src="https://i.ibb.co.com/b5C2rfFD/Paper-meal-chart-to-digital-dashboard.png"
+                alt="From manual paper meal chart to MessTally digital dashboard"
+                fill
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                className="object-cover object-center select-none"
+              />
+            </div>
+          </div>
+
+          {/* Right Column (Desktop): Story Content */}
+          <div className="lg:col-span-6 space-y-5 sm:space-y-6 order-1 lg:order-2">
             <p className="text-xs sm:text-sm font-bold uppercase tracking-wider text-primary dark:text-brand-accent">
               OUR STORY
             </p>
@@ -119,19 +132,6 @@ export default function AboutUsPage() {
                 So we built MessTally, a simple, transparent, and easy-to-use
                 platform to make shared living easier for everyone.
               </p>
-            </div>
-          </div>
-
-          {/* Right Column: Story Graphic */}
-          <div className="lg:col-span-6">
-            <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl sm:rounded-3xl shadow-sm border border-border/40 bg-muted">
-              <Image
-                src="https://i.ibb.co.com/b5C2rfFD/Paper-meal-chart-to-digital-dashboard.png"
-                alt="From manual paper meal chart to MessTally digital dashboard"
-                fill
-                sizes="(min-width: 1024px) 50vw, 100vw"
-                className="object-cover object-center select-none"
-              />
             </div>
           </div>
         </div>
