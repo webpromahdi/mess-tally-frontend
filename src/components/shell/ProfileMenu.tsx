@@ -1,6 +1,7 @@
 "use client";
 
 import { Ellipsis, LogOut, Settings, UserRound } from "lucide-react";
+import { useRouter } from "next/navigation";
 import {
   SimpleDropdown,
   SimpleMenuItem,
@@ -18,6 +19,7 @@ export function ProfileMenu({
   user: ShellUser;
   collapsed?: boolean;
 }) {
+  const router = useRouter();
   return (
     <SimpleDropdown
       side="top"
@@ -59,7 +61,12 @@ export function ProfileMenu({
             <p className="text-caption text-ink-subtle">{user.roleLabel}</p>
           </div>
           <SimpleMenuSeparator />
-          <SimpleMenuItem onClick={close}>
+          <SimpleMenuItem
+            onClick={() => {
+              close();
+              router.push("/dashboard/profile");
+            }}
+          >
             <UserRound />
             Profile
           </SimpleMenuItem>

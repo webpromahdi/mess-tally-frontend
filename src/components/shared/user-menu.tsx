@@ -193,14 +193,14 @@ export function UserMenu({
 
         {/* Profile Item */}
         <DropdownMenuItem
-          onSelect={(e) => {
-            e.preventDefault();
-            handlePendingFeature("Profile management");
-          }}
+          asChild
           className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium text-foreground transition-colors focus:bg-accent focus:text-accent-foreground group"
         >
           <UserIcon className="size-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
-          <span>Profile</span>
+          <Link href="/dashboard/profile" className="flex items-center gap-2.5 w-full">
+            <UserIcon className="size-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
+            <span>Profile</span>
+          </Link>
         </DropdownMenuItem>
 
         {/* Settings Item */}
