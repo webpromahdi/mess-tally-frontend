@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useMediaQuery } from "@/hooks";
+import { getApiMessage } from "@/lib/apiError";
 import { formatDayLong } from "@/lib/dates";
 import { formatBDT } from "@/lib/format";
 import { entryKey } from "@/lib/meals";
@@ -30,6 +31,9 @@ interface EditorTarget {
 
 export interface MealsViewProps {
   data: MealsGridData;
+  onSaveCell?: (input: UpsertMealInput) => Promise<void>;
+  onClearCell?: (entryId: string | null) => Promise<void>;
+  onSaveBulk?: (inputs: UpsertMealInput[]) => Promise<void>;
   initialEditor?: EditorTarget;
   initialEditorValues?: Partial<EditorValues>;
   initialDayDate?: string;
@@ -41,6 +45,9 @@ export interface MealsViewProps {
 
 export function MealsView({
   data,
+  onSaveCell,
+  onClearCell,
+  onSaveBulk,
   initialEditor,
   initialEditorValues,
   initialDayDate,
@@ -58,12 +65,12 @@ export function MealsView({
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
   const [dayDate, setDayDate] = useState<string | null>(initialDayDate ?? null);
   const [toast, setToast] = useState<string | null>(initialToast ?? null);
-  const [failedKey, _setFailedKey] = useState<string | null>(
+  const [failedKey, setFailedKey] = useState<string | null>(
     initialFailedKey ?? null,
   );
-  const saving = useRef<ReadonlySet<string>>(new Set()).current;
+  const [saving, setSaving] = useState<ReadonlySet<string>>(new Set());
   const firstOpen = useRef(true);
-  const canEdit = !!month && !month.isLocked;
+  const canEdit = !!month && !month.isLocked && data.viewer.isManager;
 
   useEffect(() => {
     if (!editor || !desktop) {
@@ -86,25 +93,77 @@ export function MealsView({
   }, []);
   const closeDay = useCallback(() => setDayDate(null), []);
 
-  const handleSaveCell = useCallback(
-    (_input: UpsertMealInput) => {
-      closeEditor();
-      setToast("Saved meal entry");
+  const runSave = useCallback(
+    async (key: string, action: () => Promise<void>, success: string) => {
+      setSaving((prev) => new Set(prev).add(key));
+      setFailedKey(null);
+      try {
+        await action();
+        setToast(success);
+        return true;
+      } catch (error) {
+        setFailedKey(key);
+        setToast(
+          getApiMessage(error, "Couldn't save this meal entry. Try again."),
+        );
+        return false;
+      } finally {
+        setSaving((prev) => {
+          const next = new Set(prev);
+          next.delete(key);
+          return next;
+        });
+      }
     },
-    [closeEditor],
+    [],
   );
 
-  const handleClearCell = useCallback(() => {
-    closeEditor();
-    setToast("Cleared day meals");
-  }, [closeEditor]);
+  const handleSaveCell = useCallback(
+    async (input: UpsertMealInput) => {
+      if (!onSaveCell) {
+        closeEditor();
+        return;
+      }
+      const saved = await runSave(
+        entryKey(input.memberId, input.date),
+        () => onSaveCell(input),
+        "Saved meal entry",
+      );
+      if (saved) closeEditor();
+    },
+    [closeEditor, onSaveCell, runSave],
+  );
+
+  const handleClearCell = useCallback(
+    async (entryId: string | null) => {
+      const key = editor ? entryKey(editor.memberId, editor.date) : "clear";
+      const cleared = await runSave(
+        key,
+        async () => {
+          if (entryId) await onClearCell?.(entryId);
+        },
+        entryId ? "Cleared day meals" : "Nothing to clear",
+      );
+      if (cleared) closeEditor();
+    },
+    [closeEditor, editor, onClearCell, runSave],
+  );
 
   const handleSaveBulk = useCallback(
-    (_inputs: UpsertMealInput[]) => {
-      closeDay();
-      setToast("Saved daily meal entries");
+    async (inputs: UpsertMealInput[]) => {
+      if (!onSaveBulk || inputs.length === 0) {
+        closeDay();
+        return;
+      }
+      const date = inputs[0]?.date ?? "";
+      const saved = await runSave(
+        `bulk|${date}`,
+        () => onSaveBulk(inputs),
+        "Saved daily meal entries",
+      );
+      if (saved) closeDay();
     },
-    [closeDay],
+    [closeDay, onSaveBulk, runSave],
   );
 
   const logDate = month
@@ -174,14 +233,17 @@ export function MealsView({
         autoFocus={desktop}
         size={desktop ? "md" : "lg"}
         onSave={handleSaveCell}
-        onClear={handleClearCell}
+        onClear={() => void handleClearCell(entry?.id ?? null)}
         onClose={closeEditor}
       />
     ) : null;
 
   return (
     <div className="flex flex-col gap-5 sm:gap-6">
-      <MealsHeader data={data} onLogDay={() => setDayDate(logDate)} />
+      <MealsHeader
+        data={data}
+        onLogDay={canEdit ? () => setDayDate(logDate) : undefined}
+      />
 
       {month.isLocked && (
         <Banner

@@ -1,4 +1,5 @@
 import type { MonthStatus, Plan, Role } from "./dashboard.types";
+import type { MemberStatus } from "./member.types";
 
 export interface MealsViewer {
   memberId: string;
@@ -87,4 +88,78 @@ export interface MealWarning {
 export interface MealValidationResult {
   errors: MealValidationError[];
   warnings: MealWarning[];
+}
+
+// ---------------------------------------------------------------------------
+// Raw API contract — GET/PUT/PATCH/POST/DELETE /api/v1/meals (API.md §24–28)
+// ---------------------------------------------------------------------------
+
+export interface MealTotalsDto {
+  breakfast: number;
+  lunch: number;
+  dinner: number;
+  guestMeals: number;
+  total: number;
+}
+
+export interface MealsMonthDto {
+  /** `null` when no month row exists yet (reads never create one). */
+  id: string | null;
+  /** `YYYY-MM`. */
+  name: string;
+  startDate: string;
+  endDate: string;
+  /** `null` when `exists` is false — no month row, so no status. */
+  status: MonthStatus | null;
+  exists: boolean;
+}
+
+export interface MealsGridDayDto {
+  date: string;
+  /** `null` = nothing logged; the dense grid still returns the day. */
+  entryId: string | null;
+  breakfast: number;
+  lunch: number;
+  dinner: number;
+  guestMeals: number;
+  total: number;
+  isLocked: boolean;
+}
+
+export interface MealsGridMemberDto {
+  memberId: string;
+  name: string;
+  avatarUrl: string | null;
+  /** Members with entries stay in the grid even after they leave. */
+  status: MemberStatus;
+  days: MealsGridDayDto[];
+  totals: MealTotalsDto;
+}
+
+export interface MealsResponseData {
+  month: MealsMonthDto;
+  days: string[];
+  members: MealsGridMemberDto[];
+  houseTotals: MealTotalsDto;
+}
+
+export interface MealEntryDto {
+  id: string;
+  messMonthId: string;
+  memberId: string;
+  date: string;
+  breakfast: number;
+  lunch: number;
+  dinner: number;
+  guestMeals: number;
+  total: number;
+  isLocked: boolean;
+  updatedById: string;
+  updatedAt: string;
+}
+
+/** `POST /meals/bulk` — one daily sheet; `date` is lifted out of the cells. */
+export interface BulkMealsInput {
+  date: string;
+  entries: Array<Omit<UpsertMealInput, "date">>;
 }
