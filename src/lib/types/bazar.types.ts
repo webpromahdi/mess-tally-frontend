@@ -1,8 +1,8 @@
-import type { DashboardMonthDto } from "./dashboard.types";
 import type {
   MealsMember,
   MealsMess,
   MealsMonth,
+  MealsMonthDto,
   MealsViewer,
 } from "./meal.types";
 
@@ -102,7 +102,8 @@ export interface BazarShopperTotalDto {
 }
 
 export interface BazarListResponseData {
-  month: DashboardMonthDto;
+  /** Reads never create a month, so `id`/`status` are null when no row exists. */
+  month: MealsMonthDto;
   entries: BazarEntryDto[];
   totals: {
     houseTotal: number;

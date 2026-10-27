@@ -1,10 +1,11 @@
 "use client";
 
-import { Paperclip, Trash2 } from "lucide-react";
+import { Paperclip, Trash2, Upload } from "lucide-react";
 import { type FormEvent, useState } from "react";
 import { Field, NativeSelect } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { getApiMessage } from "@/lib/apiError";
 import { NOTE_MAX, parseAmount, upsertBazar, validateBazar } from "@/lib/bazar";
 import { formatBDT } from "@/lib/format";
 import type {
@@ -15,6 +16,7 @@ import type {
   BazarMonth,
 } from "@/lib/types/bazar.types";
 import { cn } from "@/lib/utils";
+import { validateReceipt } from "@/validations";
 
 export interface BazarFormValues {
   memberId: string;
@@ -32,8 +34,13 @@ interface BazarEntryFormProps {
   /** Show validation immediately (static validation screen). */
   initialSubmitted?: boolean;
   autoFocus?: boolean;
-  onSave: (input: BazarInput) => void;
+  /** Receipt uploads are a PRO feature (API.md §33–34). */
+  isPro?: boolean;
+  onSave: (input: BazarInput) => Promise<boolean>;
   onDelete?: () => void;
+  /** Resolves with the new receipt URL, or `null` when none was returned. */
+  onUploadReceipt?: (file: File) => Promise<string | null>;
+  onRemoveReceipt?: () => Promise<void>;
   onClose: () => void;
 }
 
@@ -49,8 +56,11 @@ export function BazarEntryForm({
   initialValues,
   initialSubmitted,
   autoFocus,
+  isPro,
   onSave,
   onDelete,
+  onUploadReceipt,
+  onRemoveReceipt,
   onClose,
 }: BazarEntryFormProps) {
   const payers = data.members.filter(
@@ -69,6 +79,49 @@ export function BazarEntryForm({
     ...initialValues,
   });
   const [submitted, setSubmitted] = useState(!!initialSubmitted);
+  const [saving, setSaving] = useState(false);
+  const [receiptUrl, setReceiptUrl] = useState(entry?.receiptUrl ?? null);
+  const [receiptBusy, setReceiptBusy] = useState(false);
+  const [receiptError, setReceiptError] = useState<string | null>(null);
+
+  const canManageReceipt = Boolean(entry && isPro);
+  const locked = month.isLocked;
+
+  const uploadReceipt = async (file: File) => {
+    if (!onUploadReceipt) return;
+    const invalid = validateReceipt(file);
+    if (invalid) {
+      setReceiptError(invalid);
+      return;
+    }
+    setReceiptError(null);
+    setReceiptBusy(true);
+    try {
+      setReceiptUrl((await onUploadReceipt(file)) ?? null);
+    } catch (error) {
+      setReceiptError(
+        getApiMessage(error, "Couldn't upload the receipt. Try again."),
+      );
+    } finally {
+      setReceiptBusy(false);
+    }
+  };
+
+  const removeReceipt = async () => {
+    if (!onRemoveReceipt) return;
+    setReceiptError(null);
+    setReceiptBusy(true);
+    try {
+      await onRemoveReceipt();
+      setReceiptUrl(null);
+    } catch (error) {
+      setReceiptError(
+        getApiMessage(error, "Couldn't remove the receipt. Try again."),
+      );
+    } finally {
+      setReceiptBusy(false);
+    }
+  };
 
   const input: BazarInput = {
     id: entry?.id ?? null,
@@ -91,12 +144,16 @@ export function BazarEntryForm({
   const patch = (next: Partial<BazarFormValues>) =>
     setValues((v) => ({ ...v, ...next }));
 
-  const submit = (e: FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
-    if (errors.length === 0) {
-      onSave(input);
-      onClose();
+    if (errors.length !== 0) return;
+    setSaving(true);
+    try {
+      // Keep the sheet open on failure so the typed values aren't lost.
+      if (await onSave(input)) onClose();
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -161,9 +218,75 @@ export function BazarEntryForm({
         />
       </Field>
 
-      <div className="flex items-center gap-2 rounded-xl border border-dashed border-line px-3 py-2.5 text-body-sm text-ink-muted">
-        <Paperclip aria-hidden className="size-4 shrink-0" />
-        Receipt upload coming soon
+      <div className="flex flex-col gap-2 rounded-xl border border-dashed border-line px-3 py-2.5 text-body-sm text-ink-muted">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <Paperclip aria-hidden className="size-4 shrink-0" />
+          {receiptUrl ? (
+            <>
+              <a
+                href={receiptUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="font-medium text-ink underline underline-offset-2"
+              >
+                View receipt
+              </a>
+              {canManageReceipt && !locked && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="text-error"
+                  disabled={receiptBusy}
+                  onClick={() => void removeReceipt()}
+                >
+                  <Trash2 />
+                  Remove
+                </Button>
+              )}
+            </>
+          ) : (
+            <span>
+              {entry
+                ? isPro
+                  ? "No receipt attached yet."
+                  : "Receipt uploads are a PRO feature."
+                : "Save the entry, then attach a receipt."}
+            </span>
+          )}
+          {!receiptUrl && canManageReceipt && !locked && (
+            <label
+              className={cn(
+                "inline-flex min-h-8 cursor-pointer items-center gap-1.5 rounded-md border border-line bg-surface px-3 text-body-sm font-medium text-ink transition-colors hover:bg-silver-100",
+                receiptBusy && "pointer-events-none opacity-60",
+              )}
+            >
+              <Upload aria-hidden className="size-4" />
+              {receiptBusy ? "Uploading…" : "Attach receipt"}
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="sr-only"
+                disabled={receiptBusy}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  e.target.value = "";
+                  if (file) void uploadReceipt(file);
+                }}
+              />
+            </label>
+          )}
+        </div>
+        {receiptError ? (
+          <p role="alert" className="text-error">
+            {receiptError}
+          </p>
+        ) : (
+          canManageReceipt &&
+          !locked && (
+            <p className="text-caption">JPEG, PNG or WebP · up to 5 MB.</p>
+          )
+        )}
       </div>
 
       <p
@@ -206,8 +329,8 @@ export function BazarEntryForm({
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" variant="primary">
-            Save Bazar Entry
+          <Button type="submit" variant="primary" disabled={saving}>
+            {saving ? "Saving…" : "Save Bazar Entry"}
           </Button>
         </div>
       </div>

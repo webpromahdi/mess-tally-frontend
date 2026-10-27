@@ -62,7 +62,7 @@ Before initiating work on any feature or screen:
 | **03. Mess Onboarding & Setup** | 🟢 Done | 🟡 Partial | In Progress (create/join wired) | `/onboarding`, `/onboarding/create`, `/onboarding/join`, `/onboarding/pending` |
 | **04. Dashboard Overview** | 🟢 Done | 🟢 Done | Completed | `/dashboard` |
 | **05. Daily Meals Matrix** | 🟢 Done | 🟢 Done | Completed (manager flow + self-service API) | `/dashboard/meals` |
-| **06. Bazar / Grocery Expenses** | 🟡 Partial | 🟢 Done | API + hooks ready; UI placeholder | `/dashboard/bazar` |
+| **06. Bazar / Grocery Expenses** | 🟢 Done | 🟢 Done | Completed | `/dashboard/bazar` |
 | **07. Utility Bills & Advance Fund** | 🟡 Partial | 🟢 Done | API + hooks ready; UI placeholder | `/dashboard/utilities` |
 | **08. Monthly Summary & Settlement** | 🟡 Partial | 🟢 Done | API + hooks ready; UI placeholder | `/dashboard/summary` |
 | **09. Members & Roles Management** | 🟡 Partial | 🟢 Done | API + hooks ready; UI placeholder | `/dashboard/members` |
@@ -72,7 +72,7 @@ Before initiating work on any feature or screen:
 
 > **Dummy data removed:** Modules 05–09 no longer mount fixture data. Their designed components remain in the codebase for Phase 2, but every route renders an honest "not connected yet" state until the APIs are wired.
 >
-> **API layer status:** every endpoint in `API.md` that the client can call now has a typed function in `src/api/` and a TanStack Query hook in `src/hooks/` (see the per-module Phase 2 lists). Modules 06–09 and 11 still render placeholders — the data layer is ready, the screens are not wired yet.
+> **API layer status:** every endpoint in `API.md` that the client can call now has a typed function in `src/api/` and a TanStack Query hook in `src/hooks/` (see the per-module Phase 2 lists). Modules 07–09 and 11 still render placeholders — the data layer is ready, the screens are not wired yet.
 
 *Status Legend:* 🟢 Done · 🟡 In Progress · ⚪ Pending / Queued
 
@@ -248,12 +248,11 @@ Before initiating work on any feature or screen:
 - [x] "Add Bazar Entry" / Edit modal form with amount, date, shopper select, category chips, items list ([src/components/bazar/dialogs/bazar-entry-dialog.tsx](./src/components/bazar/dialogs/bazar-entry-dialog.tsx)).
 - [x] Category chips & search toolbar ([src/components/bazar/layout/bazar-filters.tsx](./src/components/bazar/layout/bazar-filters.tsx)).
 - [x] Delete confirmation dialog ([src/components/bazar/dialogs/delete-confirm.tsx](./src/components/bazar/dialogs/delete-confirm.tsx)).
-- [x] Pure domain calculations & helpers ([src/lib/bazar.ts](./src/lib/bazar.ts)) and static fixtures ([src/fixtures/bazar.fixtures.ts](./src/fixtures/bazar.fixtures.ts)).
-- [x] Interactive dev scenario switcher covering 11 visual states ([src/components/bazar/bazar-scenarios.tsx](./src/components/bazar/bazar-scenarios.tsx)).
+- [x] Pure domain calculations & helpers ([src/lib/bazar.ts](./src/lib/bazar.ts)). The static fixtures and the dev scenario switcher were removed when dummy data was dropped.
 
-#### Phase 2: Dynamic API Integration (A to Z) — **API LAYER COMPLETE, UI NOT WIRED**
-- [x] **6.1 Types:** `src/lib/types/bazar.types.ts` — designed view models kept, raw contract added (`BazarEntryDto`, `BazarListResponseData`, `BazarShopperTotalDto`, `CreateBazarRequest`, `UpdateBazarRequest`, `BazarListQuery`).
-- [ ] **6.2 Validations:** `src/validations/bazar.validation.ts` (`createBazarSchema`) still pending.
+#### Phase 2: Dynamic API Integration (A to Z) — **COMPLETED**
+- [x] **6.1 Types:** `src/lib/types/bazar.types.ts` — designed view models kept, raw contract added (`BazarEntryDto`, `BazarListResponseData`, `BazarShopperTotalDto`, `CreateBazarRequest`, `UpdateBazarRequest`, `BazarListQuery`). `BazarListResponseData.month` reuses `MealsMonthDto` because reads never create a month, so `id`/`status` can be `null`.
+- [x] **6.2 Validations:** `src/validations/bazar.validation.ts` — `bazarEntrySchema`, `updateBazarSchema`, plus `validateReceipt` (JPEG/PNG/WebP ≤ 5 MB) for the PRO upload path.
 - [x] **6.3 API Service:** `src/api/bazar.api.ts`:
   - `GET /bazar?month=&shopperId=&from=&to=` → entries plus house/per-shopper totals (`month.exists = false` when no row).
   - `POST /bazar` → log new expense.
@@ -261,7 +260,11 @@ Before initiating work on any feature or screen:
   - `DELETE /bazar/:id` → delete expense.
   - `POST /bazar/:id/receipt` / `DELETE /bazar/:id/receipt` → PRO receipt upload (multipart field `receipt`, ≤ 5 MB).
 - [x] **6.4 Hooks:** `src/hooks/bazar.hook.ts` (`useBazar`, `useCreateBazar`, `useUpdateBazar`, `useDeleteBazar`, `useUploadBazarReceipt`, `useDeleteBazarReceipt`) invalidating `bazar`, `dashboard` and `summary`.
-- [ ] **6.5 Form Integration:** TanStack Form with instant calculation of total amount and toast notifications.
+- [x] **6.5 Form Integration:** the designed form now saves through `bazar-page.tsx` — it keeps the sheet open while the request is in flight, closes only on success, and shows the API message inline in the view's `<Toast>` on failure. The payer select lists active members plus anyone who shopped this month (so a departed shopper keeps a name), and the "meal rate will become" preview still runs on the domain helpers.
+- [x] **6.6 Mapper:** `src/lib/mappers/bazar.mapper.ts` — `toBazarData()` joins `/bazar`, `/mess/members`, `/dashboard` (house meals, meal rate, pending count) and `GET /month` metadata into `BazarData`. The single design "Note" field maps to the API `title` (both 120 chars).
+- [x] **6.7 Receipts:** the form replaces the old "coming soon" placeholder with a real control — attach/replace for PRO, view for everyone, remove for PRO — disabled once the month is `CLOSED`.
+- [x] **6.8 Month state:** a month with no row renders "Open this month" for managers (wired to `useCreateMonth`), and a `CLOSED` month renders the read-only banner and hides every write action.
+- [x] **6.9 Edge states:** `BazarSkeleton` while loading, `ErrorState` with retry when the payload can't be built, and the shared PRO upgrade state on `402`.
 
 ---
 

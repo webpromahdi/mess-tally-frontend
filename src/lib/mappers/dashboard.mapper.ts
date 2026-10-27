@@ -2,7 +2,6 @@ import { formatDate, monthLabel } from "@/lib/dates";
 import type {
   AuthMeResponseData,
   DashboardData,
-  DashboardMonthDto,
   DashboardResponseData,
   MealBlock,
   MessInfo,
@@ -78,10 +77,17 @@ export function toMess(
 }
 
 export function toMonthInfo(
-  month: DashboardMonthDto,
+  month: {
+    name: string;
+    startDate: string;
+    endDate: string;
+    status: MonthInfo["status"] | null;
+    exists: boolean;
+  },
   meta?: MonthsResponseData["months"][number],
 ): MonthInfo | null {
-  if (!month.exists) return null;
+  // Reads never create a row; `exists: false` also means `status` is null.
+  if (!month.exists || !month.status) return null;
   return {
     key: month.name,
     label: monthLabel(month.name),

@@ -22,12 +22,15 @@ export function UtilityEntryDialog({
   data,
   onSave,
   onDelete,
+  onTogglePaid,
   onClose,
 }: {
   target: UtilityDialogTarget | null;
   data: UtilityData;
-  onSave: (input: UtilityInput) => void;
+  /** Resolves `true` on success, so the sheet stays open on failure. */
+  onSave: (input: UtilityInput) => Promise<boolean>;
   onDelete: (entry: UtilityEntry) => void;
+  onTogglePaid?: () => Promise<boolean>;
   onClose: () => void;
 }) {
   const desktop = useMediaQuery("(min-width: 768px)");
@@ -53,6 +56,7 @@ export function UtilityEntryDialog({
           autoFocus={desktop}
           onSave={onSave}
           onDelete={entry ? () => onDelete(entry) : undefined}
+          onTogglePaid={entry ? onTogglePaid : undefined}
           onClose={onClose}
         />
       )}

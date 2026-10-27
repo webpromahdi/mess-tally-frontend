@@ -20,14 +20,21 @@ export interface BazarDialogTarget {
 export function BazarEntryDialog({
   target,
   data,
+  isPro,
   onSave,
   onDelete,
+  onUploadReceipt,
+  onRemoveReceipt,
   onClose,
 }: {
   target: BazarDialogTarget | null;
   data: BazarData;
-  onSave: (input: BazarInput) => void;
+  isPro: boolean;
+  onSave: (input: BazarInput) => Promise<boolean>;
   onDelete: (entry: BazarEntry) => void;
+  /** Resolves with the new receipt URL, or `null` when none was returned. */
+  onUploadReceipt: (file: File) => Promise<string | null>;
+  onRemoveReceipt: () => Promise<void>;
   onClose: () => void;
 }) {
   const desktop = useMediaQuery("(min-width: 768px)");
@@ -51,8 +58,11 @@ export function BazarEntryDialog({
           initialValues={target.initialValues}
           initialSubmitted={target.initialSubmitted}
           autoFocus={desktop}
+          isPro={isPro}
           onSave={onSave}
           onDelete={entry ? () => onDelete(entry) : undefined}
+          onUploadReceipt={onUploadReceipt}
+          onRemoveReceipt={onRemoveReceipt}
           onClose={onClose}
         />
       )}

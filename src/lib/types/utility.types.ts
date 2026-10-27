@@ -1,8 +1,9 @@
-import type { DashboardMonthDto, FundBlock } from "./dashboard.types";
+import type { FundBlock } from "./dashboard.types";
 import type {
   MealsMember,
   MealsMess,
   MealsMonth,
+  MealsMonthDto,
   MealsViewer,
 } from "./meal.types";
 import type { MemberStatus } from "./member.types";
@@ -16,11 +17,14 @@ export type UtilityMember = MealsMember;
 export type UtilityKind = "DEPOSIT" | "BILL";
 
 export type UtilityCategory =
+  | "Rent"
   | "Electricity"
   | "Gas"
-  | "Internet"
   | "Water"
-  | "Maid"
+  | "Internet"
+  | "Cook salary"
+  | "Garbage / guard"
+  | "Subscription"
   | "Other";
 
 export interface UtilityEntry {
@@ -30,11 +34,12 @@ export interface UtilityEntry {
   memberId: string | null;
   /** Bill category, bills only. */
   category: UtilityCategory | null;
-  /** ISO date, YYYY-MM-DD. */
+  /** ISO date, YYYY-MM-DD. Bills use `dueDate` (falling back to `createdAt`). */
   date: string;
   amount: number;
   note: string;
-  /** Upload is deferred (PRD), always null for now. */
+  /** Deposits always count as paid; bills carry the API `isPaid` flag. */
+  isPaid: boolean;
   receiptUrl: string | null;
   isLocked: boolean;
 }
@@ -124,7 +129,7 @@ export interface UtilityBillDto {
 }
 
 export interface UtilityBillsResponseData {
-  month: DashboardMonthDto;
+  month: MealsMonthDto;
   bills: UtilityBillDto[];
   totals: {
     total: number;
@@ -170,7 +175,7 @@ export interface DeleteUtilityResponseData {
 }
 
 export interface UtilityFundResponseData {
-  month: DashboardMonthDto;
+  month: MealsMonthDto;
   totalDeposits: number;
   totalPaidBills: number;
   balance: number;
@@ -199,7 +204,7 @@ export interface FundDepositDto {
 }
 
 export interface FundDepositsResponseData {
-  month: DashboardMonthDto;
+  month: MealsMonthDto;
   deposits: FundDepositDto[];
   total: number;
   byMember: Array<{

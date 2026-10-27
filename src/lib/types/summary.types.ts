@@ -1,12 +1,12 @@
 import type {
   BalanceStatus,
-  DashboardMonthDto,
   FundBlock,
   MealBlock,
   MessInfo,
   MonthInfo,
   Viewer,
 } from "./dashboard.types";
+import type { MealsMonthDto } from "./meal.types";
 
 /** Shapes mirror the future `GET /api/v1/summary?month=YYYY-MM`. */
 export type SummaryViewer = Viewer;
@@ -75,7 +75,7 @@ export interface SummarySettlementDto {
 }
 
 export interface SummaryResponseData {
-  month: DashboardMonthDto;
+  month: MealsMonthDto;
   canSettle: boolean;
   totals: {
     totalMeals: number;

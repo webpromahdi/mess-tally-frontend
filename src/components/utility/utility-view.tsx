@@ -9,7 +9,7 @@ import {
   Wallet,
 } from "lucide-react";
 import type React from "react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   Banner,
   EmptyState,
@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useMediaQuery } from "@/hooks";
+import { getApiMessage } from "@/lib/apiError";
 import { formatBDT } from "@/lib/format";
 import type {
   UtilityData,
@@ -34,10 +35,8 @@ import {
   isFiltered,
   netOf,
   noFilter,
-  recompute,
   removeEntry,
   sortEntries,
-  upsertEntry,
 } from "@/lib/utility";
 import {
   UtilityDeleteConfirm,
@@ -57,106 +56,109 @@ import {
   LedgerTable,
 } from "./table";
 
-export const UTILITY_SAVE_ERROR = "Couldn’t save. Try again.";
-const LATENCY_MS = 450;
-
-export interface UtilityStateOptions {
-  /** Every save or delete fails and reverts. */
-  failSaves?: boolean;
-  initialToast?: string;
-  initialFailedId?: string;
-}
-
 export interface UtilityViewProps {
   data: UtilityData;
-  state?: UtilityStateOptions;
   initialFilter?: UtilityFilter;
   initialSort?: UtilitySort;
   initialDialog?: UtilityDialogTarget;
   initialDeleteId?: string;
   /** Replace the ledger card with an inline error (summary strip stays). */
   listError?: boolean;
+  /** Rejects on failure; the view shows the API message in a toast. */
+  onSave: (input: UtilityInput) => Promise<void>;
+  onDelete: (entry: UtilityEntry) => Promise<void>;
+  /** Bills only; deposits are always paid (API.md §38). */
+  onTogglePaid: (entry: UtilityEntry) => Promise<void>;
+  /** Manager action when the selected month has no row yet. */
+  onCreateMonth?: () => Promise<void>;
 }
 
 const defaultSort: UtilitySort = { key: "date", dir: "desc" };
 
-function restore(
-  data: UtilityData,
-  id: string,
-  previous: UtilityEntry | undefined,
-): UtilityData {
-  const rest = data.entries.filter((e) => e.id !== id);
-  return recompute({ ...data, entries: previous ? [...rest, previous] : rest });
-}
-
 export function UtilityView({
-  data: initial,
-  state,
+  data,
   initialFilter,
   initialSort,
   initialDialog,
   initialDeleteId,
   listError,
+  onSave,
+  onDelete,
+  onTogglePaid,
+  onCreateMonth,
 }: UtilityViewProps) {
-  const [data, setData] = useState(initial);
   const [saving, setSaving] = useState<ReadonlySet<string>>(new Set());
-  const [failedId, setFailedId] = useState<string | null>(
-    state?.initialFailedId ?? null,
-  );
-  const [toast, setToast] = useState<string | null>(
-    state?.initialToast ?? null,
-  );
-  const dataRef = useRef(data);
-  dataRef.current = data;
-  const counter = useRef(1);
-  const timers = useRef<number[]>([]);
+  const [failedId, setFailedId] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
 
-  useEffect(() => {
-    const pending = timers.current;
-    return () => {
-      pending.forEach((t) => {
-        window.clearTimeout(t);
-      });
-    };
-  }, []);
-
+  /** Runs one write, keeping the row marked while the request is in flight. */
   const runMutation = useCallback(
-    (id: string, apply: (d: UtilityData) => UtilityData) => {
-      const previous = dataRef.current.entries.find((e) => e.id === id);
-      setData(apply);
+    async (
+      key: string,
+      action: () => Promise<void>,
+      success?: string,
+    ): Promise<boolean> => {
+      setSaving((prev) => new Set(prev).add(key));
       setFailedId(null);
-      setToast(null);
-      setSaving((s) => new Set(s).add(id));
-      const t = window.setTimeout(() => {
-        setSaving((s) => {
-          const next = new Set(s);
-          next.delete(id);
+      try {
+        await action();
+        if (success) setToast(success);
+        return true;
+      } catch (error) {
+        setFailedId(key);
+        setToast(getApiMessage(error, "Couldn't save. Try again."));
+        return false;
+      } finally {
+        setSaving((prev) => {
+          const next = new Set(prev);
+          next.delete(key);
           return next;
         });
-        if (!state?.failSaves) return;
-        setData((d) => restore(d, id, previous));
-        setFailedId(id);
-        setToast(UTILITY_SAVE_ERROR);
-      }, LATENCY_MS);
-      timers.current.push(t);
+      }
     },
-    [state?.failSaves],
+    [],
   );
 
   const save = useCallback(
-    (input: UtilityInput) => {
-      const id = input.id ?? `ut_new_${counter.current++}`;
-      runMutation(id, (d) => upsertEntry(d, input, id));
-    },
-    [runMutation],
+    (input: UtilityInput) =>
+      runMutation(
+        input.id ?? "new",
+        () => onSave(input),
+        input.kind === "DEPOSIT"
+          ? input.id
+            ? "Deposit updated"
+            : "Deposit recorded"
+          : input.id
+            ? "Bill updated"
+            : "Bill added",
+      ),
+    [onSave, runMutation],
   );
 
   const remove = useCallback(
-    (id: string) => runMutation(id, (d) => removeEntry(d, id)),
-    [runMutation],
+    (entry: UtilityEntry) =>
+      runMutation(
+        entry.id,
+        () => onDelete(entry),
+        entry.kind === "DEPOSIT" ? "Deposit deleted" : "Bill deleted",
+      ),
+    [onDelete, runMutation],
   );
 
-  const dismissToast = useCallback(() => setToast(null), []);
+  const togglePaid = useCallback(
+    (entry: UtilityEntry) =>
+      runMutation(
+        entry.id,
+        () => onTogglePaid(entry),
+        entry.isPaid ? "Bill marked unpaid" : "Bill marked paid",
+      ),
+    [onTogglePaid, runMutation],
+  );
+
+  const openMonth = useCallback(() => {
+    if (!onCreateMonth) return;
+    void runMutation("month", onCreateMonth, "Month opened");
+  }, [onCreateMonth, runMutation]);
 
   const { month } = data;
   const desktop = useMediaQuery("(min-width: 768px)");
@@ -169,9 +171,16 @@ export function UtilityView({
     initialDialog ?? null,
   );
   const [deleting, setDeleting] = useState<UtilityEntry | null>(
-    () => initial.entries.find((e) => e.id === initialDeleteId) ?? null,
+    () => data.entries.find((e) => e.id === initialDeleteId) ?? null,
   );
-  const canEdit = !!month && !month.isLocked && data.viewer.isManager;
+
+  // Any active member may write bills; every deposit write is manager-only.
+  const canEdit = !!month && !month.isLocked;
+  const canEditEntry = useCallback(
+    (entry: UtilityEntry) =>
+      canEdit && (entry.kind === "BILL" || data.viewer.isManager),
+    [canEdit, data.viewer.isManager],
+  );
 
   const closeDialog = useCallback(() => setDialog(null), []);
   const closeDelete = useCallback(() => setDeleting(null), []);
@@ -224,10 +233,15 @@ export function UtilityView({
                 : `The utility fund appears here as soon as ${data.mess.managerFirstName} opens the month.`
             }
             actions={
-              manager && (
-                <Button variant="accent">
+              manager &&
+              onCreateMonth && (
+                <Button
+                  variant="accent"
+                  disabled={saving.has("month")}
+                  onClick={openMonth}
+                >
                   <CalendarPlus />
-                  Open a month
+                  {saving.has("month") ? "Opening…" : "Open this month"}
                 </Button>
               )
             }
@@ -271,10 +285,12 @@ export function UtilityView({
         actions={
           canEdit && (
             <div className="flex flex-wrap gap-2">
-              <Button variant="primary" onClick={openDeposit}>
-                <Plus />
-                Record Deposit
-              </Button>
+              {data.viewer.isManager && (
+                <Button variant="primary" onClick={openDeposit}>
+                  <Plus />
+                  Record Deposit
+                </Button>
+              )}
               <Button variant="accent" onClick={openBill}>
                 <Receipt />
                 Add Bill
@@ -320,20 +336,21 @@ export function UtilityView({
               members={data.members}
               sort={sort}
               page={safePage}
-              canEdit={canEdit}
+              canEdit={canEditEntry}
               saving={saving}
               failedId={failedId}
               onSort={changeSort}
               onPage={setPage}
               onEdit={(entry) => setDialog({ entry })}
               onDelete={setDeleting}
+              onTogglePaid={(entry) => void togglePaid(entry)}
             />
           ) : (
             <>
               <LedgerCardList
                 entries={matches}
                 members={data.members}
-                canEdit={canEdit}
+                canEdit={canEditEntry}
                 saving={saving}
                 failedId={failedId}
                 onOpen={(entry) => setDialog({ entry })}
@@ -355,9 +372,17 @@ export function UtilityView({
     );
   }
 
+  const dialogEntry = dialog?.entry
+    ? (data.entries.find((e) => e.id === dialog.entry?.id) ?? dialog.entry)
+    : undefined;
+
   return (
     <div className="flex flex-col gap-5 sm:gap-6">
-      <UtilityHeader data={data} onDeposit={openDeposit} onBill={openBill} />
+      <UtilityHeader
+        data={data}
+        onDeposit={data.viewer.isManager ? openDeposit : undefined}
+        onBill={openBill}
+      />
 
       {month.isLocked && (
         <Banner
@@ -381,13 +406,18 @@ export function UtilityView({
       <Card className="overflow-hidden gap-0">{listContent}</Card>
 
       <UtilityEntryDialog
-        target={dialog}
+        target={dialog ? { ...dialog, entry: dialogEntry } : null}
         data={data}
         onSave={save}
         onDelete={(entry) => {
           setDialog(null);
           setDeleting(entry);
         }}
+        onTogglePaid={
+          dialogEntry?.kind === "BILL" && canEditEntry(dialogEntry)
+            ? () => togglePaid(dialogEntry)
+            : undefined
+        }
         onClose={closeDialog}
       />
 
@@ -395,11 +425,11 @@ export function UtilityView({
         entry={deleting}
         title={deleting ? entryTitle(deleting, data.members) : ""}
         newBalance={deleting ? removeEntry(data, deleting.id).balance : 0}
-        onConfirm={() => deleting && remove(deleting.id)}
+        onConfirm={() => deleting && void remove(deleting)}
         onClose={closeDelete}
       />
 
-      {toast && <Toast message={toast} onDismiss={dismissToast} />}
+      {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
     </div>
   );
 }
