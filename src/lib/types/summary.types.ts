@@ -87,3 +87,6 @@ export interface SummaryResponseData {
   settlement: SummarySettlementDto[];
   isLocked: boolean;
 }
+
+/** `GET /summary/export?format=` — API.md §47. */
+export type SummaryExportFormat = "csv" | "json";

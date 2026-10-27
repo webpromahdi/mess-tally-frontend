@@ -9,6 +9,7 @@ import {
   userRegister,
   verifyEmail,
 } from "@/api";
+import { queryKeys } from "@/lib/queryKeys";
 import { useAuthStore } from "@/store";
 
 /**
@@ -27,7 +28,7 @@ export function useLogin() {
   return useMutation({
     mutationFn: userLogin,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.auth.me });
     },
   });
 }
@@ -44,7 +45,7 @@ export function useVerifyEmail() {
     mutationFn: verifyEmail,
     onSuccess: (data) => {
       if (data?.data?.user) {
-        queryClient.setQueryData(["auth", "me"], {
+        queryClient.setQueryData(queryKeys.auth.me, {
           success: true,
           message: "User profile fetched successfully",
           data: data.data.user,
@@ -62,7 +63,7 @@ export function useResendOtp() {
 
 export function useGetMe() {
   return useQuery({
-    queryKey: ["auth", "me"],
+    queryKey: queryKeys.auth.me,
     queryFn: getMe,
     retry: false,
     staleTime: 5 * 60 * 1000,

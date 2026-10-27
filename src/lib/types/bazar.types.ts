@@ -1,3 +1,4 @@
+import type { DashboardMonthDto } from "./dashboard.types";
 import type {
   MealsMember,
   MealsMess,
@@ -70,4 +71,77 @@ export interface BazarFilter {
   /** ISO date or "" for open-ended. */
   from: string;
   to: string;
+}
+
+// ---------------------------------------------------------------------------
+// Raw API contract — /api/v1/bazar (API.md §29–34)
+// ---------------------------------------------------------------------------
+
+export interface BazarEntryDto {
+  id: string;
+  title: string;
+  items: string | null;
+  amount: number;
+  /** ISO date, YYYY-MM-DD. */
+  bazarDate: string;
+  shopperId: string;
+  shopperName: string;
+  addedById: string;
+  addedByName: string;
+  paidFromMessFund: boolean;
+  receiptUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BazarShopperTotalDto {
+  memberId: string;
+  name: string;
+  count: number;
+  amount: number;
+}
+
+export interface BazarListResponseData {
+  month: DashboardMonthDto;
+  entries: BazarEntryDto[];
+  totals: {
+    houseTotal: number;
+    byShopper: BazarShopperTotalDto[];
+  };
+}
+
+export interface BazarListQuery {
+  month?: string | null;
+  shopperId?: string;
+  /** ISO date inside the selected month. */
+  from?: string;
+  /** ISO date inside the selected month. */
+  to?: string;
+}
+
+export interface CreateBazarRequest {
+  title?: string;
+  items?: string | null;
+  amount: number;
+  /** ISO date, YYYY-MM-DD. */
+  bazarDate: string;
+  shopperId: string;
+}
+
+/** `PATCH /bazar/:id` — at least one field is required. */
+export interface UpdateBazarRequest {
+  title?: string;
+  items?: string | null;
+  amount?: number;
+  bazarDate?: string;
+  shopperId?: string;
+}
+
+export interface BazarEntryResponseData {
+  entry: BazarEntryDto;
+}
+
+export interface DeleteBazarResponseData {
+  id: string;
+  deleted: boolean;
 }
