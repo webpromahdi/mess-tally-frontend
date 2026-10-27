@@ -8,6 +8,7 @@
 export * from "./auth.hook";
 export * from "./dashboard.hook";
 export * from "./dashboard-view.hook";
+export * from "./meal.hook";
 export * from "./mess.hook";
 export * from "./month.hook";
 export * from "./subscription.hook";

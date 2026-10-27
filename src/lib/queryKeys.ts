@@ -21,6 +21,10 @@ export const queryKeys = {
     detail: (month: string | null) =>
       ["dashboard", month ?? "current"] as const,
   },
+  meals: {
+    all: ["meals"] as const,
+    detail: (month: string | null) => ["meals", month ?? "current"] as const,
+  },
   summary: {
     all: ["summary"] as const,
     detail: (month: string | null) => ["summary", month ?? "current"] as const,

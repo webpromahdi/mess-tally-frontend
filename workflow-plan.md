@@ -61,7 +61,7 @@ Before initiating work on any feature or screen:
 | **02. Authentication & Access** | 🟢 Done | 🟢 Done | Completed | `/login`, `/register`, `/forgot-password`, `/reset-password` |
 | **03. Mess Onboarding & Setup** | 🟢 Done | 🟡 Partial | In Progress (create/join wired) | `/onboarding`, `/onboarding/create`, `/onboarding/join`, `/onboarding/pending` |
 | **04. Dashboard Overview** | 🟢 Done | 🟢 Done | Completed | `/dashboard` |
-| **05. Daily Meals Matrix** | 🟡 Partial | ⚪ Pending | Not connected (placeholder) | `/dashboard/meals` |
+| **05. Daily Meals Matrix** | 🟢 Done | 🟢 Done | Completed (manager flow; self-service `PATCH /meals/me` deferred) | `/dashboard/meals` |
 | **06. Bazar / Grocery Expenses** | 🟡 Partial | ⚪ Pending | Not connected (placeholder) | `/dashboard/bazar` |
 | **07. Utility Bills & Advance Fund** | 🟡 Partial | ⚪ Pending | Not connected (placeholder) | `/dashboard/utilities` |
 | **08. Monthly Summary & Settlement** | 🟡 Partial | ⚪ Pending | Not connected (placeholder) | `/dashboard/summary` |
@@ -219,17 +219,17 @@ Before initiating work on any feature or screen:
 - [x] Pure domain calculations & matrix helpers ([src/lib/meals.ts](./src/lib/meals.ts)) and static fixtures ([src/fixtures/meal.fixtures.ts](./src/fixtures/meal.fixtures.ts)).
 - [x] Interactive dev scenario switcher with all 16 states ([src/components/meals/meals-scenarios.tsx](./src/components/meals/meals-scenarios.tsx)).
 
-#### Phase 2: Dynamic API Integration (A to Z)
-- [ ] **5.1 Types:** `src/lib/types/meal.types.ts` (`MealEntry`, `DailyMealSummary`, `BulkMealUpdateDto`).
-- [ ] **5.2 Validations:** `src/validations/meal.validation.ts` (`mealEntrySchema`, `bulkMealsSchema`).
-- [ ] **5.3 API Service:** `src/api/meal.api.ts`:
-  - `GET /meals?month=YYYY-MM` → fetch monthly meal matrix.
-  - `POST /meals` → single meal entry for a member.
-  - `POST /meals/bulk` → bulk save meal matrix (Manager only).
-  - `PATCH /meals/:id` → edit specific meal count.
-  - `DELETE /meals/:id` → remove meal record.
-- [ ] **5.4 Hooks:** `src/hooks/meal.hook.ts` with optimistic updates for single and bulk writes.
-- [ ] **5.5 Validation Rules:** Enforce cutoff time checks and block writes if the selected month is `CLOSED`.
+#### Phase 2: Dynamic API Integration (A to Z) — **COMPLETED (manager flow)**
+- [x] **5.1 Types:** `src/lib/types/meal.types.ts` — view model kept; raw contract added (`MealsResponseData`, `MealsMonthDto`, `MealsGridMemberDto`, `MealsGridDayDto`, `MealTotalsDto`, `MealEntryDto`, `BulkMealsInput`).
+- [x] **5.2 Validations:** `src/validations/meal.validation.ts` (`mealEntrySchema`, `bulkMealsInputSchema`), used as guards in `meals-page.tsx`.
+- [x] **5.3 API Service:** `src/api/meal.api.ts`:
+  - `GET /meals?month=YYYY-MM` → monthly meal matrix.
+  - `PUT /meals` → upsert one member-day cell (all four counts required).
+  - `POST /meals/bulk` → upsert one daily sheet.
+  - `DELETE /meals/:id` → remove a logged cell.
+  - `PATCH /meals/me` → **not wired** (member self-service, PRO, today-only, pre-cutoff); deferred.
+- [x] **5.4 Hooks:** `src/hooks/meal.hook.ts` — `useMeals` + upsert/bulk/delete mutations that invalidate `meals`, `dashboard`, `summary`. Invalidates + refetches instead of optimistic updates.
+- [x] **5.5 Validation Rules:** writes are blocked when `month.isLocked` (`CLOSED`) or the viewer is not a manager; the backend enforces the same via `assertManager`/`assertMonthWritable`. Cutoff only applies to the unwired member self-service path. Mapper: `src/lib/mappers/meals.mapper.ts`; page: `src/components/meals/meals-page.tsx`.
 
 ---
 

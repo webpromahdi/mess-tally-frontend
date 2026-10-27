@@ -113,3 +113,9 @@ export function formatDate(iso: string | null | undefined) {
   if (Number.isNaN(d.getTime())) return "";
   return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 }
+
+/** Local calendar date as `YYYY-MM-DD` (no string parsing, so no UTC drift). */
+export function todayIso() {
+  const now = new Date();
+  return toIso(now.getFullYear(), now.getMonth() + 1, now.getDate());
+}
