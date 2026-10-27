@@ -63,16 +63,16 @@ Before initiating work on any feature or screen:
 | **04. Dashboard Overview** | 🟢 Done | 🟢 Done | Completed | `/dashboard` |
 | **05. Daily Meals Matrix** | 🟢 Done | 🟢 Done | Completed (manager flow + self-service API) | `/dashboard/meals` |
 | **06. Bazar / Grocery Expenses** | 🟢 Done | 🟢 Done | Completed | `/dashboard/bazar` |
-| **07. Utility Bills & Advance Fund** | 🟡 Partial | 🟢 Done | API + hooks ready; UI placeholder | `/dashboard/utilities` |
-| **08. Monthly Summary & Settlement** | 🟡 Partial | 🟢 Done | API + hooks ready; UI placeholder | `/dashboard/summary` |
-| **09. Members & Roles Management** | 🟡 Partial | 🟢 Done | API + hooks ready; UI placeholder | `/dashboard/members` |
+| **07. Utility Bills & Advance Fund** | 🟢 Done | 🟢 Done | Completed | `/dashboard/utilities` |
+| **08. Monthly Summary & Settlement** | 🟢 Done | 🟢 Done | Completed | `/dashboard/summary` |
+| **09. Members & Roles Management** | 🟢 Done | 🟢 Done | Completed | `/dashboard/members` |
 | **10. Settings & Mess Profile** | 🟡 Partial | 🟡 Partial | In Progress (Shell + Placeholder) | `/dashboard/settings`, `/profile` |
 | **11. Subscription (bKash PRO)** | ⚪ Pending | 🟡 Partial | Queued (checkout + payments API ready) | `/dashboard/subscription` |
 | **12. AI Chatbot (TallyBot)** | ⚪ Pending | ⚪ Pending | Queued | Floating drawer / `/dashboard/ai-chat` |
 
 > **Dummy data removed:** Modules 05–09 no longer mount fixture data. Their designed components remain in the codebase for Phase 2, but every route renders an honest "not connected yet" state until the APIs are wired.
 >
-> **API layer status:** every endpoint in `API.md` that the client can call now has a typed function in `src/api/` and a TanStack Query hook in `src/hooks/` (see the per-module Phase 2 lists). Modules 07–09 and 11 still render placeholders — the data layer is ready, the screens are not wired yet.
+> **API layer status:** every endpoint in `API.md` that the client can call now has a typed function in `src/api/` and a TanStack Query hook in `src/hooks/`. Modules 07–10 are connected to their supported backend flows; subscription checkout remains the next UI phase.
 
 *Status Legend:* 🟢 Done · 🟡 In Progress · ⚪ Pending / Queued
 
@@ -285,9 +285,9 @@ Before initiating work on any feature or screen:
 - [x] Pure domain calculations & helpers ([src/lib/utility.ts](./src/lib/utility.ts)) and static fixtures ([src/fixtures/utility.fixtures.ts](./src/fixtures/utility.fixtures.ts)).
 - [x] Interactive dev scenario switcher covering 10 visual states ([src/components/utility/utility-scenarios.tsx](./src/components/utility/utility-scenarios.tsx)).
 
-#### Phase 2: Dynamic API Integration (A to Z) — **API LAYER COMPLETE, UI NOT WIRED**
+#### Phase 2: Dynamic API Integration (A to Z) — **COMPLETED**
 - [x] **7.1 Types:** `src/lib/types/utility.types.ts` — designed view models kept, raw contract added (`UtilityBillDto`, `UtilityBillCategory`, `UtilitySplitType`, `UtilityBillsResponseData`, `UtilityFundResponseData`, `FundDepositDto`, `FundDepositsResponseData`, create/update requests).
-- [ ] **7.2 Validations:** `src/validations/utility.validation.ts` (`createUtilitySchema`, `createDepositSchema`) still pending.
+- [x] **7.2 Validations:** `src/validations/utility.validation.ts` validates bill and deposit create/update payloads.
 - [x] **7.3 API Service:** `src/api/utility.api.ts`:
   - `GET /utilities?month=` & `POST /utilities` (Bills).
   - `PATCH /utilities/:id`, `PATCH /utilities/:id/paid` & `DELETE /utilities/:id`.
@@ -295,7 +295,7 @@ Before initiating work on any feature or screen:
   - `GET /utilities/replenishment-estimate?perMember=` (Manager only).
   - `GET /utilities/fund-deposits?month=`, `POST`, `PATCH` & `DELETE` (all writes Manager only).
 - [x] **7.4 Hooks:** `src/hooks/utility.hook.ts` (`useUtilityBills`, `useUtilityFund`, `useFundDeposits`, `useReplenishmentEstimate`, plus create/update/paid/delete mutations) invalidating `utilities`, `dashboard` and `summary`.
-- [ ] **7.5 Manager Gates:** Lock deposit creation controls for non-manager members.
+- [x] **7.5 Manager Gates:** Deposit creation and editing are manager-only.
 
 ---
 
@@ -316,7 +316,7 @@ Before initiating work on any feature or screen:
 - [x] Pure domain calculations (greedy settlement solver, meal rate derivation) ([src/lib/summary.ts](./src/lib/summary.ts)) and static fixtures ([src/fixtures/summary.fixtures.ts](./src/fixtures/summary.fixtures.ts)).
 - [x] Interactive dev scenario switcher covering 10 visual states ([src/components/summary/summary-scenarios.tsx](./src/components/summary/summary-scenarios.tsx)).
 
-#### Phase 2: Dynamic API Integration (A to Z) — **API LAYER COMPLETE, UI NOT WIRED**
+#### Phase 2: Dynamic API Integration (A to Z) — **COMPLETED**
 - [x] **8.1 Types:** `src/lib/types/summary.types.ts` — `SummaryResponseData` (§46), `SummaryMemberDto`, `SummarySettlementDto`, `SummaryExportFormat`.
 - [x] **8.2 API Service:** `src/api/summary.api.ts`:
   - `GET /summary?month=YYYY-MM` → full calculation report & transfers.
@@ -326,7 +326,7 @@ Before initiating work on any feature or screen:
   - `src/api/month.api.ts`: `POST /months`, `PATCH /months/:id/close`, `PATCH /months/:id/reopen`.
 - [x] **8.3 Hooks:** `src/hooks/summary.hook.ts` (`useSummary`, `useDownloadSummaryCsv`, `useDownloadSummaryStatement`); `src/hooks/month.hook.ts` (`useMonths`, `useCreateMonth`, `useCloseMonth`, `useReopenMonth`) invalidating months, meals, dashboard, summary, bazar and utilities.
 - [x] **8.4 File Download Utility:** `src/lib/download.ts` — `fetchFile()` over `apiClient.raw(..., { responseType: "blob" })` (honours `Content-Disposition`) and `saveFile()` for the browser download.
-- [ ] **8.5 Confirmation Guards:** Irreversible modal warning when closing a month.
+- [x] **8.5 Confirmation Guards:** Summary close/reopen actions use confirmation sheets.
 
 ---
 
@@ -348,7 +348,7 @@ Before initiating work on any feature or screen:
 - [x] Pure domain calculations & helpers ([src/lib/members.ts](./src/lib/members.ts)) and static fixtures ([src/fixtures/member.fixtures.ts](./src/fixtures/member.fixtures.ts)).
 - [x] Interactive dev scenario switcher covering 11 visual states ([src/components/members/members-scenarios.tsx](./src/components/members/members-scenarios.tsx)).
 
-#### Phase 2: Dynamic API Integration (A to Z) — **API LAYER COMPLETE, UI NOT WIRED**
+#### Phase 2: Dynamic API Integration (A to Z) — **COMPLETED**
 - [x] **9.1 Types:** `src/lib/types/member.types.ts` (`MessMember`, `MemberRole`, `MemberStatus`) plus `mess.types.ts` (`MessMemberDto`, `MessMembersResponseData`, `PendingMembersResponseData`, `RemoveMemberResponseData`, `LeaveMessResponseData`).
 - [x] **9.2 API Service:** membership routes live in `src/api/mess.api.ts` (there is no separate `member.api.ts`):
   - `GET /mess/members?status=` and `GET /mess/members/pending` (Manager).
@@ -358,7 +358,7 @@ Before initiating work on any feature or screen:
   - `DELETE /mess/members/:id` (Manager; fails when records reference it).
   - `POST /mess/leave` (owner must transfer ownership first).
 - [x] **9.3 Hooks:** `src/hooks/mess.hook.ts` (`useMessMembers`, `usePendingMembers`, `useApproveMember`, `useRejectMember`, `useTransferManager`, `useTransferOwner`, `useRemoveMember`, `useLeaveMess`) invalidating the members prefix, `/mess/my`, dashboard, summary and utilities.
-- [ ] **9.4 Optimistic UI:** Instant member status updates and toast feedback.
+- [x] **9.4 API mutation feedback:** Member actions call the backend mutations and refresh scoped queries with toast feedback.
 
 ---
 
@@ -375,9 +375,9 @@ Before initiating work on any feature or screen:
 - [ ] Notification Preferences (Email alerts for monthly closing, Bazar reminder).
 - [ ] Danger Zone (Leave mess, Disband mess if Owner).
 
-#### Phase 2: Dynamic API Integration (A to Z) — **PARTIAL (profile only)**
+#### Phase 2: Dynamic API Integration (A to Z) — **COMPLETED (supported profile flows)**
 - [x] **10.1 Types:** `src/lib/types/profile.types.ts` (`ProfileDto`, `UpdateProfileRequest`). There is no separate settings type because `API.md` exposes no mess-settings read/update route.
-- [ ] **10.2 Validations:** `src/validations/profile.validation.ts` (`updateProfileSchema`, `changePasswordSchema`) still pending — there is no change-password endpoint yet.
+- [x] **10.2 Validations:** `src/validations/profile.validation.ts` validates bio, phone, and address; change-password validation is intentionally absent because API.md exposes no change-password endpoint.
 - [x] **10.3 API Service:** `src/api/profile.api.ts`:
   - `PATCH /profile/update` (bio / phone / address; at least one field).
   - `PATCH /profile/image` (multipart field `profileImage`, JPEG/PNG/WebP ≤ 5 MB).

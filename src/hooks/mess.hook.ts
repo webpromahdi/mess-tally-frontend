@@ -34,10 +34,11 @@ export function useMessMembers(status: MembershipStatus = "ACTIVE") {
 }
 
 /** `GET /mess/members/pending` — manager-only join requests, oldest first. */
-export function usePendingMembers() {
+export function usePendingMembers(enabled = true) {
   return useQuery({
     queryKey: queryKeys.workspace.pendingMembers,
     queryFn: getPendingMembers,
+    enabled,
     staleTime: 60 * 1000,
   });
 }

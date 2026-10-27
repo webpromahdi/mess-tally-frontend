@@ -18,12 +18,24 @@ export interface UseMembersStateOptions {
   failSaves?: boolean;
   initialToast?: string;
   initialFailedId?: string;
+  actions?: {
+    approve: (id: string) => Promise<void>;
+    reject: (id: string) => Promise<void>;
+    changeManager: (id: string, isManager: boolean) => Promise<void>;
+    remove: (id: string) => Promise<void>;
+    leave: () => Promise<void>;
+  };
 }
 
 /** Local stand-in for optimistic mutation: apply now, sync later, revert on error. */
 export function useMembersState(
   initial: MembersData,
-  { failSaves, initialToast, initialFailedId }: UseMembersStateOptions = {},
+  {
+    failSaves,
+    initialToast,
+    initialFailedId,
+    actions,
+  }: UseMembersStateOptions = {},
 ) {
   const [data, setData] = useState(initial);
   const [saving, setSaving] = useState<ReadonlySet<string>>(new Set());
@@ -33,6 +45,9 @@ export function useMembersState(
   const [toast, setToast] = useState<string | null>(initialToast ?? null);
   const dataRef = useRef(data);
   dataRef.current = data;
+  useEffect(() => {
+    setData(initial);
+  }, [initial]);
   const timers = useRef<number[]>([]);
   useEffect(() => {
     const pending = timers.current;
@@ -69,31 +84,60 @@ export function useMembersState(
     [failSaves],
   );
 
-  const approve = useCallback(
-    (id: string) => run(id, (d) => approveMember(d, id), "Request approved"),
-    [run],
-  );
-  const reject = useCallback(
-    (id: string) => run(id, (d) => rejectMember(d, id), "Request rejected"),
-    [run],
-  );
-  const changeManager = useCallback(
-    (id: string, isManager: boolean) =>
-      run(id, (d) => setManager(d, id, isManager), "Role updated"),
-    [run],
-  );
-  const remove = useCallback(
-    (id: string) => run(id, (d) => removeMember(d, id), "Member removed"),
-    [run],
-  );
+  const approve = useCallback(async (id: string) => {
+    if (failSaves) return run(id, (d) => approveMember(d, id), "Request approved");
+    try {
+      await actions?.approve(id);
+      setToast("Request approved");
+    } catch {
+      setFailedId(id);
+      setToast(MEMBERS_SAVE_ERROR);
+    }
+  }, [actions, failSaves, run]);
+  const reject = useCallback(async (id: string) => {
+    if (failSaves) return run(id, (d) => rejectMember(d, id), "Request rejected");
+    try {
+      await actions?.reject(id);
+      setToast("Request rejected");
+    } catch {
+      setFailedId(id);
+      setToast(MEMBERS_SAVE_ERROR);
+    }
+  }, [actions, failSaves, run]);
+  const changeManager = useCallback(async (id: string, isManager: boolean) => {
+    if (failSaves) return run(id, (d) => setManager(d, id, isManager), "Role updated");
+    try {
+      await actions?.changeManager(id, isManager);
+      setToast("Role updated");
+    } catch {
+      setFailedId(id);
+      setToast(MEMBERS_SAVE_ERROR);
+    }
+  }, [actions, failSaves, run]);
+  const remove = useCallback(async (id: string) => {
+    if (failSaves) return run(id, (d) => removeMember(d, id), "Member removed");
+    try {
+      await actions?.remove(id);
+      setToast("Member removed");
+    } catch {
+      setFailedId(id);
+      setToast(MEMBERS_SAVE_ERROR);
+    }
+  }, [actions, failSaves, run]);
   const regenerate = useCallback(
     () => run("code", regenerateCode, "New room code generated"),
     [run],
   );
-  const leave = useCallback(
-    (id: string) => run(id, (d) => removeMember(d, id), "You left the mess"),
-    [run],
-  );
+  const leave = useCallback(async () => {
+    if (failSaves) return run("leave", (d) => removeMember(d, d.viewer.memberId), "You left the mess");
+    try {
+      await actions?.leave();
+      setToast("You left the mess");
+    } catch {
+      setFailedId("leave");
+      setToast(MEMBERS_SAVE_ERROR);
+    }
+  }, [actions, failSaves, run]);
   const notify = useCallback((message: string) => setToast(message), []);
   const dismissToast = useCallback(() => setToast(null), []);
 

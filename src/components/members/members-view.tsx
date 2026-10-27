@@ -274,7 +274,7 @@ export function MembersView({
         icon={<UserX className="size-5" />}
         title={`Leave ${mess.name}?`}
         confirmLabel="Leave mess"
-        onConfirm={() => s.leave(viewer.memberId)}
+        onConfirm={() => s.leave()}
         onClose={closeDialog}
       >
         <p>
