@@ -70,7 +70,12 @@ export function ProfileMenu({
             <UserRound />
             Profile
           </SimpleMenuItem>
-          <SimpleMenuItem onClick={close}>
+          <SimpleMenuItem
+            onClick={() => {
+              close();
+              router.push("/dashboard/settings");
+            }}
+          >
             <Settings />
             Settings
           </SimpleMenuItem>

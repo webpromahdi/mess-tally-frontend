@@ -4,6 +4,8 @@ export * from "./marketing";
 export * from "./meals";
 export * from "./members";
 export * from "./onboarding";
+export * from "./profile";
+export * from "./settings";
 export * from "./shared";
 export * from "./shell";
 export * from "./summary";

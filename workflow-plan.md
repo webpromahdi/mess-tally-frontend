@@ -66,7 +66,7 @@ Before initiating work on any feature or screen:
 | **07. Utility Bills & Advance Fund** | 🟢 Done | 🟢 Done | Completed | `/dashboard/utilities` |
 | **08. Monthly Summary & Settlement** | 🟢 Done | 🟢 Done | Completed | `/dashboard/summary` |
 | **09. Members & Roles Management** | 🟢 Done | 🟢 Done | Completed | `/dashboard/members` |
-| **10. Settings & Mess Profile** | 🟡 Partial | 🟡 Partial | In Progress (Shell + Placeholder) | `/dashboard/settings`, `/profile` |
+| **10. Settings & Mess Profile** | 🟢 Done | 🟢 Done | Completed (supported API flows) | `/dashboard/settings`, `/dashboard/profile` |
 | **11. Subscription (bKash PRO)** | ⚪ Pending | 🟡 Partial | Queued (checkout + payments API ready) | `/dashboard/subscription` |
 | **12. AI Chatbot (TallyBot)** | ⚪ Pending | ⚪ Pending | Queued | Floating drawer / `/dashboard/ai-chat` |
 
@@ -368,14 +368,14 @@ Before initiating work on any feature or screen:
   - [API.md § 17: Profile](../mess-tally-backend/API.md#profile)
 - **Target Routes:** `src/app/(root)/dashboard/settings/page.tsx`, `src/app/(root)/profile/page.tsx`.
 
-#### Phase 1: Screen Design (Dummy Data) — **IN PROGRESS (Shell + Placeholder)**
-- [x] Graceful Settings Page shell & tabbed overview ([src/app/(root)/dashboard/settings/page.tsx](./src/app/%28root%29/dashboard/settings/page.tsx)) linking to Member management and Dashboard.
-- [ ] User Profile Settings (Name, Phone number, Profile image upload, Change Password tab).
-- [ ] Mess Configuration (Mess name, Physical address, Timezone, Daily meal cutoff time e.g. 10:00 PM).
-- [ ] Notification Preferences (Email alerts for monthly closing, Bazar reminder).
-- [ ] Danger Zone (Leave mess, Disband mess if Owner).
+#### Phase 1: Screen Design (Dummy Data) — **COMPLETED (supported surfaces)**
+- [x] Settings page with account, mess, subscription, payment-history, and danger-zone sections.
+- [x] User Profile Settings (bio, phone, address, profile image upload) at `/dashboard/profile`.
+- [x] Read-only mess identity panel; unsupported configuration controls are not presented because API.md exposes no update route.
+- [x] Subscription status and plan feature overview in Settings.
+- [x] Leave-mess confirmation flow for non-owner members.
 
-#### Phase 2: Dynamic API Integration (A to Z) — **COMPLETED (supported profile flows)**
+#### Phase 2: Dynamic API Integration (A to Z) — **COMPLETED (supported settings/profile flows)**
 - [x] **10.1 Types:** `src/lib/types/profile.types.ts` (`ProfileDto`, `UpdateProfileRequest`). There is no separate settings type because `API.md` exposes no mess-settings read/update route.
 - [x] **10.2 Validations:** `src/validations/profile.validation.ts` validates bio, phone, and address; change-password validation is intentionally absent because API.md exposes no change-password endpoint.
 - [x] **10.3 API Service:** `src/api/profile.api.ts`:
@@ -383,6 +383,8 @@ Before initiating work on any feature or screen:
   - `PATCH /profile/image` (multipart field `profileImage`, JPEG/PNG/WebP ≤ 5 MB).
   - Profile reads come from `GET /auth/me` (`profile` object), so no `GET /profile` exists.
 - [x] **10.4 Hooks:** `src/hooks/profile.hook.ts` (`useUpdateProfile`, `useUploadProfileImage`) invalidating `auth.me`, which is what the shell avatar and user menu render.
+- [x] **10.5 Settings integration:** `src/components/settings/settings-page.tsx` uses `GET /subscription`, `GET /subscription/payments`, `POST /subscription/activate`, and `POST /mess/leave` with role gates and API error feedback.
+- [x] **10.6 Transfer Manager Action:** `src/components/dashboard/dialogs/transfer-manager-dialog.tsx` surfaces `PATCH /mess/members/:id/manager` in both the overview dashboard (`MessInfoCard`) and Settings (`SettingsPage`) with active-member selection, empty state, and scoped query invalidation.
 
 ---
 

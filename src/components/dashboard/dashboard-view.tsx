@@ -54,6 +54,7 @@ export function DashboardView({
   settlement?: SettlementLine[];
 }) {
   const { viewer, mess, month, meal, fund } = data;
+  const canTransfer = viewer.isManager || viewer.role === "OWNER";
 
   // Case 1: No active month screen
   if (!month || !meal) {
@@ -100,7 +101,12 @@ export function DashboardView({
               }
             />
           </Card>
-          <MessInfoCard mess={mess} month={null} className="lg:col-span-4" />
+          <MessInfoCard
+            mess={mess}
+            month={null}
+            canTransfer={canTransfer}
+            className="lg:col-span-4"
+          />
         </div>
       </div>
     );
@@ -238,7 +244,9 @@ export function DashboardView({
         )
       }
       summary={<SummaryLinkCard monthLabel={month.longLabel} />}
-      messInfo={<MessInfoCard mess={mess} month={month} />}
+      messInfo={
+        <MessInfoCard mess={mess} month={month} canTransfer={canTransfer} />
+      }
     />
   );
 }

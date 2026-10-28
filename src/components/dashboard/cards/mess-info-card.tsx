@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Copy, Lock } from "lucide-react";
+import { ArrowRightLeft, Check, Copy, Lock } from "lucide-react";
 import { useState } from "react";
 import { AvatarStack } from "@/components/ui/avatar";
 import { Badge, StatusDot } from "@/components/ui/badge";
@@ -14,18 +14,22 @@ import {
 } from "@/components/ui/card";
 import type { MessInfo, MonthInfo } from "@/lib/types/dashboard.types";
 import { cn } from "@/lib/utils";
+import { TransferManagerDialog } from "../dialogs";
 
 /** Design.md §10.8 Mess Info Card: name, room code, plan, month status, active members. */
 export function MessInfoCard({
   mess,
   month,
+  canTransfer = false,
   className,
 }: {
   mess: MessInfo;
   month: MonthInfo | null;
+  canTransfer?: boolean;
   className?: string;
 }) {
   const [copied, setCopied] = useState(false);
+  const [transferOpen, setTransferOpen] = useState(false);
   const copy = () => {
     void navigator.clipboard?.writeText(mess.roomCode).catch(() => undefined);
     setCopied(true);
@@ -89,7 +93,23 @@ export function MessInfoCard({
           </div>
           <div className="flex items-center justify-between gap-3">
             <dt className="text-ink-muted">Manager</dt>
-            <dd className="font-semibold text-ink">{mess.managerFirstName}</dd>
+            <dd className="flex items-center gap-2">
+              <span className="font-semibold text-ink">
+                {mess.managerFirstName}
+              </span>
+              {canTransfer && (
+                <Button
+                  variant="outline"
+                  size="xs"
+                  className="h-6 gap-1 px-2 text-xs font-medium text-aubergine-800 border-line hover:bg-aubergine-50 hover:text-aubergine-900"
+                  onClick={() => setTransferOpen(true)}
+                  aria-label="Transfer manager role"
+                >
+                  <ArrowRightLeft className="size-3" />
+                  <span>Transfer</span>
+                </Button>
+              )}
+            </dd>
           </div>
           <div className="flex items-center justify-between gap-3">
             <dt className="text-ink-muted">Active members</dt>
@@ -102,6 +122,14 @@ export function MessInfoCard({
           </div>
         </dl>
       </CardContent>
+
+      {canTransfer && (
+        <TransferManagerDialog
+          open={transferOpen}
+          onClose={() => setTransferOpen(false)}
+          currentManagerName={mess.managerFirstName}
+        />
+      )}
     </Card>
   );
 }
