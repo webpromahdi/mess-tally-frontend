@@ -61,16 +61,18 @@ Before initiating work on any feature or screen:
 | **02. Authentication & Access** | 🟢 Done | 🟢 Done | Completed | `/login`, `/register`, `/forgot-password`, `/reset-password` |
 | **03. Mess Onboarding & Setup** | 🟢 Done | 🟡 Partial | In Progress (create/join wired) | `/onboarding`, `/onboarding/create`, `/onboarding/join`, `/onboarding/pending` |
 | **04. Dashboard Overview** | 🟢 Done | 🟢 Done | Completed | `/dashboard` |
-| **05. Daily Meals Matrix** | 🟢 Done | 🟢 Done | Completed (manager flow; self-service `PATCH /meals/me` deferred) | `/dashboard/meals` |
-| **06. Bazar / Grocery Expenses** | 🟡 Partial | ⚪ Pending | Not connected (placeholder) | `/dashboard/bazar` |
-| **07. Utility Bills & Advance Fund** | 🟡 Partial | ⚪ Pending | Not connected (placeholder) | `/dashboard/utilities` |
-| **08. Monthly Summary & Settlement** | 🟡 Partial | ⚪ Pending | Not connected (placeholder) | `/dashboard/summary` |
-| **09. Members & Roles Management** | 🟡 Partial | ⚪ Pending | Not connected (placeholder) | `/dashboard/members` |
-| **10. Settings & Mess Profile** | 🟡 Partial | ⚪ Pending | In Progress (Shell + Placeholder) | `/dashboard/settings`, `/profile` |
-| **11. Subscription (bKash PRO)** | ⚪ Pending | ⚪ Pending | Queued | `/dashboard/subscription` |
+| **05. Daily Meals Matrix** | 🟢 Done | 🟢 Done | Completed (manager flow + self-service API) | `/dashboard/meals` |
+| **06. Bazar / Grocery Expenses** | 🟢 Done | 🟢 Done | Completed | `/dashboard/bazar` |
+| **07. Utility Bills & Advance Fund** | 🟢 Done | 🟢 Done | Completed | `/dashboard/utilities` |
+| **08. Monthly Summary & Settlement** | 🟢 Done | 🟢 Done | Completed | `/dashboard/summary` |
+| **09. Members & Roles Management** | 🟢 Done | 🟢 Done | Completed | `/dashboard/members` |
+| **10. Settings & Mess Profile** | 🟢 Done | 🟢 Done | Completed (supported API flows) | `/dashboard/settings`, `/dashboard/profile` |
+| **11. Subscription (bKash PRO)** | ⚪ Pending | 🟡 Partial | Queued (checkout + payments API ready) | `/dashboard/subscription` |
 | **12. AI Chatbot (TallyBot)** | ⚪ Pending | ⚪ Pending | Queued | Floating drawer / `/dashboard/ai-chat` |
 
 > **Dummy data removed:** Modules 05–09 no longer mount fixture data. Their designed components remain in the codebase for Phase 2, but every route renders an honest "not connected yet" state until the APIs are wired.
+>
+> **API layer status:** every endpoint in `API.md` that the client can call now has a typed function in `src/api/` and a TanStack Query hook in `src/hooks/`. Modules 07–10 are connected to their supported backend flows; subscription checkout remains the next UI phase.
 
 *Status Legend:* 🟢 Done · 🟡 In Progress · ⚪ Pending / Queued
 
@@ -167,8 +169,8 @@ Before initiating work on any feature or screen:
 #### Phase 2: Dynamic API Integration (A to Z)
 - [x] **3.1 Types:** `src/lib/types/mess.types.ts` covers `GET /mess/my`, `GET /mess/members`, `POST /mess` and `POST /mess/join`.
 - [ ] **3.2 Validations:** Inline submit validation is in place; a dedicated `src/validations/mess.validation.ts` is still pending.
-- [x] **3.3 API Service (partial):** `POST /mess` and `POST /mess/join` implemented in `src/api/mess.api.ts`; `GET /mess` and `PATCH /mess` still pending.
-- [x] **3.4 Hooks:** `useCreateMess` / `useJoinMess` in `src/hooks/mess.hook.ts`, plus `useMyMesses` / `useMessMembers`; mess-scoped query caches are invalidated after create/join.
+- [x] **3.3 API Service (partial):** `POST /mess`, `POST /mess/join`, `GET /mess/my`, `GET /mess/members`, `GET /mess/members/pending`, the five membership actions (`approve`, `reject`, `manager`, `owner`, `DELETE /:id`) and `POST /mess/leave` are implemented in `src/api/mess.api.ts`. There is no `GET /mess` or `PATCH /mess` endpoint in `API.md`, so mess settings cannot be wired yet.
+- [x] **3.4 Hooks:** `useCreateMess` / `useJoinMess` / `useLeaveMess` and the membership mutations in `src/hooks/mess.hook.ts`, plus `useMyMesses` / `useMessMembers` / `usePendingMembers`; mess-scoped query caches are invalidated after every write.
 - [x] **3.5 Form & State:** Create/join forms now call the real API; the pending screen reads `GET /mess/my` instead of hardcoded mess details.
 
 ---
@@ -227,8 +229,8 @@ Before initiating work on any feature or screen:
   - `PUT /meals` → upsert one member-day cell (all four counts required).
   - `POST /meals/bulk` → upsert one daily sheet.
   - `DELETE /meals/:id` → remove a logged cell.
-  - `PATCH /meals/me` → **not wired** (member self-service, PRO, today-only, pre-cutoff); deferred.
-- [x] **5.4 Hooks:** `src/hooks/meal.hook.ts` — `useMeals` + upsert/bulk/delete mutations that invalidate `meals`, `dashboard`, `summary`. Invalidates + refetches instead of optimistic updates.
+  - `PATCH /meals/me` → member self-service (PRO, today-only, pre-cutoff). The API function and `useUpdateMyMeal` exist; the member edit UI is still deferred because the page is manager-first.
+- [x] **5.4 Hooks:** `src/hooks/meal.hook.ts` — `useMeals` + upsert/bulk/delete/self-update mutations that invalidate `meals`, `dashboard`, `summary`. Invalidates + refetches instead of optimistic updates.
 - [x] **5.5 Validation Rules:** writes are blocked when `month.isLocked` (`CLOSED`) or the viewer is not a manager; the backend enforces the same via `assertManager`/`assertMonthWritable`. Cutoff only applies to the unwired member self-service path. Mapper: `src/lib/mappers/meals.mapper.ts`; page: `src/components/meals/meals-page.tsx`.
 
 ---
@@ -246,19 +248,23 @@ Before initiating work on any feature or screen:
 - [x] "Add Bazar Entry" / Edit modal form with amount, date, shopper select, category chips, items list ([src/components/bazar/dialogs/bazar-entry-dialog.tsx](./src/components/bazar/dialogs/bazar-entry-dialog.tsx)).
 - [x] Category chips & search toolbar ([src/components/bazar/layout/bazar-filters.tsx](./src/components/bazar/layout/bazar-filters.tsx)).
 - [x] Delete confirmation dialog ([src/components/bazar/dialogs/delete-confirm.tsx](./src/components/bazar/dialogs/delete-confirm.tsx)).
-- [x] Pure domain calculations & helpers ([src/lib/bazar.ts](./src/lib/bazar.ts)) and static fixtures ([src/fixtures/bazar.fixtures.ts](./src/fixtures/bazar.fixtures.ts)).
-- [x] Interactive dev scenario switcher covering 11 visual states ([src/components/bazar/bazar-scenarios.tsx](./src/components/bazar/bazar-scenarios.tsx)).
+- [x] Pure domain calculations & helpers ([src/lib/bazar.ts](./src/lib/bazar.ts)). The static fixtures and the dev scenario switcher were removed when dummy data was dropped.
 
-#### Phase 2: Dynamic API Integration (A to Z)
-- [ ] **6.1 Types:** `src/lib/types/bazar.types.ts` (`BazarExpense`, `CreateBazarDto`, `BazarCategory`).
-- [ ] **6.2 Validations:** `src/validations/bazar.validation.ts` (`createBazarSchema`).
-- [ ] **6.3 API Service:** `src/api/bazar.api.ts`:
-  - `GET /bazar?month=YYYY-MM` → get list and monthly total.
+#### Phase 2: Dynamic API Integration (A to Z) — **COMPLETED**
+- [x] **6.1 Types:** `src/lib/types/bazar.types.ts` — designed view models kept, raw contract added (`BazarEntryDto`, `BazarListResponseData`, `BazarShopperTotalDto`, `CreateBazarRequest`, `UpdateBazarRequest`, `BazarListQuery`). `BazarListResponseData.month` reuses `MealsMonthDto` because reads never create a month, so `id`/`status` can be `null`.
+- [x] **6.2 Validations:** `src/validations/bazar.validation.ts` — `bazarEntrySchema`, `updateBazarSchema`, plus `validateReceipt` (JPEG/PNG/WebP ≤ 5 MB) for the PRO upload path.
+- [x] **6.3 API Service:** `src/api/bazar.api.ts`:
+  - `GET /bazar?month=&shopperId=&from=&to=` → entries plus house/per-shopper totals (`month.exists = false` when no row).
   - `POST /bazar` → log new expense.
-  - `PATCH /bazar/:id` → edit expense.
+  - `PATCH /bazar/:id` → edit expense (subset, at least one field).
   - `DELETE /bazar/:id` → delete expense.
-- [ ] **6.4 Hooks:** `src/hooks/bazar.hook.ts` (`useBazarList`, `useCreateBazar`, `useDeleteBazar`) with query cache invalidation for `/dashboard` and `/summary`.
-- [ ] **6.5 Form Integration:** TanStack Form with instant calculation of total amount and toast notifications.
+  - `POST /bazar/:id/receipt` / `DELETE /bazar/:id/receipt` → PRO receipt upload (multipart field `receipt`, ≤ 5 MB).
+- [x] **6.4 Hooks:** `src/hooks/bazar.hook.ts` (`useBazar`, `useCreateBazar`, `useUpdateBazar`, `useDeleteBazar`, `useUploadBazarReceipt`, `useDeleteBazarReceipt`) invalidating `bazar`, `dashboard` and `summary`.
+- [x] **6.5 Form Integration:** the designed form now saves through `bazar-page.tsx` — it keeps the sheet open while the request is in flight, closes only on success, and shows the API message inline in the view's `<Toast>` on failure. The payer select lists active members plus anyone who shopped this month (so a departed shopper keeps a name), and the "meal rate will become" preview still runs on the domain helpers.
+- [x] **6.6 Mapper:** `src/lib/mappers/bazar.mapper.ts` — `toBazarData()` joins `/bazar`, `/mess/members`, `/dashboard` (house meals, meal rate, pending count) and `GET /month` metadata into `BazarData`. The single design "Note" field maps to the API `title` (both 120 chars).
+- [x] **6.7 Receipts:** the form replaces the old "coming soon" placeholder with a real control — attach/replace for PRO, view for everyone, remove for PRO — disabled once the month is `CLOSED`.
+- [x] **6.8 Month state:** a month with no row renders "Open this month" for managers (wired to `useCreateMonth`), and a `CLOSED` month renders the read-only banner and hides every write action.
+- [x] **6.9 Edge states:** `BazarSkeleton` while loading, `ErrorState` with retry when the payload can't be built, and the shared PRO upgrade state on `402`.
 
 ---
 
@@ -279,16 +285,17 @@ Before initiating work on any feature or screen:
 - [x] Pure domain calculations & helpers ([src/lib/utility.ts](./src/lib/utility.ts)) and static fixtures ([src/fixtures/utility.fixtures.ts](./src/fixtures/utility.fixtures.ts)).
 - [x] Interactive dev scenario switcher covering 10 visual states ([src/components/utility/utility-scenarios.tsx](./src/components/utility/utility-scenarios.tsx)).
 
-#### Phase 2: Dynamic API Integration (A to Z)
-- [ ] **7.1 Types:** `src/lib/types/utility.types.ts` (`UtilityExpense`, `UtilityDeposit`, `UtilitySplitType`, `UtilityCategory`).
-- [ ] **7.2 Validations:** `src/validations/utility.validation.ts` (`createUtilitySchema`, `createDepositSchema`).
-- [ ] **7.3 API Service:** `src/api/utility.api.ts`:
-  - `GET /utilities?month=YYYY-MM` & `POST /utilities` (Bills).
-  - `PATCH /utilities/:id` & `DELETE /utilities/:id`.
-  - `GET /deposits?month=YYYY-MM` & `POST /deposits` (Manager only).
-  - `DELETE /deposits/:id` (Manager only).
-- [ ] **7.4 Hooks:** `src/hooks/utility.hook.ts` (`useUtilities`, `useDeposits`, `useRecordDeposit`).
-- [ ] **7.5 Manager Gates:** Lock deposit creation controls for non-manager members.
+#### Phase 2: Dynamic API Integration (A to Z) — **COMPLETED**
+- [x] **7.1 Types:** `src/lib/types/utility.types.ts` — designed view models kept, raw contract added (`UtilityBillDto`, `UtilityBillCategory`, `UtilitySplitType`, `UtilityBillsResponseData`, `UtilityFundResponseData`, `FundDepositDto`, `FundDepositsResponseData`, create/update requests).
+- [x] **7.2 Validations:** `src/validations/utility.validation.ts` validates bill and deposit create/update payloads.
+- [x] **7.3 API Service:** `src/api/utility.api.ts`:
+  - `GET /utilities?month=` & `POST /utilities` (Bills).
+  - `PATCH /utilities/:id`, `PATCH /utilities/:id/paid` & `DELETE /utilities/:id`.
+  - `GET /utilities/fund?month=` → deposits minus paid bills.
+  - `GET /utilities/replenishment-estimate?perMember=` (Manager only).
+  - `GET /utilities/fund-deposits?month=`, `POST`, `PATCH` & `DELETE` (all writes Manager only).
+- [x] **7.4 Hooks:** `src/hooks/utility.hook.ts` (`useUtilityBills`, `useUtilityFund`, `useFundDeposits`, `useReplenishmentEstimate`, plus create/update/paid/delete mutations) invalidating `utilities`, `dashboard` and `summary`.
+- [x] **7.5 Manager Gates:** Deposit creation and editing are manager-only.
 
 ---
 
@@ -309,16 +316,17 @@ Before initiating work on any feature or screen:
 - [x] Pure domain calculations (greedy settlement solver, meal rate derivation) ([src/lib/summary.ts](./src/lib/summary.ts)) and static fixtures ([src/fixtures/summary.fixtures.ts](./src/fixtures/summary.fixtures.ts)).
 - [x] Interactive dev scenario switcher covering 10 visual states ([src/components/summary/summary-scenarios.tsx](./src/components/summary/summary-scenarios.tsx)).
 
-#### Phase 2: Dynamic API Integration (A to Z)
-- [ ] **8.1 Types:** `src/lib/types/summary.types.ts` (`MonthlySummary`, `MemberLedger`, `SettlementTransfer`).
-- [ ] **8.2 API Service:** `src/api/summary.api.ts`:
+#### Phase 2: Dynamic API Integration (A to Z) — **COMPLETED**
+- [x] **8.1 Types:** `src/lib/types/summary.types.ts` — `SummaryResponseData` (§46), `SummaryMemberDto`, `SummarySettlementDto`, `SummaryExportFormat`.
+- [x] **8.2 API Service:** `src/api/summary.api.ts`:
   - `GET /summary?month=YYYY-MM` → full calculation report & transfers.
-  - `PATCH /months/:id/close` → close month (Manager only).
-  - `PATCH /months/:id/reopen` → reopen month (Manager only).
-  - `GET /summary/export/csv` & `GET /summary/export/pdf` → file stream downloads.
-- [ ] **8.3 Hooks:** `src/hooks/summary.hook.ts` (`useMonthlySummary`, `useCloseMonth`, `useExportSummary`).
-- [ ] **8.4 File Download Utility:** Blob handling for CSV/PDF downloads with progress indicators.
-- [ ] **8.5 Confirmation Guards:** Irreversible modal warning when closing a month.
+  - `GET /summary/export?format=json` → same payload as `/summary`, enveloped.
+  - `GET /summary/export?format=csv` → raw CSV file (UTF-8 BOM, CRLF).
+  - `GET /summary/statement?month=` → caller's PDF statement (PRO, closed months only).
+  - `src/api/month.api.ts`: `POST /months`, `PATCH /months/:id/close`, `PATCH /months/:id/reopen`.
+- [x] **8.3 Hooks:** `src/hooks/summary.hook.ts` (`useSummary`, `useDownloadSummaryCsv`, `useDownloadSummaryStatement`); `src/hooks/month.hook.ts` (`useMonths`, `useCreateMonth`, `useCloseMonth`, `useReopenMonth`) invalidating months, meals, dashboard, summary, bazar and utilities.
+- [x] **8.4 File Download Utility:** `src/lib/download.ts` — `fetchFile()` over `apiClient.raw(..., { responseType: "blob" })` (honours `Content-Disposition`) and `saveFile()` for the browser download.
+- [x] **8.5 Confirmation Guards:** Summary close/reopen actions use confirmation sheets.
 
 ---
 
@@ -340,16 +348,17 @@ Before initiating work on any feature or screen:
 - [x] Pure domain calculations & helpers ([src/lib/members.ts](./src/lib/members.ts)) and static fixtures ([src/fixtures/member.fixtures.ts](./src/fixtures/member.fixtures.ts)).
 - [x] Interactive dev scenario switcher covering 11 visual states ([src/components/members/members-scenarios.tsx](./src/components/members/members-scenarios.tsx)).
 
-#### Phase 2: Dynamic API Integration (A to Z)
-- [ ] **9.1 Types:** `src/lib/types/member.types.ts` (`MessMember`, `MemberRole`, `MemberStatus`).
-- [ ] **9.2 API Service:** `src/api/member.api.ts`:
-  - `GET /mess/members` → all members and statuses.
+#### Phase 2: Dynamic API Integration (A to Z) — **COMPLETED**
+- [x] **9.1 Types:** `src/lib/types/member.types.ts` (`MessMember`, `MemberRole`, `MemberStatus`) plus `mess.types.ts` (`MessMemberDto`, `MessMembersResponseData`, `PendingMembersResponseData`, `RemoveMemberResponseData`, `LeaveMessResponseData`).
+- [x] **9.2 API Service:** membership routes live in `src/api/mess.api.ts` (there is no separate `member.api.ts`):
+  - `GET /mess/members?status=` and `GET /mess/members/pending` (Manager).
   - `PATCH /mess/members/:id/approve` & `PATCH /mess/members/:id/reject`.
   - `PATCH /mess/members/:id/manager` (delegate manager flag).
   - `PATCH /mess/members/:id/owner` (transfer owner role).
-  - `DELETE /mess/members/:id/leave` (leave mess).
-- [ ] **9.3 Hooks:** `src/hooks/member.hook.ts` (`useMembersList`, `useApproveMember`, `useTransferManager`).
-- [ ] **9.4 Optimistic UI:** Instant member status updates and toast feedback.
+  - `DELETE /mess/members/:id` (Manager; fails when records reference it).
+  - `POST /mess/leave` (owner must transfer ownership first).
+- [x] **9.3 Hooks:** `src/hooks/mess.hook.ts` (`useMessMembers`, `usePendingMembers`, `useApproveMember`, `useRejectMember`, `useTransferManager`, `useTransferOwner`, `useRemoveMember`, `useLeaveMess`) invalidating the members prefix, `/mess/my`, dashboard, summary and utilities.
+- [x] **9.4 API mutation feedback:** Member actions call the backend mutations and refresh scoped queries with toast feedback.
 
 ---
 
@@ -359,21 +368,23 @@ Before initiating work on any feature or screen:
   - [API.md § 17: Profile](../mess-tally-backend/API.md#profile)
 - **Target Routes:** `src/app/(root)/dashboard/settings/page.tsx`, `src/app/(root)/profile/page.tsx`.
 
-#### Phase 1: Screen Design (Dummy Data) — **IN PROGRESS (Shell + Placeholder)**
-- [x] Graceful Settings Page shell & tabbed overview ([src/app/(root)/dashboard/settings/page.tsx](./src/app/%28root%29/dashboard/settings/page.tsx)) linking to Member management and Dashboard.
-- [ ] User Profile Settings (Name, Phone number, Profile image upload, Change Password tab).
-- [ ] Mess Configuration (Mess name, Physical address, Timezone, Daily meal cutoff time e.g. 10:00 PM).
-- [ ] Notification Preferences (Email alerts for monthly closing, Bazar reminder).
-- [ ] Danger Zone (Leave mess, Disband mess if Owner).
+#### Phase 1: Screen Design (Dummy Data) — **COMPLETED (supported surfaces)**
+- [x] Settings page with account, mess, subscription, payment-history, and danger-zone sections.
+- [x] User Profile Settings (bio, phone, address, profile image upload) at `/dashboard/profile`.
+- [x] Read-only mess identity panel; unsupported configuration controls are not presented because API.md exposes no update route.
+- [x] Subscription status and plan feature overview in Settings.
+- [x] Leave-mess confirmation flow for non-owner members.
 
-#### Phase 2: Dynamic API Integration (A to Z)
-- [ ] **10.1 Types:** `src/lib/types/profile.types.ts`, `src/lib/types/settings.types.ts`.
-- [ ] **10.2 Validations:** `src/validations/profile.validation.ts` (`updateProfileSchema`, `changePasswordSchema`).
-- [ ] **10.3 API Service:** `src/api/profile.api.ts`:
-  - `GET /profile` & `PATCH /profile`.
-  - `PATCH /profile/password`.
-  - `PATCH /mess` (Mess settings).
-- [ ] **10.4 Hooks:** `src/hooks/profile.hook.ts` with instant Zustand auth store sync.
+#### Phase 2: Dynamic API Integration (A to Z) — **COMPLETED (supported settings/profile flows)**
+- [x] **10.1 Types:** `src/lib/types/profile.types.ts` (`ProfileDto`, `UpdateProfileRequest`). There is no separate settings type because `API.md` exposes no mess-settings read/update route.
+- [x] **10.2 Validations:** `src/validations/profile.validation.ts` validates bio, phone, and address; change-password validation is intentionally absent because API.md exposes no change-password endpoint.
+- [x] **10.3 API Service:** `src/api/profile.api.ts`:
+  - `PATCH /profile/update` (bio / phone / address; at least one field).
+  - `PATCH /profile/image` (multipart field `profileImage`, JPEG/PNG/WebP ≤ 5 MB).
+  - Profile reads come from `GET /auth/me` (`profile` object), so no `GET /profile` exists.
+- [x] **10.4 Hooks:** `src/hooks/profile.hook.ts` (`useUpdateProfile`, `useUploadProfileImage`) invalidating `auth.me`, which is what the shell avatar and user menu render.
+- [x] **10.5 Settings integration:** `src/components/settings/settings-page.tsx` uses `GET /subscription`, `GET /subscription/payments`, `POST /subscription/activate`, and `POST /mess/leave` with role gates and API error feedback.
+- [x] **10.6 Transfer Manager Action:** `src/components/dashboard/dialogs/transfer-manager-dialog.tsx` surfaces `PATCH /mess/members/:id/manager` in both the overview dashboard (`MessInfoCard`) and Settings (`SettingsPage`) with active-member selection, empty state, and scoped query invalidation.
 
 ---
 
@@ -389,13 +400,15 @@ Before initiating work on any feature or screen:
 - [ ] bKash Payment Trigger Modal (Amount ৳, Billing period, "Pay with bKash" branded button).
 - [ ] Success & Cancel Payment Redirect landing states.
 
-#### Phase 2: Dynamic API Integration (A to Z)
-- [ ] **11.1 Types:** `src/lib/types/subscription.types.ts` (`SubscriptionStatus`, `BkashInitResponse`).
-- [ ] **11.2 API Service:** `src/api/subscription.api.ts`:
-  - `GET /subscription/status` → active plan, expiration, and member limit.
-  - `POST /subscription/bkash/initiate` → returns bKash payment gateway URL.
-  - `GET /subscription/bkash/callback` → handles payment verification query params.
-- [ ] **11.3 Hooks:** `src/hooks/subscription.hook.ts` (`useSubscriptionStatus`, `useInitiateBkash`).
+#### Phase 2: Dynamic API Integration (A to Z) — **PARTIAL (checkout API only)**
+- [x] **11.1 Types:** `src/lib/types/subscription.types.ts` — `SubscriptionResponseData`, `SubscriptionOptionDto`, `SubscriptionFeaturesDto`, `ActivateSubscriptionRequest/ResponseData`, `SubscriptionPaymentDto`, `SubscriptionPaymentDetailDto`, `SubscriptionPaymentStatus`.
+- [x] **11.2 API Service:** `src/api/subscription.api.ts`:
+  - `GET /subscription` → plan, limits, feature flags and purchasable options.
+  - `POST /subscription/activate` → creates the bKash checkout and returns `paymentURL`.
+  - `GET /subscription/payments` → payment history (newest first).
+  - `GET /subscription/payments/:id/status` → reconciles a pending payment with bKash.
+  - `GET /subscription/callback` is deliberately absent: bKash calls it server-side and it always answers `302`.
+- [x] **11.3 Hooks:** `src/hooks/subscription.hook.ts` (`useSubscription`, `useActivateSubscription`, `useSubscriptionPayments`, `useSubscriptionPaymentStatus` — polls while `PENDING`, then refreshes the plan on `PAID`).
 - [ ] **11.4 Payment Flow:** External redirection to bKash gateway and toast confirmation upon return.
 
 ---

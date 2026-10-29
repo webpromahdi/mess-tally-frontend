@@ -1,5 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
-import { getSummary } from "@/api";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  downloadSummaryCsv,
+  downloadSummaryStatement,
+  getSummary,
+} from "@/api";
+import { saveFile } from "@/lib/download";
 import { queryKeys } from "@/lib/queryKeys";
 
 /**
@@ -13,5 +18,26 @@ export function useSummary(month: string | null, enabled = true) {
     enabled,
     staleTime: 30 * 1000,
     refetchOnWindowFocus: true,
+  });
+}
+
+/** `GET /summary/export?format=csv` — downloads the monthly CSV. */
+export function useDownloadSummaryCsv() {
+  return useMutation({
+    mutationFn: ({ month }: { month?: string | null } = {}) =>
+      downloadSummaryCsv({ month }),
+    onSuccess: saveFile,
+  });
+}
+
+/**
+ * `GET /summary/statement` — PRO-only PDF statement for the caller.
+ * Only closed months are accepted by the backend.
+ */
+export function useDownloadSummaryStatement() {
+  return useMutation({
+    mutationFn: ({ month }: { month?: string | null } = {}) =>
+      downloadSummaryStatement({ month }),
+    onSuccess: saveFile,
   });
 }

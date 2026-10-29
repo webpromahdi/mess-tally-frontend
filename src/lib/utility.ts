@@ -13,11 +13,14 @@ export const NOTE_MAX = 120;
 export const AMOUNT_MAX = 1_000_000;
 
 export const CATEGORIES: UtilityCategory[] = [
+  "Rent",
   "Electricity",
   "Gas",
-  "Internet",
   "Water",
-  "Maid",
+  "Internet",
+  "Cook salary",
+  "Garbage / guard",
+  "Subscription",
   "Other",
 ];
 
@@ -45,9 +48,15 @@ export function signed(entry: Pick<UtilityEntry, "kind" | "amount">): number {
   return entry.kind === "DEPOSIT" ? entry.amount : -entry.amount;
 }
 
-/** Net effect of a list of entries on the fund. */
+/** Net effect on the fund: deposits add, paid bills subtract (U2). */
 export function netOf(entries: UtilityEntry[]): number {
-  return round2(entries.reduce((s, e) => s + signed(e), 0));
+  return round2(
+    entries.reduce(
+      (s, e) =>
+        s + (e.kind === "DEPOSIT" ? e.amount : e.isPaid ? -e.amount : 0),
+      0,
+    ),
+  );
 }
 
 /** U2: balance = deposits − paid bills. U3: replenish when balance ≤ 0. */
@@ -70,13 +79,22 @@ export function fundRemainingPercent(fund: FundBlock): number {
   return Math.max(0, Math.min(100, (fund.balance / fund.totalDeposits) * 100));
 }
 
+/** U2 counts only bills actually paid from the fund. */
+export function paidBills(entries: UtilityEntry[]): number {
+  return round2(
+    entries
+      .filter((e) => e.kind === "BILL" && e.isPaid)
+      .reduce((s, e) => s + e.amount, 0),
+  );
+}
+
 /** Re-derives U1–U3 from the ledger. */
 export function recompute(data: UtilityData): UtilityData {
   return {
     ...data,
     ...buildFundBlock(
       sumKind(data.entries, "DEPOSIT"),
-      sumKind(data.entries, "BILL"),
+      paidBills(data.entries),
     ),
   };
 }
@@ -101,7 +119,13 @@ export function upsertEntry(
     ? data.entries.map((e) => (e === existing ? { ...e, ...fields } : e))
     : [
         ...data.entries,
-        { id: newId, ...fields, receiptUrl: null, isLocked: false },
+        {
+          id: newId,
+          ...fields,
+          isPaid: input.kind === "DEPOSIT",
+          receiptUrl: null,
+          isLocked: false,
+        },
       ];
   return recompute({ ...data, entries });
 }

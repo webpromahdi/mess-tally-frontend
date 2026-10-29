@@ -1,3 +1,4 @@
+export * from "./bazar-page";
 export * from "./bazar-view";
 export * from "./dialogs";
 export * from "./layout";

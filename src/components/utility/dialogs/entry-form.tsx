@@ -42,8 +42,11 @@ interface EntryFormProps {
   /** Show validation immediately (static validation screen). */
   initialSubmitted?: boolean;
   autoFocus?: boolean;
-  onSave: (input: UtilityInput) => void;
+  /** Resolves `true` on success, so the sheet stays open on failure. */
+  onSave: (input: UtilityInput) => Promise<boolean>;
   onDelete?: () => void;
+  /** Bills only — toggles `PATCH /utilities/:id/paid`. */
+  onTogglePaid?: () => Promise<boolean>;
   onClose: () => void;
 }
 
@@ -63,6 +66,7 @@ export function EntryForm({
   autoFocus,
   onSave,
   onDelete,
+  onTogglePaid,
   onClose,
 }: EntryFormProps) {
   const payers = data.members.filter(
@@ -78,6 +82,10 @@ export function EntryForm({
     ...initialValues,
   });
   const [submitted, setSubmitted] = useState(!!initialSubmitted);
+  const [saving, setSaving] = useState(false);
+  const [paid, setPaid] = useState(entry?.isPaid ?? false);
+  const [paidBusy, setPaidBusy] = useState(false);
+  const [paidError, setPaidError] = useState<string | null>(null);
   const isDeposit = values.kind === "DEPOSIT";
 
   const input: UtilityInput = {
@@ -104,12 +112,27 @@ export function EntryForm({
   const patch = (next: Partial<UtilityFormValues>) =>
     setValues((v) => ({ ...v, ...next }));
 
-  const submit = (e: FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
-    if (errors.length === 0) {
-      onSave(input);
-      onClose();
+    if (errors.length !== 0) return;
+    setSaving(true);
+    try {
+      // Keep the sheet open on failure so the typed values aren't lost.
+      if (await onSave(input)) onClose();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const togglePaid = async () => {
+    if (!onTogglePaid) return;
+    setPaidError(null);
+    setPaidBusy(true);
+    try {
+      if (await onTogglePaid()) setPaid((value) => !value);
+    } finally {
+      setPaidBusy(false);
     }
   };
 
@@ -222,7 +245,36 @@ export function EntryForm({
       {!isDeposit && (
         <div className="flex items-center gap-2 rounded-xl border border-dashed border-line px-3 py-2.5 text-body-sm text-ink-muted">
           <Paperclip aria-hidden className="size-4 shrink-0" />
-          Receipt upload coming soon
+          Receipts aren’t tracked for utility bills yet.
+        </div>
+      )}
+
+      {!isDeposit && entry && onTogglePaid && (
+        <div className="flex items-start justify-between gap-3 rounded-xl border border-line px-3 py-2.5">
+          <div className="min-w-0">
+            <p className="text-body-sm font-medium text-ink">
+              Paid from the fund
+            </p>
+            <p className="mt-0.5 text-caption text-ink-muted">
+              {paid
+                ? "Included in bills paid and the fund balance."
+                : "Unpaid bills don’t reduce the fund balance."}
+            </p>
+            {paidError && (
+              <p role="alert" className="mt-1 text-caption text-error">
+                {paidError}
+              </p>
+            )}
+          </div>
+          <Button
+            type="button"
+            variant={paid ? "outline" : "primary"}
+            size="sm"
+            disabled={paidBusy}
+            onClick={() => void togglePaid()}
+          >
+            {paidBusy ? "Saving…" : paid ? "Mark unpaid" : "Mark paid"}
+          </Button>
         </div>
       )}
 
@@ -273,8 +325,8 @@ export function EntryForm({
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" variant="primary">
-            {isDeposit ? "Save Deposit" : "Save Bill"}
+          <Button type="submit" variant="primary" disabled={saving}>
+            {saving ? "Saving…" : isDeposit ? "Save Deposit" : "Save Bill"}
           </Button>
         </div>
       </div>

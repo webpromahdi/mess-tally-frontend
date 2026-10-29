@@ -61,7 +61,11 @@ export function SummaryKpiStrip({ data }: { data: SummaryData }) {
       <Stat
         label="Total meals"
         value={meal.totalMeals}
-        hint={`incl. ${meal.totalGuestMeals} guest`}
+        hint={
+          meal.totalGuestMeals !== undefined
+            ? `incl. ${meal.totalGuestMeals} guest`
+            : "including guest meals"
+        }
       />
       <Stat
         label="Meal rate"

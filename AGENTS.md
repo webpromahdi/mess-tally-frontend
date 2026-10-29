@@ -33,7 +33,8 @@ npx shadcn add <c> # adds a primitive to src/components/ui/
 - The dashboard shell and pages share `useWorkspace(month)` / `useDashboardView(month)` (`src/hooks/workspace.hook.ts`, `dashboard-view.hook.ts`). Reuse them instead of refetching `/auth/me`, `/mess/my`, `/months`, `/subscription`, `/dashboard`, `/summary` separately; DTO → view-model mapping belongs in `src/lib/mappers/dashboard.mapper.ts`.
 - Query keys live in `src/lib/queryKeys.ts`; add new keys there and invalidate by prefix. Anything changing mess scope must invalidate the same five keys as `useMessScopeInvalidation` in `src/hooks/mess.hook.ts`.
 - `useMonthStore.selectedMonth === null` means "let the backend resolve the current month" (no `?month=` param). Do not default it to a concrete `YYYY-MM`, or you fork the cache.
-- Modules 05–09 (meals, bazar, utilities, summary, members routes) are intentionally **not wired**: each page renders `<NotConnectedState />` and the designed components under `src/components/<feature>/` must stay unmounted with dummy data. The dashboard *is* live and already consumes `/summary` for its charts.
+- Live module routes: `/dashboard` (overview), `/dashboard/meals` and `/dashboard/bazar`. Meals and bazar map API DTOs to their designed view models via `src/lib/mappers/*.mapper.ts` and mutate through the hooks — do not reintroduce fixtures.
+- Modules 07–09 (utilities, summary, members routes) are intentionally **not wired**: each page renders `<NotConnectedState />` and the designed components under `src/components/<feature>/` stay unmounted with dummy data. Their API functions and hooks already exist in `src/api/` and `src/hooks/`, so wiring one means adding a `*-page.tsx` + mapper like `bazar-page.tsx`. The dashboard *is* live and already consumes `/summary` for its charts.
 
 ## File placement
 

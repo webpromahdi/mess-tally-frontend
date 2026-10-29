@@ -1,5 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { bulkUpsertMeals, deleteMeal, getMeals, upsertMeal } from "@/api";
+import {
+  bulkUpsertMeals,
+  deleteMeal,
+  getMeals,
+  updateMyMeal,
+  upsertMeal,
+} from "@/api";
 import { queryKeys } from "@/lib/queryKeys";
 
 /**
@@ -51,6 +57,18 @@ export function useDeleteMeal() {
   const invalidate = useMealScopeInvalidation();
   return useMutation({
     mutationFn: deleteMeal,
+    onSuccess: () => invalidate(),
+  });
+}
+
+/**
+ * `PATCH /meals/me` — PRO self-service edit of the caller's own meal.
+ * Today only, before `mealCutoffTime`, and at least one count is required.
+ */
+export function useUpdateMyMeal() {
+  const invalidate = useMealScopeInvalidation();
+  return useMutation({
+    mutationFn: updateMyMeal,
     onSuccess: () => invalidate(),
   });
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { CalendarPlus, CalendarX, SearchX, ShoppingBasket } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   Banner,
   EmptyState,
@@ -12,15 +12,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useMediaQuery } from "@/hooks";
+import { getApiMessage } from "@/lib/apiError";
 import {
   filterEntries,
   isFiltered,
   noFilter,
-  recompute,
   removeBazar,
   sortEntries,
   sumAmounts,
-  upsertBazar,
 } from "@/lib/bazar";
 import { formatBDT } from "@/lib/format";
 import type {
@@ -39,107 +38,92 @@ import {
 import { BazarFilters, BazarHeader, BazarSummaryStrip } from "./layout";
 import { BAZAR_PAGE_SIZE, BazarCardList, BazarTable } from "./table";
 
-export const BAZAR_SAVE_ERROR = "Couldn’t save. Try again.";
-const LATENCY_MS = 450;
-
-export interface BazarStateOptions {
-  /** Every save or delete fails and reverts. */
-  failSaves?: boolean;
-  initialToast?: string;
-  initialFailedId?: string;
-}
-
 export interface BazarViewProps {
   data: BazarData;
-  state?: BazarStateOptions;
+  /** PRO gates receipt upload/removal (API.md §33–34). */
+  isPro: boolean;
   initialFilter?: BazarFilter;
   initialSort?: BazarSort;
   initialDialog?: BazarDialogTarget;
   initialDeleteId?: string;
   /** Replace the list card with an inline error (summary strip stays). */
   listError?: boolean;
+  onSave: (input: BazarInput) => Promise<void>;
+  onDelete: (entryId: string) => Promise<void>;
+  /** Resolves with the new receipt URL, or `null` when none was returned. */
+  onUploadReceipt: (entryId: string, file: File) => Promise<string | null>;
+  onRemoveReceipt: (entryId: string) => Promise<void>;
+  /** Manager action when the selected month has no row yet. */
+  onCreateMonth?: () => Promise<void>;
 }
 
 const defaultSort: BazarSort = { key: "date", dir: "desc" };
 
-function restore(
-  data: BazarData,
-  id: string,
-  previous: BazarEntry | undefined,
-): BazarData {
-  const rest = data.entries.filter((e) => e.id !== id);
-  return recompute({ ...data, entries: previous ? [...rest, previous] : rest });
-}
-
 export function BazarView({
-  data: initial,
-  state,
+  data,
+  isPro,
   initialFilter,
   initialSort,
   initialDialog,
   initialDeleteId,
   listError,
+  onSave,
+  onDelete,
+  onUploadReceipt,
+  onRemoveReceipt,
+  onCreateMonth,
 }: BazarViewProps) {
-  const [data, setData] = useState(initial);
   const [saving, setSaving] = useState<ReadonlySet<string>>(new Set());
-  const [failedId, setFailedId] = useState<string | null>(
-    state?.initialFailedId ?? null,
-  );
-  const [toast, setToast] = useState<string | null>(
-    state?.initialToast ?? null,
-  );
-  const dataRef = useRef(data);
-  dataRef.current = data;
-  const counter = useRef(1);
-  const timers = useRef<number[]>([]);
+  const [failedId, setFailedId] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
 
-  useEffect(() => {
-    const pending = timers.current;
-    return () => {
-      pending.forEach((t) => {
-        window.clearTimeout(t);
-      });
-    };
-  }, []);
-
+  /** Runs one write, keeping the row marked while the request is in flight. */
   const runMutation = useCallback(
-    (id: string, apply: (d: BazarData) => BazarData) => {
-      const previous = dataRef.current.entries.find((e) => e.id === id);
-      setData(apply);
+    async (
+      key: string,
+      action: () => Promise<void>,
+      success?: string,
+    ): Promise<boolean> => {
+      setSaving((prev) => new Set(prev).add(key));
       setFailedId(null);
-      setToast(null);
-      setSaving((s) => new Set(s).add(id));
-      const t = window.setTimeout(() => {
-        setSaving((s) => {
-          const next = new Set(s);
-          next.delete(id);
+      try {
+        await action();
+        if (success) setToast(success);
+        return true;
+      } catch (error) {
+        setFailedId(key);
+        setToast(getApiMessage(error, "Couldn't save. Try again."));
+        return false;
+      } finally {
+        setSaving((prev) => {
+          const next = new Set(prev);
+          next.delete(key);
           return next;
         });
-        if (!state?.failSaves) return;
-        setData((d) => restore(d, id, previous));
-        setFailedId(id);
-        setToast(BAZAR_SAVE_ERROR);
-      }, LATENCY_MS);
-      timers.current.push(t);
+      }
     },
-    [state?.failSaves],
+    [],
   );
 
   const save = useCallback(
-    (input: BazarInput) => {
-      const id = input.id ?? `bz_new_${counter.current++}`;
-      runMutation(id, (d) => upsertBazar(d, input, id));
-    },
-    [runMutation],
+    (input: BazarInput) =>
+      runMutation(
+        input.id ?? "new",
+        () => onSave(input),
+        input.id ? "Bazar entry updated" : "Bazar entry added",
+      ),
+    [onSave, runMutation],
   );
 
   const remove = useCallback(
-    (id: string) => runMutation(id, (d) => removeBazar(d, id)),
-    [runMutation],
+    (id: string) => runMutation(id, () => onDelete(id), "Bazar entry deleted"),
+    [onDelete, runMutation],
   );
 
-  const dismissToast = useCallback(() => setToast(null), []);
-
+  const openMonth = useCallback(() => {
+    if (!onCreateMonth) return;
+    void runMutation("month", onCreateMonth, "Month opened");
+  }, [onCreateMonth, runMutation]);
   const { month } = data;
   const desktop = useMediaQuery("(min-width: 768px)");
   const [filter, setFilter] = useState<BazarFilter>(initialFilter ?? noFilter);
@@ -149,7 +133,7 @@ export function BazarView({
     initialDialog ?? null,
   );
   const [deleting, setDeleting] = useState<BazarEntry | null>(
-    () => initial.entries.find((e) => e.id === initialDeleteId) ?? null,
+    () => data.entries.find((e) => e.id === initialDeleteId) ?? null,
   );
   const canEdit = !!month && !month.isLocked;
 
@@ -195,19 +179,24 @@ export function BazarView({
             }
             title={
               manager
-                ? "No active month"
+                ? "No month yet"
                 : "Waiting for the manager to open this month."
             }
             description={
               manager
-                ? "Open a month to start logging bazar for your flatmates."
+                ? "Open the month first, or log the first bazar trip and it opens automatically."
                 : `Bazar entries appear here as soon as ${data.mess.managerFirstName} opens the month.`
             }
             actions={
-              manager && (
-                <Button variant="accent">
+              manager &&
+              onCreateMonth && (
+                <Button
+                  variant="accent"
+                  disabled={saving.has("month")}
+                  onClick={openMonth}
+                >
                   <CalendarPlus />
-                  Open a month
+                  {saving.has("month") ? "Opening…" : "Open this month"}
                 </Button>
               )
             }
@@ -330,6 +319,8 @@ export function BazarView({
     );
   }
 
+  const dialogEntry = dialog?.entry;
+
   return (
     <div className="flex flex-col gap-5 sm:gap-6">
       <BazarHeader data={data} onAdd={openAdd} />
@@ -349,10 +340,17 @@ export function BazarView({
       <BazarEntryDialog
         target={dialog}
         data={data}
+        isPro={isPro}
         onSave={save}
         onDelete={(entry) => {
           setDialog(null);
           setDeleting(entry);
+        }}
+        onUploadReceipt={async (file) =>
+          dialogEntry ? onUploadReceipt(dialogEntry.id, file) : null
+        }
+        onRemoveReceipt={async () => {
+          if (dialogEntry) await onRemoveReceipt(dialogEntry.id);
         }}
         onClose={closeDialog}
       />
@@ -361,11 +359,11 @@ export function BazarView({
         entry={deleting}
         payerName={deleting ? nameOf(deleting.memberId) : ""}
         newRate={deleting ? removeBazar(data, deleting.id).mealRate : 0}
-        onConfirm={() => deleting && remove(deleting.id)}
+        onConfirm={() => deleting && void remove(deleting.id)}
         onClose={closeDelete}
       />
 
-      {toast && <Toast message={toast} onDismiss={dismissToast} />}
+      {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
     </div>
   );
 }

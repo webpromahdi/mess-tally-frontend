@@ -4,10 +4,12 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
+  Check,
   ChevronLeft,
   ChevronRight,
   Pencil,
   Trash2,
+  Undo2,
 } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -44,6 +46,20 @@ export function KindBadge({ kind }: { kind: UtilityEntry["kind"] }) {
   );
 }
 
+/** `GET /utilities/fund` only subtracts bills where `isPaid` is true. */
+export function PaidBadge({ entry }: { entry: UtilityEntry }) {
+  if (entry.kind !== "BILL") return null;
+  return entry.isPaid ? (
+    <Badge variant="status-active" size="sm">
+      Paid
+    </Badge>
+  ) : (
+    <Badge variant="status-pending" size="sm">
+      Unpaid
+    </Badge>
+  );
+}
+
 /** Signed amount: deposits +, bills − (U2). */
 export function AmountText({ entry }: { entry: UtilityEntry }) {
   return (
@@ -68,13 +84,15 @@ interface LedgerTableProps {
   members: UtilityMember[];
   sort: UtilitySort;
   page: number;
-  canEdit: boolean;
+  /** Per-row editability: bills are open to members, deposits are manager-only. */
+  canEdit: (entry: UtilityEntry) => boolean;
   saving: ReadonlySet<string>;
   failedId: string | null;
   onSort: (key: UtilitySortKey) => void;
   onPage: (page: number) => void;
   onEdit: (entry: UtilityEntry) => void;
   onDelete: (entry: UtilityEntry) => void;
+  onTogglePaid: (entry: UtilityEntry) => void;
 }
 
 const headClass =
@@ -133,10 +151,12 @@ export function LedgerTable({
   onPage,
   onEdit,
   onDelete,
+  onTogglePaid,
 }: LedgerTableProps) {
   const pages = Math.max(1, Math.ceil(matchCount / LEDGER_PAGE_SIZE));
   const from = matchCount === 0 ? 0 : (page - 1) * LEDGER_PAGE_SIZE + 1;
   const to = Math.min(matchCount, page * LEDGER_PAGE_SIZE);
+  const showActions = rows.some(canEdit);
 
   return (
     <div>
@@ -167,7 +187,7 @@ export function LedgerTable({
                 align="right"
                 onSort={onSort}
               />
-              {canEdit && (
+              {showActions && (
                 <th scope="col" className={cn(headClass, "w-28 text-right")}>
                   <span className="sr-only">Actions</span>
                 </th>
@@ -192,7 +212,10 @@ export function LedgerTable({
                     <span className="ml-1.5 text-ink-muted">{day.weekday}</span>
                   </td>
                   <td className="h-12 border-b border-line px-4">
-                    <KindBadge kind={e.kind} />
+                    <span className="flex flex-wrap items-center gap-1">
+                      <KindBadge kind={e.kind} />
+                      <PaidBadge entry={e} />
+                    </span>
                   </td>
                   <td className="h-12 border-b border-line px-4">
                     <span className="flex items-center gap-2 whitespace-nowrap">
@@ -210,25 +233,46 @@ export function LedgerTable({
                   <td className="h-12 border-b border-line px-4 text-right font-medium">
                     <AmountText entry={e} />
                   </td>
-                  {canEdit && (
+                  {showActions && (
                     <td className="h-12 border-b border-line px-2 text-right whitespace-nowrap">
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        aria-label={`Edit ${e.kind === "DEPOSIT" ? "deposit" : "bill"} ${title}, ${day.day} ${day.monthShort}`}
-                        onClick={() => onEdit(e)}
-                      >
-                        <Pencil />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        aria-label={`Delete ${e.kind === "DEPOSIT" ? "deposit" : "bill"} ${title}, ${day.day} ${day.monthShort}`}
-                        onClick={() => onDelete(e)}
-                        className="text-error"
-                      >
-                        <Trash2 />
-                      </Button>
+                      {canEdit(e) ? (
+                        <>
+                          {e.kind === "BILL" && (
+                            <Button
+                              variant="ghost"
+                              size="icon-sm"
+                              aria-label={
+                                e.isPaid
+                                  ? `Mark ${title} unpaid`
+                                  : `Mark ${title} paid`
+                              }
+                              disabled={saving.has(e.id)}
+                              onClick={() => onTogglePaid(e)}
+                            >
+                              {e.isPaid ? <Undo2 /> : <Check />}
+                            </Button>
+                          )}
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            aria-label={`Edit ${e.kind === "DEPOSIT" ? "deposit" : "bill"} ${title}, ${day.day} ${day.monthShort}`}
+                            onClick={() => onEdit(e)}
+                          >
+                            <Pencil />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            aria-label={`Delete ${e.kind === "DEPOSIT" ? "deposit" : "bill"} ${title}, ${day.day} ${day.monthShort}`}
+                            onClick={() => onDelete(e)}
+                            className="text-error"
+                          >
+                            <Trash2 />
+                          </Button>
+                        </>
+                      ) : (
+                        <span className="sr-only">Read-only</span>
+                      )}
                     </td>
                   )}
                 </tr>
@@ -248,7 +292,7 @@ export function LedgerTable({
               <td className="h-12 bg-silver-100 px-4 text-right font-semibold text-ink tabular-nums">
                 {formatBDT(matchNet, { signed: true })}
               </td>
-              {canEdit && <td className="bg-silver-100" />}
+              {showActions && <td className="bg-silver-100" />}
             </tr>
           </tfoot>
         </table>

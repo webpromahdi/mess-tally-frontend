@@ -101,6 +101,13 @@ export function rowPermissions(
       hint: "The owner can’t be demoted or removed. Transfer ownership first.",
     };
   }
+  if (m.isManager) {
+    return {
+      canChangeRole: false,
+      canRemove: true,
+      hint: "Transfer the manager position to another member before changing this role.",
+    };
+  }
   return { canChangeRole: true, canRemove: true, hint: null };
 }
 

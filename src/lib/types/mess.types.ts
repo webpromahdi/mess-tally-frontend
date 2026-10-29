@@ -101,8 +101,24 @@ export interface MessMemberDto {
   leftAt: string | null;
 }
 
-/** `GET /mess/members?status=` */
+/** `GET /mess/members?status=` — API.md §12. */
 export interface MessMembersResponseData {
   members: MessMemberDto[];
   total: number;
+}
+
+/** `GET /mess/members/pending` — manager-only, oldest first. */
+export type PendingMembersResponseData = MessMembersResponseData;
+
+/** `DELETE /mess/members/:id` */
+export interface RemoveMemberResponseData {
+  id: string;
+  deleted: boolean;
+}
+
+/** `POST /mess/leave` */
+export interface LeaveMessResponseData {
+  messId: string;
+  leftAt: string;
+  activeMessId: null;
 }

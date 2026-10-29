@@ -163,3 +163,25 @@ export interface BulkMealsInput {
   date: string;
   entries: Array<Omit<UpsertMealInput, "date">>;
 }
+
+/** `PATCH /meals/me` — PRO self-service, today only. Omitted counts stay unchanged. */
+export interface SelfMealInput {
+  date: string;
+  breakfast?: number;
+  lunch?: number;
+  dinner?: number;
+  guestMeals?: number;
+}
+
+export interface MealEntryResponseData {
+  entry: MealEntryDto;
+}
+
+export interface BulkMealsResponseData {
+  entries: MealEntryDto[];
+}
+
+export interface DeleteMealResponseData {
+  id: string;
+  deleted: boolean;
+}

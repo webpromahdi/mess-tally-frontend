@@ -6,7 +6,7 @@ import { formatBDT } from "@/lib/format";
 import type { UtilityEntry, UtilityMember } from "@/lib/types/utility.types";
 import { groupByDate, netOf } from "@/lib/utility";
 import { cn } from "@/lib/utils";
-import { AmountText, entryTitle, KindBadge } from "./ledger-table";
+import { AmountText, entryTitle, KindBadge, PaidBadge } from "./ledger-table";
 
 /** Mobile replacement for the table: date-grouped cards with sticky date headers. */
 export function LedgerCardList({
@@ -19,7 +19,8 @@ export function LedgerCardList({
 }: {
   entries: UtilityEntry[];
   members: UtilityMember[];
-  canEdit: boolean;
+  /** Per-row editability: bills are open to members, deposits are manager-only. */
+  canEdit: (entry: UtilityEntry) => boolean;
   saving: ReadonlySet<string>;
   failedId: string | null;
   onOpen: (entry: UtilityEntry) => void;
@@ -43,7 +44,10 @@ export function LedgerCardList({
                   {e.kind === "DEPOSIT" ? (
                     <Avatar name={title} size="md" />
                   ) : (
-                    <KindBadge kind="BILL" />
+                    <span className="flex flex-col items-start gap-1">
+                      <KindBadge kind="BILL" />
+                      <PaidBadge entry={e} />
+                    </span>
                   )}
                   <span className="min-w-0 flex-1 text-left">
                     <span className="block truncate text-body font-medium text-ink">
@@ -70,7 +74,7 @@ export function LedgerCardList({
               );
               return (
                 <li key={e.id}>
-                  {canEdit ? (
+                  {canEdit(e) ? (
                     <button
                       type="button"
                       onClick={() => onOpen(e)}
