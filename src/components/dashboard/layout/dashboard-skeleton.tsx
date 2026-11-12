@@ -4,7 +4,7 @@ import { DashboardLayout, edgeToEdge } from "./dashboard-layout";
 
 function StatSkeleton() {
   return (
-    <Card className="flex flex-col gap-6 p-4 sm:p-5">
+    <Card className="flex flex-col gap-6 p-5 sm:p-6">
       <div className="flex items-start justify-between">
         <Skeleton className="h-3 w-24" />
         <Skeleton className="size-8 rounded-lg" />
@@ -121,7 +121,7 @@ export function DashboardSkeleton() {
         memberChart={<BlockSkeleton chart="bars" className={edgeToEdge} />}
         bazarChart={<BlockSkeleton chart="donut" className={edgeToEdge} />}
         summary={
-          <Card className="flex items-center gap-4 p-4 sm:p-5">
+          <Card className="flex items-center gap-4 p-5 sm:p-6">
             <Skeleton className="size-10 rounded-xl" />
             <div className="flex flex-1 flex-col gap-2">
               <Skeleton className="h-4 w-32" />

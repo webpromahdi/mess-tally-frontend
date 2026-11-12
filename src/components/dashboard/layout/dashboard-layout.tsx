@@ -39,7 +39,7 @@ export function DashboardLayout({
   messInfo: ReactNode;
 }) {
   return (
-    <div className="flex min-w-0 flex-col gap-5 sm:gap-6">
+    <div className="flex min-w-0 flex-col gap-4 sm:gap-5 lg:gap-6">
       {header}
       {banners}
 
@@ -47,7 +47,7 @@ export function DashboardLayout({
         <Eyebrow id="kpi-heading" className="mb-3">
           {kpiLabel}
         </Eyebrow>
-        <div className="grid grid-cols-1 gap-3 xs:grid-cols-2 sm:gap-4 xl:grid-cols-4 2xl:grid-cols-5">
+        <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 sm:gap-5 lg:gap-6 xl:grid-cols-4 2xl:grid-cols-5">
           <div className="order-2 col-span-full flex min-w-0 flex-col *:flex-1 sm:col-span-1 xl:order-1 2xl:col-span-2">
             {mealRate}
           </div>
@@ -63,7 +63,7 @@ export function DashboardLayout({
         </div>
       </section>
 
-      <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-12">
+      <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-12 lg:gap-6">
         <div className="flex min-w-0 flex-col *:flex-1 sm:col-span-2 lg:col-span-5 lg:col-start-8 lg:row-start-1 xl:col-span-4 xl:col-start-9">
           {fund}
         </div>

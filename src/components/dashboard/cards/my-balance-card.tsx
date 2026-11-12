@@ -26,7 +26,7 @@ export function MyBalanceCard({
 }) {
   const role = balanceRole(balance);
   return (
-    <Card className={cn("flex flex-col gap-4 p-4 sm:p-5", className)}>
+    <Card className={cn("flex flex-col gap-4 p-5 sm:p-6", className)}>
       <div className="flex items-start justify-between gap-3">
         <p className="text-label text-ink-muted">
           {closed ? "My final balance" : "My meal balance"}

@@ -36,7 +36,8 @@ interface BazarEntryFormProps {
   autoFocus?: boolean;
   /** Receipt uploads are a PRO feature (API.md §33–34). */
   isPro?: boolean;
-  onSave: (input: BazarInput) => Promise<boolean>;
+  /** `receipt` is only passed when creating; it is uploaded after the entry exists. */
+  onSave: (input: BazarInput, receipt?: File) => Promise<boolean>;
   onDelete?: () => void;
   /** Resolves with the new receipt URL, or `null` when none was returned. */
   onUploadReceipt?: (file: File) => Promise<string | null>;
@@ -83,9 +84,22 @@ export function BazarEntryForm({
   const [receiptUrl, setReceiptUrl] = useState(entry?.receiptUrl ?? null);
   const [receiptBusy, setReceiptBusy] = useState(false);
   const [receiptError, setReceiptError] = useState<string | null>(null);
+  // Create mode: the file waits here until the entry is saved.
+  const [pendingReceipt, setPendingReceipt] = useState<File | null>(null);
 
   const canManageReceipt = Boolean(entry && isPro);
+  const canQueueReceipt = !entry && Boolean(isPro);
   const locked = month.isLocked;
+
+  const pickReceipt = (file: File) => {
+    if (canQueueReceipt) {
+      const invalid = validateReceipt(file);
+      setReceiptError(invalid ?? null);
+      setPendingReceipt(invalid ? null : file);
+      return;
+    }
+    void uploadReceipt(file);
+  };
 
   const uploadReceipt = async (file: File) => {
     if (!onUploadReceipt) return;
@@ -151,7 +165,7 @@ export function BazarEntryForm({
     setSaving(true);
     try {
       // Keep the sheet open on failure so the typed values aren't lost.
-      if (await onSave(input)) onClose();
+      if (await onSave(input, pendingReceipt ?? undefined)) onClose();
     } finally {
       setSaving(false);
     }
@@ -245,44 +259,64 @@ export function BazarEntryForm({
                 </Button>
               )}
             </>
+          ) : pendingReceipt ? (
+            <>
+              <span className="min-w-0 truncate font-medium text-ink">
+                {pendingReceipt.name}
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="text-error"
+                disabled={saving}
+                onClick={() => setPendingReceipt(null)}
+              >
+                <Trash2 />
+                Remove
+              </Button>
+            </>
           ) : (
             <span>
-              {entry
-                ? isPro
+              {!isPro
+                ? "Receipt uploads are a PRO feature."
+                : entry
                   ? "No receipt attached yet."
-                  : "Receipt uploads are a PRO feature."
-                : "Save the entry, then attach a receipt."}
+                  : "Optional: attach a receipt. It uploads when you save."}
             </span>
           )}
-          {!receiptUrl && canManageReceipt && !locked && (
-            <label
-              className={cn(
-                "inline-flex min-h-8 cursor-pointer items-center gap-1.5 rounded-md border border-line bg-surface px-3 text-body-sm font-medium text-ink transition-colors hover:bg-silver-100",
-                receiptBusy && "pointer-events-none opacity-60",
-              )}
-            >
-              <Upload aria-hidden className="size-4" />
-              {receiptBusy ? "Uploading…" : "Attach receipt"}
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                className="sr-only"
-                disabled={receiptBusy}
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  e.target.value = "";
-                  if (file) void uploadReceipt(file);
-                }}
-              />
-            </label>
-          )}
+          {!receiptUrl &&
+            !pendingReceipt &&
+            (canManageReceipt || canQueueReceipt) &&
+            !locked && (
+              <label
+                className={cn(
+                  "inline-flex min-h-8 cursor-pointer items-center gap-1.5 rounded-md border border-line bg-surface px-3 text-body-sm font-medium text-ink transition-colors hover:bg-silver-100",
+                  receiptBusy && "pointer-events-none opacity-60",
+                )}
+              >
+                <Upload aria-hidden className="size-4" />
+                {receiptBusy ? "Uploading…" : "Attach receipt"}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="sr-only"
+                  disabled={receiptBusy}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    e.target.value = "";
+                    if (file) pickReceipt(file);
+                  }}
+                />
+              </label>
+            )}
         </div>
         {receiptError ? (
           <p role="alert" className="text-error">
             {receiptError}
           </p>
         ) : (
-          canManageReceipt &&
+          (canManageReceipt || canQueueReceipt) &&
           !locked && (
             <p className="text-caption">JPEG, PNG or WebP · up to 5 MB.</p>
           )
@@ -330,7 +364,11 @@ export function BazarEntryForm({
             Cancel
           </Button>
           <Button type="submit" variant="primary" disabled={saving}>
-            {saving ? "Saving…" : "Save Bazar Entry"}
+            {saving
+              ? pendingReceipt
+                ? "Saving & uploading…"
+                : "Saving…"
+              : "Save Bazar Entry"}
           </Button>
         </div>
       </div>

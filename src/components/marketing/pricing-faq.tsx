@@ -13,17 +13,17 @@ const faqList: FAQItem[] = [
   {
     question: "Does each member in our mess have to pay ৳ 100?",
     answer:
-      "No! The subscription is flat-rate per mess, not per person. A single payment of ৳ 100/month covers the entire flat — including the manager and all flatmates, whether your mess has 6 members or 25 members.",
+      "No! The subscription is flat-rate per mess, not per person. A single payment of ৳ 100/month covers the entire flat — including the manager and all flatmates, up to 100 active members.",
   },
   {
     question: "How do we pay for MessTally PRO in Bangladesh?",
     answer:
-      "Managers can activate PRO directly using bKash. When your manager clicks 'Upgrade to PRO', an automated bKash gateway checkout opens. Once verified, PRO features (unlimited members, receipts, self-service meals, past archives) activate immediately for everyone.",
+      "Managers can activate PRO directly using bKash. When your manager clicks 'Upgrade to PRO', an automated bKash gateway checkout opens. Once verified, PRO features (up to 100 active members, receipts, self-service meals, past archives) activate immediately for everyone.",
   },
   {
     question: "What happens if we have more than 5 members on the Free plan?",
     answer:
-      "The Starter plan is completely free forever for messes with up to 5 active members. When your 6th flatmate accepts the room code invite, your mess can upgrade to PRO to unlock unlimited member slots.",
+      "The Starter plan is completely free forever for messes with up to 5 active members. When your 6th flatmate accepts the room code invite, your mess can upgrade to PRO to support up to 100 active members.",
   },
   {
     question: "What happens to our meal data if our PRO subscription expires?",

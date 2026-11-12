@@ -180,7 +180,7 @@ export function PricingCards({ billingCycle }: PricingCardsProps) {
             <Zap className="size-5 text-brand-accent fill-brand-accent" />
           </h3>
           <p className="mt-2 text-xs sm:text-sm text-silver-300 leading-relaxed min-h-[40px]">
-            Unlimited members, receipt scans, member self-service, and past
+            Up to 100 members, receipt scans, member self-service, and past
             month archives for a seamless bachelor life.
           </p>
 
@@ -233,8 +233,8 @@ export function PricingCards({ billingCycle }: PricingCardsProps) {
                 <Check className="size-3.5 stroke-[2.5]" aria-hidden="true" />
               </div>
               <span className="leading-tight">
-                <strong className="text-white">Unlimited active members</strong>{" "}
-                (no 5-member limit)
+                <strong className="text-white">Up to 100 active members</strong>{" "}
+                (instead of 5 on Free)
               </span>
             </li>
             <li className="flex items-start gap-3">
@@ -356,7 +356,7 @@ export function PricingCards({ billingCycle }: PricingCardsProps) {
               </div>
               <span className="leading-tight">
                 <strong className="text-foreground">
-                  30 to 200+ flatmates
+                  100+ flatmates
                 </strong>{" "}
                 per hall or hostel
               </span>

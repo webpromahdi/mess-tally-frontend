@@ -9,6 +9,7 @@ export type NavKey =
 
 export interface ShellUser {
   name: string;
+  avatarUrl?: string | null;
   /** Explicit role subtitle, e.g. "Owner · Manager" or "Member" (Design.md §11.1). */
   roleLabel: string;
   isManager: boolean;

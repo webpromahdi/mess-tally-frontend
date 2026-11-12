@@ -3,6 +3,7 @@
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
+import { toast } from "sonner";
 import { EmptyState, ErrorState, IconTile } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -16,7 +17,7 @@ import {
   useUploadBazarReceipt,
   useWorkspace,
 } from "@/hooks";
-import { isUpgradeRequired } from "@/lib/apiError";
+import { getApiMessage, isUpgradeRequired } from "@/lib/apiError";
 import { todayIso } from "@/lib/dates";
 import { toBazarData } from "@/lib/mappers/bazar.mapper";
 import type { BazarInput } from "@/lib/types/bazar.types";
@@ -107,7 +108,7 @@ export function BazarPage() {
   const refetch = () =>
     Promise.all([workspace.refetch(), bazarQuery.refetch()]);
 
-  const handleSave = async (input: BazarInput) => {
+  const handleSave = async (input: BazarInput, receipt?: File) => {
     const parsed = parseEntry(input);
     if (input.id) {
       await updateBazar.mutateAsync({
@@ -121,12 +122,28 @@ export function BazarPage() {
       });
       return;
     }
-    await createBazar.mutateAsync({
+    const created = await createBazar.mutateAsync({
       shopperId: parsed.memberId,
       bazarDate: parsed.date,
       amount: parsed.amount,
       ...(parsed.title ? { title: parsed.title } : {}),
     });
+    if (!receipt) return;
+    // The entry already exists, so an upload failure must not fail the save:
+    // retrying the form would create a duplicate entry.
+    try {
+      await uploadReceipt.mutateAsync({
+        id: created.data.entry.id,
+        receipt,
+      });
+    } catch (error) {
+      toast.error(
+        getApiMessage(
+          error,
+          "Entry saved, but the receipt didn't upload. Open the entry to attach it again.",
+        ),
+      );
+    }
   };
 
   const handleDelete = async (entryId: string) => {

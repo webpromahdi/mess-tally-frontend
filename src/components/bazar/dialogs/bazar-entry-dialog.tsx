@@ -30,7 +30,7 @@ export function BazarEntryDialog({
   target: BazarDialogTarget | null;
   data: BazarData;
   isPro: boolean;
-  onSave: (input: BazarInput) => Promise<boolean>;
+  onSave: (input: BazarInput, receipt?: File) => Promise<boolean>;
   onDelete: (entry: BazarEntry) => void;
   /** Resolves with the new receipt URL, or `null` when none was returned. */
   onUploadReceipt: (file: File) => Promise<string | null>;

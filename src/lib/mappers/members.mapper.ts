@@ -44,7 +44,7 @@ export function toMembersData({
       plan,
       roomCode: mess.roomCode,
       managerFirstName: mess.managerFirstName,
-      memberCap: plan === "PRO" ? Number.MAX_SAFE_INTEGER : 5,
+      memberCap: plan === "PRO" ? 100 : 5,
     },
     members: records,
     pendingCount: viewer.isManager ? pending.length : null,

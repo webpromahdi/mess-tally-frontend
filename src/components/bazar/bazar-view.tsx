@@ -43,7 +43,8 @@ export interface BazarViewProps {
   initialDeleteId?: string;
   /** Replace the list card with an inline error (summary strip stays). */
   listError?: boolean;
-  onSave: (input: BazarInput) => Promise<void>;
+  /** `receipt` (PRO, create only) is uploaded right after the entry is created. */
+  onSave: (input: BazarInput, receipt?: File) => Promise<void>;
   onDelete: (entryId: string) => Promise<void>;
   /** Resolves with the new receipt URL, or `null` when none was returned. */
   onUploadReceipt: (entryId: string, file: File) => Promise<string | null>;
@@ -100,10 +101,10 @@ export function BazarView({
   );
 
   const save = useCallback(
-    (input: BazarInput) =>
+    (input: BazarInput, receipt?: File) =>
       runMutation(
         input.id ?? "new",
-        () => onSave(input),
+        () => onSave(input, receipt),
         input.id ? "Bazar entry updated" : "Bazar entry added",
       ),
     [onSave, runMutation],

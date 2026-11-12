@@ -65,9 +65,9 @@ export function DashboardView({
   if (!month || !meal) {
     const manager = viewer.isManager;
     return (
-      <div className="flex flex-col gap-5 sm:gap-6">
+      <div className="flex flex-col gap-4 sm:gap-5 lg:gap-6">
         <DashboardHeader data={data} />
-        <div className="grid gap-4 sm:gap-6 lg:grid-cols-12">
+        <div className="grid gap-4 sm:gap-5 lg:grid-cols-12 lg:gap-6">
           <Card className="lg:col-span-8">
             <EmptyState
               size="lg"

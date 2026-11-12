@@ -134,7 +134,7 @@ export function MembersView({
         <Banner
           tone="warning"
           title="Member limit reached"
-          description={`The ${mess.plan === "PRO" ? "Pro" : "Free"} plan allows ${pluralMembers(mess.memberCap)}. Remove someone or upgrade to approve more.`}
+          description={`The ${mess.plan === "PRO" ? "Pro" : "Free"} plan allows ${pluralMembers(mess.memberCap)}. ${mess.plan === "PRO" ? "Remove someone to approve more." : "Remove someone or upgrade to approve more."}`}
         />
       )}
 

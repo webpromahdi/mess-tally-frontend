@@ -7,7 +7,12 @@ import {
   SimpleMenuItem,
   SimpleMenuSeparator,
 } from "@/components/shared";
-import { Avatar } from "@/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  initials,
+} from "@/components/ui/avatar";
 import { useLogout } from "@/hooks";
 import { cn } from "@/lib/utils";
 import type { ShellUser } from "./types";
@@ -43,7 +48,14 @@ export function ProfileMenu({
             collapsed ? "size-11 justify-center" : "min-h-12 p-2",
           )}
         >
-          <Avatar name={user.name} tone="accent" size="sm" />
+          <Avatar aria-hidden="true" size="sm">
+            {user.avatarUrl ? (
+              <AvatarImage src={user.avatarUrl} alt="" />
+            ) : null}
+            <AvatarFallback className="bg-marigold-500 text-aubergine-950">
+              {initials(user.name)}
+            </AvatarFallback>
+          </Avatar>
           {!collapsed && (
             <>
               <span className="min-w-0 flex-1">

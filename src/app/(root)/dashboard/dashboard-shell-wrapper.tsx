@@ -108,6 +108,7 @@ export function DashboardShellWrapper({ children }: { children: ReactNode }) {
   const shellProps: ShellProps = {
     user: {
       name: workspace.viewer.name,
+      avatarUrl: workspace.user?.profile?.imageUrl,
       roleLabel: viewerRoleLabel(workspace.viewer),
       isManager: workspace.viewer.isManager,
     },

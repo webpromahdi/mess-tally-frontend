@@ -30,7 +30,7 @@ export function MealRateCard({
   return (
     <Card
       className={cn(
-        "relative overflow-hidden border-aubergine-900 bg-aubergine-800 text-white",
+        "relative gap-0 overflow-hidden border-aubergine-900 bg-aubergine-800 py-0 text-white",
         className,
       )}
     >
@@ -45,7 +45,7 @@ export function MealRateCard({
         <span className="h-28 w-3 rounded-t-md bg-marigold-400" />
       </div>
 
-      <div className="relative p-4 sm:p-5">
+      <div className="relative p-5 sm:p-6">
         <div className="flex items-start justify-between gap-3">
           <p className="text-label text-white/70">Meal Rate · {month.label}</p>
           <span
