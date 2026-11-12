@@ -2,7 +2,8 @@
 
 import { CalendarPlus, CalendarX, ReceiptText } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Banner, EmptyState, IconTile, Toast } from "@/components/shared";
+import { toast } from "sonner";
+import { Banner, EmptyState, IconTile } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMediaQuery } from "@/hooks";
@@ -57,7 +58,6 @@ export function SummaryView({
   const { month, meal, viewer } = data;
   const desktop = useMediaQuery("(min-width: 768px)");
   const [sort, setSort] = useState<SummarySort>(initialSort ?? defaultSort);
-  const [toast, setToast] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
   const [statementExporting, setStatementExporting] = useState(false);
   const [openingMonth, setOpeningMonth] = useState(false);
@@ -83,10 +83,10 @@ export function SummaryView({
   ): Promise<boolean> => {
     try {
       await action();
-      setToast(success);
+      toast.success(success);
       return true;
     } catch (error) {
-      setToast(getApiMessage(error, fallback));
+      toast.error(getApiMessage(error, fallback));
       return false;
     }
   };
@@ -158,9 +158,9 @@ export function SummaryView({
       .join("\n");
     try {
       await navigator.clipboard.writeText(text);
-      setToast("Settlement copied");
+      toast.success("Settlement copied");
     } catch {
-      setToast("Couldn't copy the settlement. Try again.");
+      toast.error("Couldn't copy the settlement. Try again.");
     }
   };
 
@@ -204,8 +204,6 @@ export function SummaryView({
             }
           />
         </Card>
-
-        {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
       </div>
     );
   }
@@ -290,8 +288,6 @@ export function SummaryView({
         onConfirm={() => void confirmClose()}
         onClose={() => setCloseOpen(false)}
       />
-
-      {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
     </div>
   );
 }

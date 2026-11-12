@@ -1,6 +1,6 @@
 "use client";
 
-import { Ellipsis, LogOut, Settings, UserRound } from "lucide-react";
+import { Ellipsis, Loader2, LogOut, Settings, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   SimpleDropdown,
@@ -8,6 +8,7 @@ import {
   SimpleMenuSeparator,
 } from "@/components/shared";
 import { Avatar } from "@/components/ui/avatar";
+import { useLogout } from "@/hooks";
 import { cn } from "@/lib/utils";
 import type { ShellUser } from "./types";
 
@@ -20,6 +21,13 @@ export function ProfileMenu({
   collapsed?: boolean;
 }) {
   const router = useRouter();
+  const logout = useLogout();
+  // Full reload: useLogout already cleared the cache, and a client-side hop
+  // would let the dashboard refetch and bounce to /login?expired=1.
+  const signOut = () =>
+    logout.mutate(undefined, {
+      onSettled: () => window.location.replace("/login"),
+    });
   return (
     <SimpleDropdown
       side="top"
@@ -81,11 +89,13 @@ export function ProfileMenu({
           </SimpleMenuItem>
           <SimpleMenuSeparator />
           <SimpleMenuItem
-            onClick={close}
-            className="text-error [&_svg]:text-error"
+            onClick={signOut}
+            disabled={logout.isPending}
+            aria-busy={logout.isPending}
+            className="text-error [&_svg]:text-error disabled:cursor-wait disabled:opacity-70"
           >
-            <LogOut />
-            Sign out
+            {logout.isPending ? <Loader2 className="animate-spin" /> : <LogOut />}
+            {logout.isPending ? "Signing out…" : "Sign out"}
           </SimpleMenuItem>
         </>
       )}

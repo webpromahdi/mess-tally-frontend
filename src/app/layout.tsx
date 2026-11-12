@@ -52,7 +52,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-background text-foreground antialiased">
         <Providers>
           {children}
-          <Toaster position="bottom-right" richColors />
+          <Toaster position="top-right" duration={3000} richColors />
         </Providers>
       </body>
     </html>

@@ -11,7 +11,6 @@ import type {
 function todayIso() {
   return new Date().toISOString().slice(0, 10);
 }
-const NEXT_CODE = "H8Q2LD";
 
 export function activeMembers(data: MembersData): MemberRecord[] {
   return data.members.filter((m) => m.status === "ACTIVE");
@@ -73,10 +72,6 @@ export function removeMember(data: MembersData, id: string): MembersData {
   return patch(data, id, (m) => ({ ...m, status: "LEFT", leftOn: todayIso() }));
 }
 
-export function regenerateCode(data: MembersData): MembersData {
-  return { ...data, mess: { ...data.mess, roomCode: NEXT_CODE } };
-}
-
 export function hasOpenBalance(m: MemberRecord): boolean {
   return m.activeBalance !== null && !isSettled(m.activeBalance);
 }
@@ -84,35 +79,49 @@ export function hasOpenBalance(m: MemberRecord): boolean {
 export interface RowPermissions {
   canChangeRole: boolean;
   canRemove: boolean;
+  canTransfer: boolean;
   hint: string | null;
+}
+
+/** Managers and the owner get a row menu; the owner alone can hand over ownership. */
+export function hasRowActions(viewer: Viewer, m: MemberRecord): boolean {
+  return (viewer.isManager || viewer.role === "OWNER") && m.status === "ACTIVE";
 }
 
 export function rowPermissions(
   viewer: Viewer,
   m: MemberRecord,
 ): RowPermissions {
+  const canTransfer =
+    viewer.role === "OWNER" &&
+    m.status === "ACTIVE" &&
+    m.id !== viewer.memberId;
   if (!viewer.isManager || m.status !== "ACTIVE") {
-    return { canChangeRole: false, canRemove: false, hint: null };
+    return { canChangeRole: false, canRemove: false, canTransfer, hint: null };
   }
   if (m.role === "OWNER") {
     return {
       canChangeRole: false,
       canRemove: false,
-      hint: "The owner can’t be demoted or removed. Transfer ownership first.",
+      canTransfer,
+      hint: "The owner can’t be demoted or removed. The owner can make another member owner first.",
     };
   }
   if (m.isManager) {
     return {
       canChangeRole: false,
       canRemove: true,
+      canTransfer,
       hint: "Transfer the manager position to another member before changing this role.",
     };
   }
-  return { canChangeRole: true, canRemove: true, hint: null };
+  return { canChangeRole: true, canRemove: true, canTransfer, hint: null };
 }
 
 export function formatDate(iso: string): string {
-  return new Date(`${iso}T00:00:00`).toLocaleDateString("en-GB", {
+  // The API sends full timestamps; local fixtures send bare `YYYY-MM-DD`.
+  const date = new Date(iso.length === 10 ? `${iso}T00:00:00` : iso);
+  return date.toLocaleDateString("en-GB", {
     day: "numeric",
     month: "short",
     year: "numeric",

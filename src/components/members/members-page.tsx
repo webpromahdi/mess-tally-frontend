@@ -11,6 +11,7 @@ import {
   useRemoveMember,
   useSummary,
   useTransferManager,
+  useTransferOwner,
   useWorkspace,
 } from "@/hooks";
 import { toMembersData } from "@/lib/mappers/members.mapper";
@@ -24,10 +25,14 @@ export function MembersPage() {
   const left = useMessMembers("LEFT");
   const rejected = useMessMembers("REJECTED");
   const pending = usePendingMembers(workspace.viewer?.isManager ?? false);
-  const summary = useSummary(selectedMonth, Boolean(workspace.viewer?.isManager));
+  const summary = useSummary(
+    selectedMonth,
+    Boolean(workspace.viewer?.isManager),
+  );
   const approve = useApproveMember();
   const reject = useRejectMember();
   const transferManager = useTransferManager();
+  const transferOwner = useTransferOwner();
   const remove = useRemoveMember();
   const leave = useLeaveMess();
 
@@ -91,6 +96,9 @@ export function MembersPage() {
           },
           remove: async (id) => {
             await remove.mutateAsync(id);
+          },
+          transferOwner: async (id) => {
+            await transferOwner.mutateAsync(id);
           },
           leave: async () => {
             await leave.mutateAsync();

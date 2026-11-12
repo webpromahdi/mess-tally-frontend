@@ -13,5 +13,4 @@ export * from "./number-stepper";
 export * from "./popover";
 export * from "./progress";
 export * from "./simple-dropdown";
-export * from "./toast";
 export * from "./user-menu";

@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import {
   approveMember,
-  regenerateCode,
   rejectMember,
   removeMember,
   setManager,
@@ -16,13 +16,13 @@ const LATENCY_MS = 450;
 export interface UseMembersStateOptions {
   /** Every action fails and reverts. */
   failSaves?: boolean;
-  initialToast?: string;
   initialFailedId?: string;
   actions?: {
     approve: (id: string) => Promise<void>;
     reject: (id: string) => Promise<void>;
     changeManager: (id: string, isManager: boolean) => Promise<void>;
     remove: (id: string) => Promise<void>;
+    transferOwner: (id: string) => Promise<void>;
     leave: () => Promise<void>;
   };
 }
@@ -32,7 +32,6 @@ export function useMembersState(
   initial: MembersData,
   {
     failSaves,
-    initialToast,
     initialFailedId,
     actions,
   }: UseMembersStateOptions = {},
@@ -42,7 +41,6 @@ export function useMembersState(
   const [failedId, setFailedId] = useState<string | null>(
     initialFailedId ?? null,
   );
-  const [toast, setToast] = useState<string | null>(initialToast ?? null);
   const dataRef = useRef(data);
   dataRef.current = data;
   useEffect(() => {
@@ -63,7 +61,6 @@ export function useMembersState(
       const previous = dataRef.current;
       setData(apply);
       setFailedId(null);
-      setToast(null);
       setSaving((s) => new Set(s).add(id));
       const t = window.setTimeout(() => {
         setSaving((s) => {
@@ -74,9 +71,9 @@ export function useMembersState(
         if (failSaves) {
           setData(previous);
           setFailedId(id);
-          setToast(MEMBERS_SAVE_ERROR);
+          toast.error(MEMBERS_SAVE_ERROR);
         } else if (success) {
-          setToast(success);
+          toast.success(success);
         }
       }, LATENCY_MS);
       timers.current.push(t);
@@ -84,75 +81,101 @@ export function useMembersState(
     [failSaves],
   );
 
-  const approve = useCallback(async (id: string) => {
-    if (failSaves) return run(id, (d) => approveMember(d, id), "Request approved");
-    try {
-      await actions?.approve(id);
-      setToast("Request approved");
-    } catch {
-      setFailedId(id);
-      setToast(MEMBERS_SAVE_ERROR);
-    }
-  }, [actions, failSaves, run]);
-  const reject = useCallback(async (id: string) => {
-    if (failSaves) return run(id, (d) => rejectMember(d, id), "Request rejected");
-    try {
-      await actions?.reject(id);
-      setToast("Request rejected");
-    } catch {
-      setFailedId(id);
-      setToast(MEMBERS_SAVE_ERROR);
-    }
-  }, [actions, failSaves, run]);
-  const changeManager = useCallback(async (id: string, isManager: boolean) => {
-    if (failSaves) return run(id, (d) => setManager(d, id, isManager), "Role updated");
-    try {
-      await actions?.changeManager(id, isManager);
-      setToast("Role updated");
-    } catch {
-      setFailedId(id);
-      setToast(MEMBERS_SAVE_ERROR);
-    }
-  }, [actions, failSaves, run]);
-  const remove = useCallback(async (id: string) => {
-    if (failSaves) return run(id, (d) => removeMember(d, id), "Member removed");
-    try {
-      await actions?.remove(id);
-      setToast("Member removed");
-    } catch {
-      setFailedId(id);
-      setToast(MEMBERS_SAVE_ERROR);
-    }
-  }, [actions, failSaves, run]);
-  const regenerate = useCallback(
-    () => run("code", regenerateCode, "New room code generated"),
-    [run],
+  const approve = useCallback(
+    async (id: string) => {
+      if (failSaves)
+        return run(id, (d) => approveMember(d, id), "Request approved");
+      try {
+        await actions?.approve(id);
+        toast.success("Request approved");
+      } catch {
+        setFailedId(id);
+        toast.error(MEMBERS_SAVE_ERROR);
+      }
+    },
+    [actions, failSaves, run],
+  );
+  const reject = useCallback(
+    async (id: string) => {
+      if (failSaves)
+        return run(id, (d) => rejectMember(d, id), "Request rejected");
+      try {
+        await actions?.reject(id);
+        toast.success("Request rejected");
+      } catch {
+        setFailedId(id);
+        toast.error(MEMBERS_SAVE_ERROR);
+      }
+    },
+    [actions, failSaves, run],
+  );
+  const changeManager = useCallback(
+    async (id: string, isManager: boolean) => {
+      if (failSaves)
+        return run(id, (d) => setManager(d, id, isManager), "Role updated");
+      try {
+        await actions?.changeManager(id, isManager);
+        toast.success("Role updated");
+      } catch {
+        setFailedId(id);
+        toast.error(MEMBERS_SAVE_ERROR);
+      }
+    },
+    [actions, failSaves, run],
+  );
+  const remove = useCallback(
+    async (id: string) => {
+      if (failSaves)
+        return run(id, (d) => removeMember(d, id), "Member removed");
+      try {
+        await actions?.remove(id);
+        toast.success("Member removed");
+      } catch {
+        setFailedId(id);
+        toast.error(MEMBERS_SAVE_ERROR);
+      }
+    },
+    [actions, failSaves, run],
+  );
+  const transferOwner = useCallback(
+    async (id: string) => {
+      try {
+        await actions?.transferOwner(id);
+        toast.success("Ownership transferred");
+      } catch {
+        setFailedId(id);
+        toast.error(MEMBERS_SAVE_ERROR);
+      }
+    },
+    [actions],
   );
   const leave = useCallback(async () => {
-    if (failSaves) return run("leave", (d) => removeMember(d, d.viewer.memberId), "You left the mess");
+    if (failSaves)
+      return run(
+        "leave",
+        (d) => removeMember(d, d.viewer.memberId),
+        "You left the mess",
+      );
     try {
       await actions?.leave();
-      setToast("You left the mess");
+      toast.success("You left the mess");
     } catch {
       setFailedId("leave");
-      setToast(MEMBERS_SAVE_ERROR);
+      toast.error(MEMBERS_SAVE_ERROR);
     }
   }, [actions, failSaves, run]);
-  const notify = useCallback((message: string) => setToast(message), []);
-  const dismissToast = useCallback(() => setToast(null), []);
+  const notify = useCallback((message: string) => toast.success(message), []);
 
   return {
     data,
     saving,
     failedId,
-    toast,
     approve,
     reject,
     changeManager,
     remove,
-    regenerate,
+    transferOwner,
     leave,
     notify,
-    dismissToast,
   };
 }

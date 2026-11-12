@@ -2,6 +2,7 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
+  Crown,
   MoreHorizontal,
   ShieldCheck,
   UserMinus,
@@ -10,7 +11,7 @@ import { SimpleDropdown, SimpleMenuItem } from "@/components/shared";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatDate, rowPermissions } from "@/lib/members";
+import { formatDate, hasRowActions, rowPermissions } from "@/lib/members";
 import type { Viewer } from "@/lib/types/dashboard.types";
 import type {
   MemberDialogKind,
@@ -117,6 +118,17 @@ function RowMenu({
             <UserMinus className="size-4" />
             Remove from mess
           </SimpleMenuItem>
+          {perms.canTransfer && (
+            <SimpleMenuItem
+              onClick={() => {
+                close();
+                onAction("transfer", member.id);
+              }}
+            >
+              <Crown className="size-4" />
+              Make owner
+            </SimpleMenuItem>
+          )}
         </>
       )}
     </SimpleDropdown>
@@ -166,7 +178,7 @@ export function RosterTable({
               sort={sort}
               onSort={onSort}
             />
-            {viewer.isManager && (
+            {(viewer.isManager || viewer.role === "OWNER") && (
               <th scope="col" className={cn(headClass, "w-16")}>
                 <span className="sr-only">Actions</span>
               </th>
@@ -217,9 +229,9 @@ export function RosterTable({
                 <td className={cn(cell, "whitespace-nowrap text-ink-muted")}>
                   {joinedText(m)}
                 </td>
-                {viewer.isManager && (
+                {(viewer.isManager || viewer.role === "OWNER") && (
                   <td className={cn(cell, "text-right")}>
-                    {m.status === "ACTIVE" && (
+                    {hasRowActions(viewer, m) && (
                       <RowMenu
                         member={m}
                         viewer={viewer}

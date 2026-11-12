@@ -2,13 +2,8 @@
 
 import { CalendarPlus, CalendarX, SearchX, ShoppingBasket } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import {
-  Banner,
-  EmptyState,
-  ErrorState,
-  IconTile,
-  Toast,
-} from "@/components/shared";
+import { toast } from "sonner";
+import { Banner, EmptyState, ErrorState, IconTile } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useMediaQuery } from "@/hooks";
@@ -75,7 +70,6 @@ export function BazarView({
 }: BazarViewProps) {
   const [saving, setSaving] = useState<ReadonlySet<string>>(new Set());
   const [failedId, setFailedId] = useState<string | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
 
   /** Runs one write, keeping the row marked while the request is in flight. */
   const runMutation = useCallback(
@@ -88,11 +82,11 @@ export function BazarView({
       setFailedId(null);
       try {
         await action();
-        if (success) setToast(success);
+        if (success) toast.success(success);
         return true;
       } catch (error) {
         setFailedId(key);
-        setToast(getApiMessage(error, "Couldn't save. Try again."));
+        toast.error(getApiMessage(error, "Couldn't save. Try again."));
         return false;
       } finally {
         setSaving((prev) => {
@@ -362,8 +356,6 @@ export function BazarView({
         onConfirm={() => deleting && void remove(deleting.id)}
         onClose={closeDelete}
       />
-
-      {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
     </div>
   );
 }

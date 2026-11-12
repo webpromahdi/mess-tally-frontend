@@ -12,6 +12,7 @@ import {
   isNoMembershipError,
   isRetryableError,
 } from "@/lib/apiError";
+import { queryKeys } from "@/lib/queryKeys";
 
 function redirectToLogin() {
   const { pathname, search } = window.location;
@@ -26,22 +27,22 @@ function redirectToLogin() {
  * intentionally call `/auth/me` too, and a signed-out visitor must not be
  * bounced to /login from there.
  */
-function handleProtectedQueryError(error: unknown) {
+function handleProtectedQueryError(client: QueryClient, error: unknown) {
   if (typeof window === "undefined") return;
   if (!window.location.pathname.startsWith("/dashboard")) return;
   if (isAuthError(error)) {
     redirectToLogin();
   } else if (isNoMembershipError(error)) {
-    window.location.assign(
-      new URL("/onboarding", window.location.origin).toString(),
-    );
+    // A 403 can also be a role check (e.g. right after a manager transfer), so
+    // refresh membership and let the dashboard shell decide about /onboarding.
+    void client.invalidateQueries({ queryKey: queryKeys.workspace.myMesses });
   }
 }
 
 function makeQueryClient() {
-  return new QueryClient({
+  const client: QueryClient = new QueryClient({
     queryCache: new QueryCache({
-      onError: handleProtectedQueryError,
+      onError: (error) => handleProtectedQueryError(client, error),
     }),
     defaultOptions: {
       queries: {
@@ -57,6 +58,7 @@ function makeQueryClient() {
       },
     },
   });
+  return client;
 }
 
 let browserQueryClient: QueryClient | undefined;

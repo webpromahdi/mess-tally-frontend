@@ -35,8 +35,15 @@ export function DashboardShellWrapper({ children }: { children: ReactNode }) {
     title: "Dashboard",
   };
 
+  const noMembership =
+    workspace.queries.myMesses.isSuccess && !workspace.membership;
+
   // Session / membership failures are terminal for the dashboard shell.
   useEffect(() => {
+    if (noMembership) {
+      router.replace("/onboarding");
+      return;
+    }
     if (!workspace.identityError) return;
     if (isAuthError(workspace.identityError)) {
       // This redirect is client-side, so the in-memory cache survives it.
@@ -48,7 +55,7 @@ export function DashboardShellWrapper({ children }: { children: ReactNode }) {
     } else if (isNoMembershipError(workspace.identityError)) {
       router.replace("/onboarding");
     }
-  }, [workspace.identityError, pathname, router, queryClient]);
+  }, [noMembership, workspace.identityError, pathname, router, queryClient]);
 
   // A FREE downgrade (or a deleted month) can drop a previously selected key.
   useEffect(() => {
@@ -69,9 +76,10 @@ export function DashboardShellWrapper({ children }: { children: ReactNode }) {
 
   if (!workspace.viewer || !workspace.mess) {
     if (
-      workspace.identityError &&
-      (isAuthError(workspace.identityError) ||
-        isNoMembershipError(workspace.identityError))
+      noMembership ||
+      (workspace.identityError &&
+        (isAuthError(workspace.identityError) ||
+          isNoMembershipError(workspace.identityError)))
     ) {
       return <ShellSkeleton />;
     }

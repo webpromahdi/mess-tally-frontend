@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
   useBulkMeals,
+  useCreateMonth,
   useDeleteMeal,
   useMeals,
   useUpsertMeal,
@@ -64,6 +65,7 @@ export function MealsPage() {
   const upsertMeal = useUpsertMeal();
   const bulkMeals = useBulkMeals();
   const deleteMeal = useDeleteMeal();
+  const createMonth = useCreateMonth();
   const today = todayIso();
 
   const data = useMemo(() => {
@@ -127,6 +129,12 @@ export function MealsPage() {
     await bulkMeals.mutateAsync(parsed.data);
   };
 
+  const handleCreateMonth = async () => {
+    const name = mealsQuery.data?.data.month.name;
+    if (!name) throw new Error("Couldn't work out which month to open.");
+    await createMonth.mutateAsync({ month: name });
+  };
+
   // A 402 from either query means the selected month is PRO-only.
   if (
     isUpgradeRequired(mealsQuery.error) ||
@@ -155,6 +163,7 @@ export function MealsPage() {
       onSaveCell={handleSaveCell}
       onClearCell={handleClearCell}
       onSaveBulk={handleSaveBulk}
+      onCreateMonth={handleCreateMonth}
     />
   );
 }

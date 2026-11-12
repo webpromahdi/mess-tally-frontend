@@ -1,6 +1,7 @@
 import { MoreHorizontal } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { hasRowActions } from "@/lib/members";
 import type { Viewer } from "@/lib/types/dashboard.types";
 import type { MemberDialogKind, MemberRecord } from "@/lib/types/member.types";
 import { cn } from "@/lib/utils";
@@ -25,7 +26,7 @@ export function RosterCards({
     <ul>
       {rows.map((m) => {
         const mine = m.id === viewer.memberId;
-        const tappable = viewer.isManager && m.status === "ACTIVE";
+        const tappable = hasRowActions(viewer, m);
         const failed = failedId === m.id;
         const body = (
           <>

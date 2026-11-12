@@ -1,16 +1,8 @@
 "use client";
 
-import {
-  Check,
-  LogOut,
-  RefreshCw,
-  UserMinus,
-  Users,
-  UserX,
-  X,
-} from "lucide-react";
+import { Check, Crown, LogOut, UserMinus, Users, UserX, X } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { Banner, EmptyState, IconTile, Toast } from "@/components/shared";
+import { Banner, EmptyState, IconTile } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMediaQuery } from "@/hooks";
@@ -284,16 +276,17 @@ export function MembersView({
       </ConfirmSheet>
 
       <ConfirmSheet
-        open={kind === "regenerate"}
-        icon={<RefreshCw className="size-5" />}
-        title="Generate a new room code?"
-        confirmLabel="Generate new code"
-        onConfirm={s.regenerate}
-        onClose={() => open("invite")}
+        open={kind === "transfer" && !!target}
+        tone="primary"
+        icon={<Crown className="size-5" />}
+        title={`Make ${target?.name ?? ""} the owner?`}
+        confirmLabel="Transfer ownership"
+        onConfirm={() => target && s.transferOwner(target.id)}
+        onClose={closeDialog}
       >
         <p>
-          The current code <strong className="text-ink">{mess.roomCode}</strong>{" "}
-          stops working immediately. Existing members are not affected.
+          They become the owner and manager of {mess.name}. You become a regular
+          member, and only the new owner can undo this.
         </p>
       </ConfirmSheet>
 
@@ -306,9 +299,7 @@ export function MembersView({
       <InviteSheet
         open={kind === "invite"}
         roomCode={mess.roomCode}
-        canRegenerate={isManager}
         onCopy={() => s.notify("Room code copied")}
-        onRegenerate={() => open("regenerate")}
         onClose={closeDialog}
       />
 
@@ -318,8 +309,6 @@ export function MembersView({
         onAction={open}
         onClose={closeDialog}
       />
-
-      {s.toast && <Toast message={s.toast} onDismiss={s.dismissToast} />}
     </div>
   );
 }

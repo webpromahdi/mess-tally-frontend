@@ -5,7 +5,8 @@ import Link from "next/link";
 import { EmptyState, ErrorState, IconTile } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useDashboardView } from "@/hooks";
+import { useCreateMonth, useDashboardView } from "@/hooks";
+import { getApiMessage } from "@/lib/apiError";
 import { useMonthStore } from "@/store";
 import { DashboardView } from "./dashboard-view";
 import { DashboardSkeleton } from "./layout";
@@ -38,6 +39,8 @@ function UpgradeState() {
 export function DashboardPage() {
   const selectedMonth = useMonthStore((s) => s.selectedMonth);
   const view = useDashboardView(selectedMonth);
+  const createMonth = useCreateMonth();
+  const monthName = view.workspace.dashboard?.month.name;
 
   if (view.isLoading) {
     return <DashboardSkeleton />;
@@ -65,6 +68,13 @@ export function DashboardPage() {
       data={view.data}
       errors={view.errors}
       settlement={view.settlement}
+      onCreateMonth={
+        monthName ? () => createMonth.mutate({ month: monthName }) : undefined
+      }
+      openingMonth={createMonth.isPending}
+      openMonthError={
+        createMonth.isError ? getApiMessage(createMonth.error) : null
+      }
     />
   );
 }
