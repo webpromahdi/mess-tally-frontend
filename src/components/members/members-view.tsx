@@ -33,7 +33,12 @@ import {
   MemberActionsSheet,
   RoleDialog,
 } from "./dialogs";
-import { LeaveCard, MembersHeader, PlanUsageCard } from "./layout";
+import {
+  LeaveCard,
+  MembersHeader,
+  PlanUsageCard,
+  SubscriptionCard,
+} from "./layout";
 import {
   JoinRequestsCard,
   RosterCards,
@@ -201,6 +206,8 @@ export function MembersView({
           )}
         </div>
       </Card>
+
+      <SubscriptionCard canManage={viewer.isManager} />
 
       <PlanUsageCard data={data} />
 

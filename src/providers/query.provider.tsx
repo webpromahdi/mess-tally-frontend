@@ -29,7 +29,13 @@ function redirectToLogin() {
  */
 function handleProtectedQueryError(client: QueryClient, error: unknown) {
   if (typeof window === "undefined") return;
-  if (!window.location.pathname.startsWith("/dashboard")) return;
+  const { pathname } = window.location;
+  if (pathname.startsWith("/admin")) {
+    // Admin pages have no mess, so only an expired session redirects.
+    if (isAuthError(error)) redirectToLogin();
+    return;
+  }
+  if (!pathname.startsWith("/dashboard")) return;
   if (isAuthError(error)) {
     redirectToLogin();
   } else if (isNoMembershipError(error)) {

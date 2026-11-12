@@ -64,4 +64,11 @@ export const queryKeys = {
     paymentStatus: (paymentId: string) =>
       ["subscription", "payments", paymentId, "status"] as const,
   },
+  admin: {
+    all: ["admin"] as const,
+    overview: ["admin", "overview"] as const,
+    users: (filters: object) => ["admin", "users", filters] as const,
+    messes: (filters: object) => ["admin", "messes", filters] as const,
+    revenue: (filters: object) => ["admin", "revenue", filters] as const,
+  },
 };

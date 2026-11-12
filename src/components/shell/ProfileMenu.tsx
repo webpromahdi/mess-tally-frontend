@@ -1,6 +1,13 @@
 "use client";
 
-import { Ellipsis, Loader2, LogOut, Settings, UserRound } from "lucide-react";
+import {
+  Ellipsis,
+  Loader2,
+  LogOut,
+  Settings,
+  ShieldCheck,
+  UserRound,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   SimpleDropdown,
@@ -13,7 +20,7 @@ import {
   AvatarImage,
   initials,
 } from "@/components/ui/avatar";
-import { useLogout } from "@/hooks";
+import { useGetMe, useLogout } from "@/hooks";
 import { cn } from "@/lib/utils";
 import type { ShellUser } from "./types";
 
@@ -27,6 +34,8 @@ export function ProfileMenu({
 }) {
   const router = useRouter();
   const logout = useLogout();
+  const role = useGetMe().data?.data?.role;
+  const isStaff = role === "ADMIN" || role === "SUPERADMIN";
   // Full reload: useLogout already cleared the cache, and a client-side hop
   // would let the dashboard refetch and bounce to /login?expired=1.
   const signOut = () =>
@@ -99,6 +108,17 @@ export function ProfileMenu({
             <Settings />
             Settings
           </SimpleMenuItem>
+          {isStaff && (
+            <SimpleMenuItem
+              onClick={() => {
+                close();
+                router.push("/admin");
+              }}
+            >
+              <ShieldCheck />
+              Admin panel
+            </SimpleMenuItem>
+          )}
           <SimpleMenuSeparator />
           <SimpleMenuItem
             onClick={signOut}

@@ -3,7 +3,7 @@
  * Grounded in backend API contracts (D:\Projects\mess-tally-backend\API.md § 7).
  */
 
-export type UserRole = "USER" | "ADMIN";
+export type UserRole = "USER" | "ADMIN" | "SUPERADMIN";
 export type UserStatus = "ACTIVE" | "SUSPENDED" | "DELETED";
 
 export interface UserProfile {

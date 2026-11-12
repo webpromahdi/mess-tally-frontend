@@ -17,6 +17,7 @@ import type {
 } from "@/lib/types/bazar.types";
 import { cn } from "@/lib/utils";
 import { validateReceipt } from "@/validations";
+import { ReceiptViewer } from "../receipt-viewer";
 
 export interface BazarFormValues {
   memberId: string;
@@ -87,9 +88,17 @@ export function BazarEntryForm({
   // Create mode: the file waits here until the entry is saved.
   const [pendingReceipt, setPendingReceipt] = useState<File | null>(null);
 
+  const [dragging, setDragging] = useState(false);
+
   const canManageReceipt = Boolean(entry && isPro);
   const canQueueReceipt = !entry && Boolean(isPro);
   const locked = month.isLocked;
+  const canPickReceipt =
+    !receiptUrl &&
+    !pendingReceipt &&
+    (canManageReceipt || canQueueReceipt) &&
+    !locked;
+  const canDrop = canPickReceipt && !receiptBusy && !saving;
 
   const pickReceipt = (file: File) => {
     if (canQueueReceipt) {
@@ -232,19 +241,49 @@ export function BazarEntryForm({
         />
       </Field>
 
-      <div className="flex flex-col gap-2 rounded-xl border border-dashed border-line px-3 py-2.5 text-body-sm text-ink-muted">
+      {/* The Attach button stays the keyboard path; dropping is a pointer shortcut. */}
+      <fieldset
+        className={cn(
+          "flex min-w-0 flex-col gap-2 rounded-xl border border-dashed border-line px-3 py-2.5 text-body-sm text-ink-muted transition-colors",
+          dragging && "border-aubergine-500 bg-aubergine-50",
+        )}
+        onDragOver={(e) => {
+          if (!canDrop) return;
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "copy";
+          setDragging(true);
+        }}
+        onDragLeave={(e) => {
+          // Ignore leaves into child elements of the zone.
+          if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+            setDragging(false);
+          }
+        }}
+        onDrop={(e) => {
+          if (!canDrop) return;
+          e.preventDefault();
+          setDragging(false);
+          const file = e.dataTransfer.files?.[0];
+          if (file) pickReceipt(file);
+        }}
+      >
+        <legend className="sr-only">Receipt</legend>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <Paperclip aria-hidden className="size-4 shrink-0" />
           {receiptUrl ? (
             <>
-              <a
-                href={receiptUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="font-medium text-ink underline underline-offset-2"
+              <ReceiptViewer
+                url={receiptUrl}
+                title="Bazar receipt"
+                description={`${formatBDT(entry?.amount ?? 0)} · ${values.date}`}
               >
-                View receipt
-              </a>
+                <button
+                  type="button"
+                  className="cursor-pointer font-medium text-ink underline underline-offset-2"
+                >
+                  View receipt
+                </button>
+              </ReceiptViewer>
               {canManageReceipt && !locked && (
                 <Button
                   type="button"
@@ -280,48 +319,51 @@ export function BazarEntryForm({
             <span>
               {!isPro
                 ? "Receipt uploads are a PRO feature."
-                : entry
-                  ? "No receipt attached yet."
-                  : "Optional: attach a receipt. It uploads when you save."}
+                : dragging
+                  ? "Drop to attach the receipt."
+                  : canPickReceipt
+                    ? entry
+                      ? "Drag a receipt here, or"
+                      : "Optional: drag a receipt here (uploads when you save), or"
+                    : "No receipt attached yet."}
             </span>
           )}
-          {!receiptUrl &&
-            !pendingReceipt &&
-            (canManageReceipt || canQueueReceipt) &&
-            !locked && (
-              <label
-                className={cn(
-                  "inline-flex min-h-8 cursor-pointer items-center gap-1.5 rounded-md border border-line bg-surface px-3 text-body-sm font-medium text-ink transition-colors hover:bg-silver-100",
-                  receiptBusy && "pointer-events-none opacity-60",
-                )}
-              >
-                <Upload aria-hidden className="size-4" />
-                {receiptBusy ? "Uploading…" : "Attach receipt"}
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  className="sr-only"
-                  disabled={receiptBusy}
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    e.target.value = "";
-                    if (file) pickReceipt(file);
-                  }}
-                />
-              </label>
-            )}
+          {(canPickReceipt || (canManageReceipt || canQueueReceipt) && !locked) && (
+            <div className="flex w-full flex-wrap items-center justify-between gap-x-3 gap-y-1">
+              {canPickReceipt && (
+                <label
+                  className={cn(
+                    "inline-flex min-h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-md border border-line-strong bg-surface px-3 text-body-sm font-medium text-ink transition-colors hover:bg-silver-100",
+                    receiptBusy && "pointer-events-none opacity-60",
+                  )}
+                >
+                  <Upload aria-hidden className="size-4" />
+                  {receiptBusy ? "Uploading…" : "Attach receipt"}
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="sr-only"
+                    disabled={receiptBusy}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      e.target.value = "";
+                      if (file) pickReceipt(file);
+                    }}
+                  />
+                </label>
+              )}
+              {(canManageReceipt || canQueueReceipt) && !locked && (
+                <p className="text-caption">JPEG, PNG or WebP · up to 5 MB.</p>
+              )}
+            </div>
+          )}
         </div>
         {receiptError ? (
           <p role="alert" className="text-error">
             {receiptError}
           </p>
-        ) : (
-          (canManageReceipt || canQueueReceipt) &&
-          !locked && (
-            <p className="text-caption">JPEG, PNG or WebP · up to 5 MB.</p>
-          )
-        )}
-      </div>
+        ) : null}
+      </fieldset>
 
       <p
         aria-live="polite"
