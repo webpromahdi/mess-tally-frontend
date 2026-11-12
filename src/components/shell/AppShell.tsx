@@ -32,11 +32,9 @@ export function AppShell({
   const [collapsed, setCollapsed] = useState(false);
   const [drawer, setDrawer] = useState(!!initialDrawerOpen);
   const [more, setMore] = useState(!!initialMoreOpen);
-  const [bot, setBot] = useState(false);
 
   const closeDrawer = useCallback(() => setDrawer(false), []);
   const closeMore = useCallback(() => setMore(false), []);
-  const closeBot = useCallback(() => setBot(false), []);
 
   // Crossing the 1024px split closes the mobile-only overlays.
   useEffect(() => {
@@ -79,7 +77,6 @@ export function AppShell({
           active={active}
           collapsed={collapsed}
           onToggleCollapse={() => setCollapsed((c) => !c)}
-          onOpenBot={() => setBot(true)}
         />
       </aside>
 
@@ -98,7 +95,6 @@ export function AppShell({
           pageTitle={pageTitle}
           drawerOpen={drawer}
           onOpenDrawer={() => setDrawer(true)}
-          onOpenBot={() => setBot(true)}
         />
         <main
           id="main"
@@ -132,14 +128,10 @@ export function AppShell({
           active={active}
           onClose={closeDrawer}
           onNavigate={closeDrawer}
-          onOpenBot={() => {
-            setDrawer(false);
-            setBot(true);
-          }}
         />
       </DrawerSheet>
       <MoreSheet open={more} onClose={closeMore} mess={mess} badge={badge} />
-      <TallyBotSheet open={bot} onClose={closeBot} />
+      <TallyBotSheet />
     </div>
   );
 }

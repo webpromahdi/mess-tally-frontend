@@ -50,7 +50,10 @@ function makeQueryClient() {
         retry: (failureCount, error) =>
           isRetryableError(error) && failureCount < 2,
         retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 8000),
-        refetchOnWindowFocus: false,
+        // Refetch stale data when the tab regains focus. Every mess-scoped
+        // query follows the same rule, so the dashboard KPIs and the lists
+        // they are derived from can never disagree after an alt-tab.
+        refetchOnWindowFocus: true,
       },
     },
   });

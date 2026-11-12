@@ -14,6 +14,5 @@ export function useDashboardData(month: string | null) {
     queryKey: queryKeys.dashboard.detail(month),
     queryFn: () => getDashboard({ month }),
     staleTime: 30 * 1000,
-    refetchOnWindowFocus: true,
   });
 }

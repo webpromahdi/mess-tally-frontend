@@ -1,14 +1,14 @@
 "use client";
 
-import { ChevronRight, Menu, Sparkles } from "lucide-react";
+import { ChevronRight, Menu } from "lucide-react";
 import { Logo } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { MonthSelector } from "./MonthSelector";
 import type { ShellProps } from "./types";
 
 /**
- * ≥1024px: breadcrumb · month selector · TallyBot.
- * <1024px: [☰] [Logo] [Month ▾] [Bot] (Design.md §11.2).
+ * ≥1024px: breadcrumb · month selector.
+ * <1024px: [☰] [Logo] [Month ▾] (Design.md §11.2). TallyBot is the floating button.
  */
 export function Topbar({
   mess,
@@ -19,7 +19,6 @@ export function Topbar({
   pageTitle = "Dashboard",
   drawerOpen,
   onOpenDrawer,
-  onOpenBot,
 }: Pick<
   ShellProps,
   | "mess"
@@ -31,7 +30,6 @@ export function Topbar({
 > & {
   drawerOpen: boolean;
   onOpenDrawer: () => void;
-  onOpenBot: () => void;
 }) {
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-canvas/85 backdrop-blur-md">
@@ -69,23 +67,6 @@ export function Topbar({
             selectedKey={selectedMonthKey}
             onSelectMonth={onSelectMonth}
           />
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Open TallyBot"
-            onClick={onOpenBot}
-            className="lg:hidden"
-          >
-            <Sparkles className="size-5! text-aubergine-700" />
-          </Button>
-          <Button
-            variant="primary"
-            onClick={onOpenBot}
-            className="hidden lg:inline-flex"
-          >
-            <Sparkles className="text-marigold-400" />
-            Ask TallyBot
-          </Button>
         </div>
       </div>
     </header>

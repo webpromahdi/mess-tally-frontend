@@ -5,6 +5,7 @@
  * Usage:
  *   import { userLogin, getMe } from "@/api";
  */
+export * from "./ai.api";
 export * from "./auth.api";
 export * from "./bazar.api";
 export * from "./dashboard.api";
