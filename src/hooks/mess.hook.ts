@@ -46,17 +46,29 @@ export function usePendingMembers(enabled = true) {
 /**
  * Refresh everything that is scoped to the caller's active mess.
  * A new/joined mess changes the shell identity, the month list and the
- * dashboard totals, so all of them are invalidated together.
+ * dashboard totals, and it also invalidates the meals, bazar and utility
+ * caches: those read models are keyed by month only, so the previous mess's
+ * entries would otherwise be shown until they go stale.
  */
 function useMessScopeInvalidation() {
   const queryClient = useQueryClient();
   return () =>
     Promise.all([
-      queryClient.invalidateQueries({ queryKey: queryKeys.workspace.myMesses }),
       queryClient.invalidateQueries({ queryKey: queryKeys.auth.me }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.workspace.myMesses }),
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.workspace.membersAll,
+      }),
       queryClient.invalidateQueries({ queryKey: queryKeys.workspace.months }),
+      // The plan is per-mess, so switching scope changes the badge and gates.
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.workspace.subscription,
+      }),
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all }),
       queryClient.invalidateQueries({ queryKey: queryKeys.summary.all }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.meals.all }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.bazar.all }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.utilities.all }),
     ]);
 }
 
@@ -72,6 +84,10 @@ function useMembersInvalidation() {
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all }),
       queryClient.invalidateQueries({ queryKey: queryKeys.summary.all }),
       queryClient.invalidateQueries({ queryKey: queryKeys.utilities.all }),
+      // The roster is the row/column source for the meal sheet and the payer
+      // list in bazar, so both change when a member is added or removed.
+      queryClient.invalidateQueries({ queryKey: queryKeys.meals.all }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.bazar.all }),
     ]);
 }
 

@@ -1,7 +1,6 @@
 import {
   CalendarPlus,
   CalendarX,
-  Settings,
   ShoppingBasket,
   Utensils,
   UtensilsCrossed,
@@ -46,12 +45,18 @@ export function DashboardView({
   errors = [],
   formulaOpen,
   settlement = [],
+  onCreateMonth,
+  openingMonth,
+  openMonthError,
 }: {
   data: DashboardData;
   errors?: DashboardBlock[];
   formulaOpen?: boolean;
   /** Closed-month settlement lines for the viewer (from `GET /summary`). */
   settlement?: SettlementLine[];
+  onCreateMonth?: () => void;
+  openingMonth?: boolean;
+  openMonthError?: string | null;
 }) {
   const { viewer, mess, month, meal, fund } = data;
   const canTransfer = viewer.isManager || viewer.role === "OWNER";
@@ -60,9 +65,9 @@ export function DashboardView({
   if (!month || !meal) {
     const manager = viewer.isManager;
     return (
-      <div className="flex flex-col gap-5 sm:gap-6">
+      <div className="flex flex-col gap-4 sm:gap-5 lg:gap-6">
         <DashboardHeader data={data} />
-        <div className="grid gap-4 sm:gap-6 lg:grid-cols-12">
+        <div className="grid gap-4 sm:gap-5 lg:grid-cols-12 lg:gap-6">
           <Card className="lg:col-span-8">
             <EmptyState
               size="lg"
@@ -82,21 +87,23 @@ export function DashboardView({
                   : `Meals, bazar and balances show up here as soon as ${mess.managerFirstName} opens the month.`
               }
               actions={
-                manager && (
-                  <>
-                    <Button variant="accent" asChild>
-                      <Link href="/dashboard/settings">
-                        <CalendarPlus />
-                        Open a month
-                      </Link>
+                manager &&
+                onCreateMonth && (
+                  <div className="flex flex-col items-center gap-2">
+                    <Button
+                      variant="accent"
+                      disabled={openingMonth}
+                      onClick={onCreateMonth}
+                    >
+                      <CalendarPlus />
+                      {openingMonth ? "Opening…" : "Open a month"}
                     </Button>
-                    <Button variant="outline" asChild>
-                      <Link href="/dashboard/settings">
-                        <Settings />
-                        Month settings
-                      </Link>
-                    </Button>
-                  </>
+                    {openMonthError && (
+                      <p role="alert" className="text-body-sm text-destructive">
+                        {openMonthError}
+                      </p>
+                    )}
+                  </div>
                 )
               }
             />

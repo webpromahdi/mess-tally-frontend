@@ -1,34 +1,39 @@
 import { type NextRequest, NextResponse } from "next/server";
 
 /**
- * Checks the JWT `exp` claim without verifying the signature.
- * Signature/user validity is still enforced by the backend; this only stops
- * the proxy from bouncing an expired session between /login and /dashboard.
+ * Reads the JWT `exp` and `role` claims without verifying the signature.
+ * Signature/user validity (and every admin permission) is still enforced by the
+ * backend; this only routes the session to the right area.
  */
-function hasFreshToken(token: string | undefined) {
-  if (!token) return false;
+function readSession(token: string | undefined) {
+  if (!token) return { fresh: false, staff: false };
   try {
     const payload = token.split(".")[1];
-    if (!payload) return false;
+    if (!payload) return { fresh: false, staff: false };
     const normalised = payload.replace(/-/g, "+").replace(/_/g, "/");
     const padded = normalised.padEnd(Math.ceil(normalised.length / 4) * 4, "=");
-    const claims = JSON.parse(atob(padded)) as { exp?: number };
-    return typeof claims.exp === "number" && claims.exp * 1000 > Date.now();
+    const claims = JSON.parse(atob(padded)) as { exp?: number; role?: string };
+    const fresh =
+      typeof claims.exp === "number" && claims.exp * 1000 > Date.now();
+    const staff = claims.role === "ADMIN" || claims.role === "SUPERADMIN";
+    return { fresh, staff: fresh && staff };
   } catch {
-    return false;
+    return { fresh: false, staff: false };
   }
 }
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("accessToken")?.value;
-  const fresh = hasFreshToken(token);
+  const { fresh, staff } = readSession(token);
   // The API client adds `expired=1` when it receives a 401, so the login page
   // stays reachable even when the cookie is still present but rejected.
   const forceLogin = request.nextUrl.searchParams.get("expired") === "1";
 
   const isProtectedRoute =
-    pathname.startsWith("/dashboard") || pathname.startsWith("/onboarding");
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/onboarding") ||
+    pathname.startsWith("/admin");
 
   const isAuthRoute =
     pathname === "/login" ||
@@ -43,8 +48,16 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  // Staff accounts don't create or join messes; their home is the admin panel.
+  // This also catches the dashboard's "no mess → /onboarding" hand-off.
+  if (staff && pathname.startsWith("/onboarding")) {
+    return NextResponse.redirect(new URL("/admin", request.url));
+  }
+
   if (isAuthRoute && fresh && !forceLogin) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(
+      new URL(staff ? "/admin" : "/dashboard", request.url),
+    );
   }
 
   return NextResponse.next();
@@ -56,6 +69,7 @@ export const config = {
   matcher: [
     "/dashboard/:path*",
     "/onboarding/:path*",
+    "/admin/:path*",
     "/login",
     "/register",
     "/forgot-password",

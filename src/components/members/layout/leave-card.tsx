@@ -12,12 +12,12 @@ export function LeaveCard({
   onLeave: () => void;
 }) {
   return (
-    <Card className="flex flex-wrap items-center justify-between gap-3 p-4">
+    <Card className="flex flex-wrap items-center justify-between gap-3 p-4 sm:flex-row">
       <div className="min-w-0 flex-1">
         <h3 className="text-h4 text-ink">Leave {messName}</h3>
         <p className="mt-0.5 text-body-sm text-ink-muted">
           {isOwner
-            ? "The owner can’t leave. Transfer ownership to another member first."
+            ? "The owner can’t leave. Use “Make owner” on another member in the roster first."
             : "Your past meals and bazar stay in closed months. You can rejoin with the room code."}
         </p>
       </div>

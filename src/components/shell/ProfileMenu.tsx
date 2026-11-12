@@ -1,13 +1,26 @@
 "use client";
 
-import { Ellipsis, LogOut, Settings, UserRound } from "lucide-react";
+import {
+  Ellipsis,
+  Loader2,
+  LogOut,
+  Settings,
+  ShieldCheck,
+  UserRound,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   SimpleDropdown,
   SimpleMenuItem,
   SimpleMenuSeparator,
 } from "@/components/shared";
-import { Avatar } from "@/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  initials,
+} from "@/components/ui/avatar";
+import { useGetMe, useLogout } from "@/hooks";
 import { cn } from "@/lib/utils";
 import type { ShellUser } from "./types";
 
@@ -20,6 +33,15 @@ export function ProfileMenu({
   collapsed?: boolean;
 }) {
   const router = useRouter();
+  const logout = useLogout();
+  const role = useGetMe().data?.data?.role;
+  const isStaff = role === "ADMIN" || role === "SUPERADMIN";
+  // Full reload: useLogout already cleared the cache, and a client-side hop
+  // would let the dashboard refetch and bounce to /login?expired=1.
+  const signOut = () =>
+    logout.mutate(undefined, {
+      onSettled: () => window.location.replace("/login"),
+    });
   return (
     <SimpleDropdown
       side="top"
@@ -35,7 +57,14 @@ export function ProfileMenu({
             collapsed ? "size-11 justify-center" : "min-h-12 p-2",
           )}
         >
-          <Avatar name={user.name} tone="accent" size="sm" />
+          <Avatar aria-hidden="true" size="sm">
+            {user.avatarUrl ? (
+              <AvatarImage src={user.avatarUrl} alt="" />
+            ) : null}
+            <AvatarFallback className="bg-marigold-500 text-aubergine-950">
+              {initials(user.name)}
+            </AvatarFallback>
+          </Avatar>
           {!collapsed && (
             <>
               <span className="min-w-0 flex-1">
@@ -79,13 +108,26 @@ export function ProfileMenu({
             <Settings />
             Settings
           </SimpleMenuItem>
+          {isStaff && (
+            <SimpleMenuItem
+              onClick={() => {
+                close();
+                router.push("/admin");
+              }}
+            >
+              <ShieldCheck />
+              Admin panel
+            </SimpleMenuItem>
+          )}
           <SimpleMenuSeparator />
           <SimpleMenuItem
-            onClick={close}
-            className="text-error [&_svg]:text-error"
+            onClick={signOut}
+            disabled={logout.isPending}
+            aria-busy={logout.isPending}
+            className="text-error [&_svg]:text-error disabled:cursor-wait disabled:opacity-70"
           >
-            <LogOut />
-            Sign out
+            {logout.isPending ? <Loader2 className="animate-spin" /> : <LogOut />}
+            {logout.isPending ? "Signing out…" : "Sign out"}
           </SimpleMenuItem>
         </>
       )}

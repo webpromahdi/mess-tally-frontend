@@ -12,6 +12,7 @@ import {
   isNoMembershipError,
   isRetryableError,
 } from "@/lib/apiError";
+import { queryKeys } from "@/lib/queryKeys";
 
 function redirectToLogin() {
   const { pathname, search } = window.location;
@@ -26,22 +27,28 @@ function redirectToLogin() {
  * intentionally call `/auth/me` too, and a signed-out visitor must not be
  * bounced to /login from there.
  */
-function handleProtectedQueryError(error: unknown) {
+function handleProtectedQueryError(client: QueryClient, error: unknown) {
   if (typeof window === "undefined") return;
-  if (!window.location.pathname.startsWith("/dashboard")) return;
+  const { pathname } = window.location;
+  if (pathname.startsWith("/admin")) {
+    // Admin pages have no mess, so only an expired session redirects.
+    if (isAuthError(error)) redirectToLogin();
+    return;
+  }
+  if (!pathname.startsWith("/dashboard")) return;
   if (isAuthError(error)) {
     redirectToLogin();
   } else if (isNoMembershipError(error)) {
-    window.location.assign(
-      new URL("/onboarding", window.location.origin).toString(),
-    );
+    // A 403 can also be a role check (e.g. right after a manager transfer), so
+    // refresh membership and let the dashboard shell decide about /onboarding.
+    void client.invalidateQueries({ queryKey: queryKeys.workspace.myMesses });
   }
 }
 
 function makeQueryClient() {
-  return new QueryClient({
+  const client: QueryClient = new QueryClient({
     queryCache: new QueryCache({
-      onError: handleProtectedQueryError,
+      onError: (error) => handleProtectedQueryError(client, error),
     }),
     defaultOptions: {
       queries: {
@@ -50,10 +57,14 @@ function makeQueryClient() {
         retry: (failureCount, error) =>
           isRetryableError(error) && failureCount < 2,
         retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 8000),
-        refetchOnWindowFocus: false,
+        // Refetch stale data when the tab regains focus. Every mess-scoped
+        // query follows the same rule, so the dashboard KPIs and the lists
+        // they are derived from can never disagree after an alt-tab.
+        refetchOnWindowFocus: true,
       },
     },
   });
+  return client;
 }
 
 let browserQueryClient: QueryClient | undefined;

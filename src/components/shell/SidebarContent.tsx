@@ -1,6 +1,6 @@
 "use client";
 
-import { PanelLeftClose, PanelLeftOpen, Sparkles, X } from "lucide-react";
+import { PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
 import Link from "next/link";
 import { Logo, LogoMark } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -67,34 +67,6 @@ function NavButton({
   );
 }
 
-function AssistantButton({
-  collapsed,
-  onClick,
-}: {
-  collapsed?: boolean;
-  onClick?: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={collapsed ? "TallyBot" : undefined}
-      title={collapsed ? "TallyBot" : undefined}
-      className={cn(
-        "relative flex h-11 w-full cursor-pointer items-center gap-3 rounded-xl text-body font-medium transition-colors",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marigold-400",
-        collapsed ? "justify-center px-0" : "px-3",
-        "text-white/75 hover:bg-white/10 hover:text-white",
-      )}
-    >
-      <Sparkles className="size-5 shrink-0 text-marigold-400" />
-      {!collapsed && (
-        <span className="flex-1 truncate text-left">TallyBot</span>
-      )}
-    </button>
-  );
-}
-
 function GroupLabel({
   children,
   collapsed,
@@ -121,13 +93,11 @@ export function SidebarContent({
   onToggleCollapse,
   onClose,
   onNavigate,
-  onOpenBot,
 }: Pick<ShellProps, "user" | "mess" | "pendingCount" | "active"> & {
   collapsed?: boolean;
   onToggleCollapse?: () => void;
   onClose?: () => void;
   onNavigate?: (key: NavKey) => void;
-  onOpenBot?: () => void;
 }) {
   const badge = user.isManager ? pendingCount : null;
   return (
@@ -219,8 +189,6 @@ export function SidebarContent({
             />
           ))}
         </div>
-        <GroupLabel collapsed={collapsed}>Assistant</GroupLabel>
-        <AssistantButton collapsed={collapsed} onClick={onOpenBot} />
       </nav>
 
       <div

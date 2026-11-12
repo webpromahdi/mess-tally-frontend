@@ -6,6 +6,7 @@ import {
   Loader2,
   LogOut,
   Settings,
+  ShieldCheck,
   User as UserIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -59,6 +60,11 @@ export function UserMenu({
 
   // Prefer explicit prop if provided, else fall back to session user
   const user = userProp !== undefined ? userProp : currentUser;
+
+  // Mess pages need an active mess; staff without one live under /admin.
+  const isStaff = user?.role === "ADMIN" || user?.role === "SUPERADMIN";
+  const showMessPages = !isStaff || Boolean(user?.activeMessId);
+  const profileHref = isStaff ? "/admin/profile" : "/dashboard/profile";
 
   const displayName = user?.name?.trim() || "Your account";
   const email = user?.email?.trim() ?? "";
@@ -176,43 +182,59 @@ export function UserMenu({
         <DropdownMenuSeparator className="my-1 bg-border/60" />
 
         {/* Existing Route: Dashboard */}
-        <DropdownMenuItem
-          asChild
-          className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium text-foreground transition-colors focus:bg-accent focus:text-accent-foreground group"
-        >
-          <Link href="/dashboard" className="flex items-center gap-2.5 w-full">
-            <LayoutDashboard className="size-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
-            <span>Dashboard</span>
-          </Link>
-        </DropdownMenuItem>
+        {showMessPages && (
+          <DropdownMenuItem
+            asChild
+            className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium text-foreground transition-colors focus:bg-accent focus:text-accent-foreground group"
+          >
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-2.5 w-full"
+            >
+              <LayoutDashboard className="size-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
+              <span>Dashboard</span>
+            </Link>
+          </DropdownMenuItem>
+        )}
 
         {/* Profile Item */}
         <DropdownMenuItem
           asChild
           className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium text-foreground transition-colors focus:bg-accent focus:text-accent-foreground group"
         >
-          <Link
-            href="/dashboard/profile"
-            className="flex items-center gap-2.5 w-full"
-          >
+          <Link href={profileHref} className="flex items-center gap-2.5 w-full">
             <UserIcon className="size-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
             <span>Profile</span>
           </Link>
         </DropdownMenuItem>
 
-        {/* Settings Item */}
-        <DropdownMenuItem
-          asChild
-          className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium text-foreground transition-colors focus:bg-accent focus:text-accent-foreground group"
-        >
-          <Link
-            href="/dashboard/settings"
-            className="flex items-center gap-2.5 w-full"
+        {/* Settings Item (mess settings, so it needs a mess) */}
+        {showMessPages && (
+          <DropdownMenuItem
+            asChild
+            className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium text-foreground transition-colors focus:bg-accent focus:text-accent-foreground group"
           >
-            <Settings className="size-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
-            <span>Settings</span>
-          </Link>
-        </DropdownMenuItem>
+            <Link
+              href="/dashboard/settings"
+              className="flex items-center gap-2.5 w-full"
+            >
+              <Settings className="size-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
+              <span>Settings</span>
+            </Link>
+          </DropdownMenuItem>
+        )}
+
+        {isStaff && (
+          <DropdownMenuItem
+            asChild
+            className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium text-foreground transition-colors focus:bg-accent focus:text-accent-foreground group"
+          >
+            <Link href="/admin" className="flex items-center gap-2.5 w-full">
+              <ShieldCheck className="size-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
+              <span>Admin panel</span>
+            </Link>
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuSeparator className="my-1 bg-border/60" />
 

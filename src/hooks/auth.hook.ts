@@ -27,8 +27,11 @@ export function useLogin() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: userLogin,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.auth.me });
+    // Query keys are not user-scoped, so a new session must never render the
+    // previous account's cached mess data. Drop every entry; the shell's
+    // observers refetch on their next mount.
+    onSuccess: () => {
+      queryClient.removeQueries();
     },
   });
 }
@@ -88,7 +91,9 @@ export function useLogout() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: logout,
-    onSuccess: () => {
+    // Clear client state even when the request fails: the user menu redirects
+    // to /login either way, and the next account must not inherit this cache.
+    onSettled: () => {
       useAuthStore.getState().clearActiveMess();
       queryClient.clear();
     },

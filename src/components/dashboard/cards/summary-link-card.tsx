@@ -15,7 +15,7 @@ export function SummaryLinkCard({
     <Link
       href="/dashboard/summary"
       className={cn(
-        "group flex min-w-0 items-center gap-4 rounded-2xl border border-line bg-surface p-4 shadow-card transition-colors hover:border-aubergine-200 sm:p-5",
+        "group flex min-w-0 items-center gap-4 rounded-2xl border border-line bg-surface p-5 shadow-card transition-colors hover:border-aubergine-200 sm:p-6",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-aubergine-500",
         className,
       )}

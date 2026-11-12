@@ -2,6 +2,7 @@
 
 import { CalendarPlus, CalendarX, Utensils } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import {
   Banner,
   DrawerSheet,
@@ -9,7 +10,6 @@ import {
   ErrorState,
   IconTile,
   Popover,
-  Toast,
 } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -34,13 +34,13 @@ export interface MealsViewProps {
   onSaveCell?: (input: UpsertMealInput) => Promise<void>;
   onClearCell?: (entryId: string | null) => Promise<void>;
   onSaveBulk?: (inputs: UpsertMealInput[]) => Promise<void>;
+  onCreateMonth?: () => Promise<void>;
   initialEditor?: EditorTarget;
   initialEditorValues?: Partial<EditorValues>;
   initialDayDate?: string;
   initialOpenDate?: string;
   gridError?: boolean;
   failedKey?: string | null;
-  initialToast?: string | null;
 }
 
 export function MealsView({
@@ -48,13 +48,13 @@ export function MealsView({
   onSaveCell,
   onClearCell,
   onSaveBulk,
+  onCreateMonth,
   initialEditor,
   initialEditorValues,
   initialDayDate,
   initialOpenDate,
   gridError,
   failedKey: initialFailedKey,
-  initialToast,
 }: MealsViewProps) {
   const { month } = data;
   const desktop = useMediaQuery("(min-width: 768px)");
@@ -64,7 +64,6 @@ export function MealsView({
   const [values, setValues] = useState(initialEditorValues);
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
   const [dayDate, setDayDate] = useState<string | null>(initialDayDate ?? null);
-  const [toast, setToast] = useState<string | null>(initialToast ?? null);
   const [failedKey, setFailedKey] = useState<string | null>(
     initialFailedKey ?? null,
   );
@@ -99,11 +98,11 @@ export function MealsView({
       setFailedKey(null);
       try {
         await action();
-        setToast(success);
+        toast.success(success);
         return true;
       } catch (error) {
         setFailedKey(key);
-        setToast(
+        toast.error(
           getApiMessage(error, "Couldn't save this meal entry. Try again."),
         );
         return false;
@@ -196,10 +195,17 @@ export function MealsView({
                 : `Daily meals appear here as soon as ${data.mess.managerFirstName} opens the month.`
             }
             actions={
-              manager && (
-                <Button variant="accent">
+              manager &&
+              onCreateMonth && (
+                <Button
+                  variant="accent"
+                  disabled={saving.has("month")}
+                  onClick={() =>
+                    void runSave("month", onCreateMonth, "Month opened")
+                  }
+                >
                   <CalendarPlus />
-                  Open a month
+                  {saving.has("month") ? "Opening…" : "Open a month"}
                 </Button>
               )
             }
@@ -349,14 +355,6 @@ export function MealsView({
         onSave={handleSaveBulk}
         onClose={closeDay}
       />
-
-      {toast && (
-        <Toast
-          message={toast}
-          onDismiss={() => setToast(null)}
-          autoDismissMs={3000}
-        />
-      )}
     </div>
   );
 }

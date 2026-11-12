@@ -32,7 +32,7 @@ const comparisonData: ComparisonCategory[] = [
         name: "Active members per mess",
         tooltip: "Total flatmates that can actively tally meals and expenses.",
         free: "Up to 5 members",
-        pro: "Unlimited",
+        pro: "Up to 100 members",
         hostel: "Unlimited (up to 200+)",
       },
       {

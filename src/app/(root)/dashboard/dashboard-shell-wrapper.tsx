@@ -1,5 +1,6 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect } from "react";
 import { ErrorState } from "@/components/shared";
@@ -24,6 +25,7 @@ const routeConfig: Record<string, { key: NavKey; title: string }> = {
 export function DashboardShellWrapper({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const selectedMonth = useMonthStore((s) => s.selectedMonth);
   const setSelectedMonth = useMonthStore((s) => s.setSelectedMonth);
   const workspace = useWorkspace(selectedMonth);
@@ -33,17 +35,27 @@ export function DashboardShellWrapper({ children }: { children: ReactNode }) {
     title: "Dashboard",
   };
 
+  const noMembership =
+    workspace.queries.myMesses.isSuccess && !workspace.membership;
+
   // Session / membership failures are terminal for the dashboard shell.
   useEffect(() => {
+    if (noMembership) {
+      router.replace("/onboarding");
+      return;
+    }
     if (!workspace.identityError) return;
     if (isAuthError(workspace.identityError)) {
+      // This redirect is client-side, so the in-memory cache survives it.
+      // Drop it here: the next session must start from a clean slate.
+      queryClient.removeQueries();
       router.replace(
         `/login?redirect=${encodeURIComponent(pathname)}&expired=1`,
       );
     } else if (isNoMembershipError(workspace.identityError)) {
       router.replace("/onboarding");
     }
-  }, [workspace.identityError, pathname, router]);
+  }, [noMembership, workspace.identityError, pathname, router, queryClient]);
 
   // A FREE downgrade (or a deleted month) can drop a previously selected key.
   useEffect(() => {
@@ -64,9 +76,10 @@ export function DashboardShellWrapper({ children }: { children: ReactNode }) {
 
   if (!workspace.viewer || !workspace.mess) {
     if (
-      workspace.identityError &&
-      (isAuthError(workspace.identityError) ||
-        isNoMembershipError(workspace.identityError))
+      noMembership ||
+      (workspace.identityError &&
+        (isAuthError(workspace.identityError) ||
+          isNoMembershipError(workspace.identityError)))
     ) {
       return <ShellSkeleton />;
     }
@@ -95,6 +108,7 @@ export function DashboardShellWrapper({ children }: { children: ReactNode }) {
   const shellProps: ShellProps = {
     user: {
       name: workspace.viewer.name,
+      avatarUrl: workspace.user?.profile?.imageUrl,
       roleLabel: viewerRoleLabel(workspace.viewer),
       isManager: workspace.viewer.isManager,
     },

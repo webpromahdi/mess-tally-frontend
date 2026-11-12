@@ -1,6 +1,7 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
+import { useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -10,8 +11,10 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getMe } from "@/api";
 import { useLogin } from "@/hooks";
 import { getErrorMessage } from "@/lib/apiClient";
+import { queryKeys } from "@/lib/queryKeys";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store";
 import { loginFormSchema } from "@/validations/auth-ui.validation";
@@ -27,6 +30,7 @@ export function LoginForm({ className, onSuccess }: LoginFormProps) {
   const [formError, setFormError] = React.useState<string | null>(null);
   const [showPassword, setShowPassword] = React.useState(false);
 
+  const queryClient = useQueryClient();
   const { mutateAsync: loginMutation, isPending: isSubmitting } = useLogin();
 
   const form = useForm({
@@ -68,8 +72,19 @@ export function LoginForm({ className, onSuccess }: LoginFormProps) {
               .setActiveMess(activeMessId, response?.data?.mess?.name ?? null);
           }
 
+          // The login response has no role, so ask /auth/me (also warms its cache).
+          const me = redirect
+            ? null
+            : await queryClient
+                .fetchQuery({ queryKey: queryKeys.auth.me, queryFn: getMe })
+                .catch(() => null);
+          const isStaff =
+            me?.data?.role === "ADMIN" || me?.data?.role === "SUPERADMIN";
+
           if (redirect) {
             router.push(redirect);
+          } else if (isStaff) {
+            router.push("/admin");
           } else if (activeMessId) {
             router.push("/dashboard");
           } else {

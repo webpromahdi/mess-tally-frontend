@@ -29,7 +29,7 @@ const badgeVariants = cva(
         "month-closed": "bg-gray-100 text-gray-700",
         neutral: "bg-gray-100 text-gray-700",
         info: "bg-info-surface text-info",
-        brand: "bg-aubergine-800 text-white",
+        brand: "bg-aubergine-800 text-white!",
       },
       size: {
         default: "px-2 py-0.5 text-xs font-medium",

@@ -2,13 +2,8 @@
 
 import { CalendarPlus, CalendarX, SearchX, ShoppingBasket } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import {
-  Banner,
-  EmptyState,
-  ErrorState,
-  IconTile,
-  Toast,
-} from "@/components/shared";
+import { toast } from "sonner";
+import { Banner, EmptyState, ErrorState, IconTile } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useMediaQuery } from "@/hooks";
@@ -48,7 +43,8 @@ export interface BazarViewProps {
   initialDeleteId?: string;
   /** Replace the list card with an inline error (summary strip stays). */
   listError?: boolean;
-  onSave: (input: BazarInput) => Promise<void>;
+  /** `receipt` (PRO, create only) is uploaded right after the entry is created. */
+  onSave: (input: BazarInput, receipt?: File) => Promise<void>;
   onDelete: (entryId: string) => Promise<void>;
   /** Resolves with the new receipt URL, or `null` when none was returned. */
   onUploadReceipt: (entryId: string, file: File) => Promise<string | null>;
@@ -75,7 +71,6 @@ export function BazarView({
 }: BazarViewProps) {
   const [saving, setSaving] = useState<ReadonlySet<string>>(new Set());
   const [failedId, setFailedId] = useState<string | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
 
   /** Runs one write, keeping the row marked while the request is in flight. */
   const runMutation = useCallback(
@@ -88,11 +83,11 @@ export function BazarView({
       setFailedId(null);
       try {
         await action();
-        if (success) setToast(success);
+        if (success) toast.success(success);
         return true;
       } catch (error) {
         setFailedId(key);
-        setToast(getApiMessage(error, "Couldn't save. Try again."));
+        toast.error(getApiMessage(error, "Couldn't save. Try again."));
         return false;
       } finally {
         setSaving((prev) => {
@@ -106,10 +101,10 @@ export function BazarView({
   );
 
   const save = useCallback(
-    (input: BazarInput) =>
+    (input: BazarInput, receipt?: File) =>
       runMutation(
         input.id ?? "new",
-        () => onSave(input),
+        () => onSave(input, receipt),
         input.id ? "Bazar entry updated" : "Bazar entry added",
       ),
     [onSave, runMutation],
@@ -362,8 +357,6 @@ export function BazarView({
         onConfirm={() => deleting && void remove(deleting.id)}
         onClose={closeDelete}
       />
-
-      {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
     </div>
   );
 }

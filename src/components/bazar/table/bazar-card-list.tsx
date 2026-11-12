@@ -1,11 +1,13 @@
 "use client";
 
+import { ReceiptText } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { groupByDate } from "@/lib/bazar";
 import { formatDayLong } from "@/lib/dates";
 import { formatBDT } from "@/lib/format";
 import type { BazarEntry, BazarMember } from "@/lib/types/bazar.types";
 import { cn } from "@/lib/utils";
+import { ReceiptViewer } from "../receipt-viewer";
 
 /** Mobile replacement for the table: date-grouped cards with sticky date headers. */
 export function BazarCardList({
@@ -54,12 +56,17 @@ export function BazarCardList({
                 </>
               );
               const cls = cn(
-                "flex min-h-16 w-full items-center gap-3 border-b border-line px-4 py-3",
+                "flex min-h-16 min-w-0 flex-1 items-center gap-3 px-4 py-3",
                 saving.has(e.id) && "opacity-60",
-                failedId === e.id && "bg-error-surface",
               );
               return (
-                <li key={e.id}>
+                <li
+                  key={e.id}
+                  className={cn(
+                    "flex items-stretch border-b border-line",
+                    failedId === e.id && "bg-error-surface",
+                  )}
+                >
                   {canEdit ? (
                     <button
                       type="button"
@@ -71,6 +78,22 @@ export function BazarCardList({
                     </button>
                   ) : (
                     <div className={cls}>{body}</div>
+                  )}
+                  {/* Sibling of the edit button: buttons can't nest. */}
+                  {e.receiptUrl && (
+                    <ReceiptViewer
+                      url={e.receiptUrl}
+                      title={`Receipt · ${name}`}
+                      description={`${formatDayLong(e.date)} · ${formatBDT(e.amount)}`}
+                    >
+                      <button
+                        type="button"
+                        aria-label={`View receipt for ${name}, ${formatBDT(e.amount)}`}
+                        className="flex w-12 shrink-0 cursor-pointer items-center justify-center border-l border-line text-aubergine-800 active:bg-silver-100 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-aubergine-500"
+                      >
+                        <ReceiptText aria-hidden className="size-5" />
+                      </button>
+                    </ReceiptViewer>
                   )}
                 </li>
               );

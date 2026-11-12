@@ -54,7 +54,7 @@ export type MemberDialogKind =
   | "remove"
   | "role"
   | "leave"
-  | "regenerate"
+  | "transfer"
   | "invite"
   | "actions";
 

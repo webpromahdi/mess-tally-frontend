@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useMediaQuery } from "@/hooks";
 import { cn } from "@/lib/utils";
 
-/** One confirmation pattern for approve, reject, remove, leave and regenerate. */
+/** One confirmation pattern for approve, reject, remove, leave and ownership transfer. */
 export function ConfirmSheet({
   open,
   tone = "danger",

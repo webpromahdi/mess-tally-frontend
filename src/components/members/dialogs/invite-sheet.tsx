@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, RefreshCw } from "lucide-react";
+import { Copy } from "lucide-react";
 import { DrawerSheet } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { useMediaQuery } from "@/hooks";
@@ -8,16 +8,12 @@ import { useMediaQuery } from "@/hooks";
 export function InviteSheet({
   open,
   roomCode,
-  canRegenerate,
   onCopy,
-  onRegenerate,
   onClose,
 }: {
   open: boolean;
   roomCode: string;
-  canRegenerate: boolean;
   onCopy: () => void;
-  onRegenerate: () => void;
   onClose: () => void;
 }) {
   const desktop = useMediaQuery("(min-width: 768px)");
@@ -47,17 +43,6 @@ export function InviteSheet({
             Copy
           </Button>
         </div>
-        {canRegenerate && (
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-body-sm text-ink-muted">
-              Regenerating makes the old code stop working.
-            </p>
-            <Button variant="ghost" size="sm" onClick={onRegenerate}>
-              <RefreshCw className="size-4" />
-              Regenerate
-            </Button>
-          </div>
-        )}
         <div className="flex justify-end">
           <Button variant="primary" onClick={onClose}>
             Done

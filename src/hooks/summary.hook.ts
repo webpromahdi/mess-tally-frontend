@@ -17,7 +17,6 @@ export function useSummary(month: string | null, enabled = true) {
     queryFn: () => getSummary({ month }),
     enabled,
     staleTime: 30 * 1000,
-    refetchOnWindowFocus: true,
   });
 }
 

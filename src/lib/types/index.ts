@@ -8,6 +8,7 @@
  *   import type { ApiResponse, PaginatedResponse } from "@/lib/types";
  */
 
+export * from "./ai.types";
 export * from "./auth.types";
 export * from "./bazar.types";
 export * from "./dashboard.types";

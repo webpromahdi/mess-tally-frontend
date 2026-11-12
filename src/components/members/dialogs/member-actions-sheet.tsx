@@ -1,6 +1,6 @@
 "use client";
 
-import { ShieldCheck, UserMinus } from "lucide-react";
+import { Crown, ShieldCheck, UserMinus } from "lucide-react";
 import { DrawerSheet } from "@/components/shared";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -67,6 +67,17 @@ export function MemberActionsSheet({
             <UserMinus className="size-4" />
             Remove from mess
           </Button>
+          {perms.canTransfer && (
+            <Button
+              variant="outline"
+              size="lg"
+              className="justify-start"
+              onClick={() => onAction("transfer", member.id)}
+            >
+              <Crown className="size-4" />
+              Make owner
+            </Button>
+          )}
           <Button variant="ghost" onClick={onClose}>
             Close
           </Button>

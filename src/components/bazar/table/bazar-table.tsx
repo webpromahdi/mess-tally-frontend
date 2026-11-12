@@ -7,6 +7,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Pencil,
+  ReceiptText,
   Trash2,
 } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
@@ -20,6 +21,7 @@ import type {
   SortKey,
 } from "@/lib/types/bazar.types";
 import { cn } from "@/lib/utils";
+import { ReceiptViewer } from "../receipt-viewer";
 
 export const BAZAR_PAGE_SIZE = 8;
 
@@ -128,6 +130,9 @@ export function BazarTable({
               <th scope="col" className={plainHead}>
                 Note
               </th>
+              <th scope="col" className={cn(plainHead, "w-28")}>
+                Receipt
+              </th>
               <SortHead
                 label="Amount"
                 sortKey="amount"
@@ -171,6 +176,26 @@ export function BazarTable({
                       {e.note || "—"}
                     </span>
                   </td>
+                  <td className="h-12 border-b border-line px-4 whitespace-nowrap">
+                    {e.receiptUrl ? (
+                      <ReceiptViewer
+                        url={e.receiptUrl}
+                        title={`Receipt · ${name}`}
+                        description={`${day.day} ${day.monthShort} · ${formatBDT(e.amount)}`}
+                      >
+                        <button
+                          type="button"
+                          aria-label={`View receipt for ${name}'s bazar on ${day.day} ${day.monthShort}`}
+                          className="inline-flex min-h-8 cursor-pointer items-center gap-1.5 rounded-md font-medium text-aubergine-800 underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-aubergine-500"
+                        >
+                          <ReceiptText aria-hidden className="size-4" />
+                          View
+                        </button>
+                      </ReceiptViewer>
+                    ) : (
+                      <span className="text-ink-subtle">—</span>
+                    )}
+                  </td>
                   <td className="h-12 border-b border-line px-4 text-right font-medium text-ink tabular-nums">
                     {formatBDT(e.amount)}
                   </td>
@@ -203,7 +228,7 @@ export function BazarTable({
             <tr>
               <th
                 scope="row"
-                colSpan={3}
+                colSpan={4}
                 className="h-12 bg-silver-100 px-4 text-left text-body-sm font-semibold text-ink"
               >
                 {matchCount === 1
